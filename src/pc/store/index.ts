@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import Vuex, { Store } from 'vuex'
-import menu from './modules/menu'
+import project from './modules/project'
 Vue.use(Vuex)
 export type RootStore = Store<RootState>
 interface RootState {
-  menu: typeof menu.state
+  project: typeof project.state
 }
 const store = new Vuex.Store<RootState>({
   state: {} as RootState,
   mutations: {},
   actions: {},
   modules: {
-    menu
+    project
   }
 })
 

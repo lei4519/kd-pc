@@ -39,6 +39,7 @@ interface Path2Dir {
  *        {
  *          name: 'FormItem',
  *          zhName: '表单组件',
+ *          iconClass: 'biaodan',
  *          minSpan: 4,
  *          path: './form/FormItem.vue',
  *          props: {},
@@ -79,6 +80,7 @@ function createComponentList(modules: RC): ComponentList {
           const {
             name: compName,
             zhName,
+            iconClass,
             editorProps = noop,
             props,
             minSpan = 4
@@ -87,6 +89,7 @@ function createComponentList(modules: RC): ComponentList {
             new ColElement({
               name: compName,
               zhName,
+              iconClass,
               minSpan,
               path: `${path}/${name}`,
               props: getDefaultProps(props),

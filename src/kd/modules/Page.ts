@@ -1,5 +1,5 @@
 import { Menu } from './Menu'
-import { Row } from './Element'
+import { Row, RowProps } from './Element'
 let id = 0
 interface Permission {
   name: string
@@ -10,7 +10,7 @@ export interface PageProps {
   name: string
   show: boolean
   edit?: boolean
-  rows?: Row[]
+  rows?: RowProps[]
   permissions?: Permission[]
   routeName?: string
 }
@@ -31,18 +31,25 @@ export class Page implements PageProps {
   name = ''
   show = true
   edit = false
-  rows: Row[]
+  rows: Row[] = []
   permissions?: Permission[] = []
   constructor(page: PageProps) {
     this.name = page.name
     this.show = page.show
     this.edit = page.edit || false
     this.routeName = page.routeName || 'pageView' + id++
-    this.rows = page.rows?.map(r => new Row(r)) || [new Row({ elements: [] })]
+    page.rows && this.addRows(page.rows)
     page.permissions && this.addPermissions(page.permissions)
   }
   addPermissions(permission: Permission | Permission[]) {
+    permission
     // ..
+  }
+  addRows(rows: RowProps | RowProps[]) {
+    if (!Array.isArray(rows)) rows = [rows]
+    rows.forEach(r => {
+      this.rows.push(new Row(r))
+    })
   }
   remove() {
     this.parent?.delChild(this)

@@ -5,6 +5,9 @@ import { genUUID } from '../utils'
  * @class Row
  * @param elements 一行内的组件，被el-col包裹
  */
+export interface RowProps {
+  elements: ColElementProp[]
+}
 export class Row {
   readonly id = genUUID()
   private MAX_SPAN = 24
@@ -15,7 +18,7 @@ export class Row {
       this.elements.reduce((span, { minSpan }) => span + minSpan, 0)
     )
   }
-  constructor(row: Omit<Row, 'id' | 'MAX_SPAN' | 'span'>) {
+  constructor(row: RowProps) {
     this.elements = row.elements.map(e => new ColElement(e))
   }
 }
@@ -29,20 +32,23 @@ export class Row {
  * @param props 组件的props，组件配置区写入属性的地方
  * @param editorProps 生成组件配置区的配置描述
  */
+export type ColElementProp = Omit<ColElement, 'type' | 'id'>
 export class ColElement {
   readonly id = genUUID()
   readonly type = 'element'
   name: string
   zhName: string
   minSpan: number
+  iconClass: string
   path: string
   props: object
   editorProps: EditorSection[]
-  constructor(element: Omit<ColElement, 'type' | 'id'>) {
+  constructor(element: ColElementProp) {
     this.name = element.name
     this.zhName = element.zhName
     this.minSpan = element.minSpan || 1
     this.path = element.path
+    this.iconClass = element.iconClass
     this.props = element.props
     this.editorProps = element.editorProps
   }

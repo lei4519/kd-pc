@@ -12,6 +12,7 @@
 export default {
   name: 'Table',
   zhName: '表格组件',
+  iconClass: 'biaodanzujian-biaoge',
   props: {
     showSelect: {
       type: Boolean,

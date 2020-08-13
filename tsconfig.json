@@ -10,25 +10,15 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
+    "noImplicitAny": true,
     "baseUrl": ".",
     "skipLibCheck": true,
-    "types": [
-      "webpack-env"
-    ],
+    "types": ["webpack-env"],
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "kd/*": [
-        "src/kd/*"
-      ]
+      "@/*": ["src/*"],
+      "kd/*": ["src/kd/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": [
     "src/**/*.ts",
@@ -38,7 +28,5 @@
     "tests/**/*.tsx",
     "node_modules/vue-tsx-support/enable-check.d.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

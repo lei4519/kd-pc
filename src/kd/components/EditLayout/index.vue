@@ -354,6 +354,7 @@ $aside_width: 200px;
     height: calc(100vh - #{$header_height});
   }
   .el-aside {
+    position: relative;
     height: 100%;
     width: $aside_width !important;
     user-select: none;

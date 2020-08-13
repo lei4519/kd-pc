@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/kd/style/index.scss'
+import 'animate.css'
 import Plugins from './plugins'
 
 Vue.config.productionTip = false

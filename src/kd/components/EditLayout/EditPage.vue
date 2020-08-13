@@ -1,32 +1,47 @@
 <template>
   <div class="EditPage-wrapper">
-    <Draggable
-      :group="{ name: 'editor', pull: true, put: false }"
-      class="editor-wrap"
+    <div
+      v-show="dragingComponent"
+      class="drop-section"
+      @drop="onDropEvent('drop', $event)"
+      @dragover="onDropEvent('dragover', $event)"
+      @dragenter="onDropEvent('dragenter', $event)"
+      @dragleave="onDropEvent('dragleave', $event)"
+    ></div>
+    <transition-group
+      tag="div"
+      class="components-wrapper"
+      enter-active-class="animate__animated animate__fadeInUp"
+      leave-active-class="animate__animated animate__fadeOutUp"
     >
-      <!-- <div class="comp-wrap" v-for="el in testList" :key="el.id">
-        <component :is="pathToComp[el.path]" v-bind="el.props"></component>
-      </div>-->
+      <el-row v-for="row in page.rows" :key="row.id">
+        <el-col
+          tag="transition-group"
+          :span="8"
+          v-for="el in row.elements"
+          :key="el.id + 't'"
+          enter-active-class="animate__animated animate__fadeInUp"
+          leave-active-class="animate__animated animate__fadeOutUp"
+        >
+          <CatchEvents :key="el.id">
+            <component :is="pathToComp[el.path]" v-bind="el.props" />
+          </CatchEvents>
+        </el-col>
+      </el-row>
+    </transition-group>
+    <div class="select-component-wrapper">
       <div
-        v-show="chooseing"
-        class="drop-section"
-        @drop="onDropEvent('drop', $event)"
-        @dragenter="onDropEvent('dragenter', $event)"
-        @dragleave="onDropEvent('dragleave', $event)"
-      ></div>
-    </Draggable>
-    <Draggable
-      :group="{ name: 'select', pull: 'clone', put: false }"
-      @start="onSelectDragEvent('start', ...arguments)"
-      @end="onSelectDragEvent('end', ...arguments)"
-      @choose="onSelectDragEvent('choose', ...arguments)"
-      @unchoose="onSelectDragEvent('unchoose', ...arguments)"
-      class="select-component-wrap"
-    >
-      <div class="comp-wrap" v-for="el in componentList" :key="el.id">
-        <el-button>{{ el.zhName }}</el-button>
+        class="component-item"
+        v-for="component in componentList"
+        :key="component.id"
+        draggable
+        @dragstart="onDragEvent('start', component, $event)"
+        @dragend="onDragEvent('end', component, $event)"
+      >
+        <IconFont :type="component.iconClass" size="32" />
+        <div class="component-name">{{ component.zhName }}</div>
       </div>
-    </Draggable>
+    </div>
     <!-- <el-drawer
       :wrapperClosable="false"
       :withHeader="false"
@@ -51,8 +66,8 @@
 </template>
 
 <script>
-import Draggable from 'vuedraggable'
 import { getComponents, pathToComp } from '../../utils/getComponents'
+import { CatchEvents } from '../utils/CatchEvents'
 /**
  *   @desc 编辑区
  *   @params page 当前编辑的页面，Page实例
@@ -60,7 +75,7 @@ import { getComponents, pathToComp } from '../../utils/getComponents'
 export default {
   name: 'EditPage',
   components: {
-    Draggable
+    CatchEvents
   },
   props: {
     page: {
@@ -74,13 +89,18 @@ export default {
     return {
       drawerVisible: true,
       componentList: [],
-      chooseing: false
+      dragingComponent: false
     }
   },
   created() {
     this.pathToComp = pathToComp
     // 拍平找组件
     this.normalList()
+  },
+  mounted() {
+    document
+      .querySelector('.el-aside')
+      .appendChild(document.querySelector('.select-component-wrapper'))
   },
   methods: {
     normalList() {
@@ -97,36 +117,42 @@ export default {
       }
       this.componentList = res
     },
-    onDropEvent(type, e) {
-      const handleEvent = {
-        drop: e => {
-          console.log('e :>> ', e)
+    onDragEvent(type, c, e) {
+      console.log('type :>> ', type)
+      ;({
+        start: () => {
+          this.dragingComponent = c
         },
-        dragenter: e => {
+        end: () => {
+          this.dragingComponent = null
+        }
+      }[type]())
+    },
+    onDropEvent(type, e) {
+      console.log('type :>> ', type)
+      ;({
+        drop: () => {
+          e.preventDefault()
+          e.target.classList.remove('enter')
+          if (!this.page.rows.length) {
+            this.page.addRows({
+              elements: [this.dragingComponent]
+            })
+          } else {
+            this.page.rows[0].elements.push(this.dragingComponent)
+          }
+        },
+        dragover: () => {
+          e.preventDefault()
+          e.dataTransfer.dropEffect = 'copy'
+        },
+        dragenter: () => {
           e.target.classList.add('enter')
         },
-        dragleave: e => {
+        dragleave: () => {
           e.target.classList.remove('enter')
         }
-      }
-      handleEvent[type](e)
-    },
-    onSelectDragEvent(type, evt) {
-      const handleEvent = {
-        choose: () => {
-          this.chooseing = true
-        },
-        unchoose: () => {
-          this.chooseing = false
-        },
-        start: e => {
-          debugger
-        },
-        end: e => {
-          console.log('end :>> ', e)
-        }
-      }
-      handleEvent[type](evt)
+      }[type]())
     }
   }
 }
@@ -136,25 +162,42 @@ export default {
 .EditPage-wrapper {
   height: 100%;
   position: relative;
-  .select-component-wrap {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 16px;
-    border: 3px dashed #409eff;
-    border-radius: 8px;
-    display: flex;
-    padding: 16px;
-  }
-  .drop-section {
-    width: 100%;
-    height: 50px;
-    border: 2px dashed rgb(39, 209, 152);
-    border-radius: 12px;
-    transition: all 0.3s;
-    &.enter {
-      background-color: rgba(39, 209, 152, 0.5);
+}
+.select-component-wrapper {
+  border-radius: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  padding: 8px;
+  border: 3px dashed #409eff;
+  user-select: none;
+  .component-item {
+    margin: 8px;
+    font-size: 12px;
+    text-align: center;
+    color: #fff;
+    cursor: grab;
+    &:active {
+      cursor: grabbing;
     }
+    .component-name {
+      margin-top: 4px;
+    }
+  }
+}
+.drop-section {
+  width: 100%;
+  height: 50px;
+  border: 2px dashed rgb(39, 209, 152);
+  border-radius: 12px;
+  transition: all 0.3s;
+  &.enter {
+    background-color: rgba(39, 209, 152, 0.5);
   }
 }
 </style>

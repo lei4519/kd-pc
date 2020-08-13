@@ -13,30 +13,32 @@ const state: State = {
 }
 const mutations: Mutation = {
   SET_PROJECT(state, projectProps) {
-    const project = new Project({
-      name: '',
-      menu: [
-        {
-          type: 'menu',
-          name: '系统管理',
-          show: true,
-          children: [
-            {
-              type: 'page',
-              name: '系统列表',
-              show: true,
-              routeName: 'SystemList'
-            },
-            {
-              type: 'page',
-              name: '角色设置',
-              show: true,
-              routeName: 'RoleEdit'
-            }
-          ]
-        }
-      ]
-    })
+    const project = new Project(
+      {
+        name: '',
+        menu: [
+          {
+            type: 'menu',
+            name: '系统管理',
+            show: true,
+            children: [
+              {
+                type: 'page',
+                name: '系统列表',
+                show: true,
+                routeName: 'SystemList'
+              },
+              {
+                type: 'page',
+                name: '角色设置',
+                show: true,
+                routeName: 'RoleEdit'
+              }
+            ]
+          }
+        ]
+      } || projectProps
+    )
     setRoutes(project.menu)
     state.project = project
   }

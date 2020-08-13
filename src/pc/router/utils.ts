@@ -1,9 +1,9 @@
-import { Children } from '../modules/Menu'
-import VueRouter, { RouteConfig, NavigationGuard } from 'vue-router'
+import { Children } from '@/kd/modules/Menu'
+import VueRouter, { RouteConfig, NavigationGuard, Route } from 'vue-router'
 import router, { routes } from './index'
 import { routeMap } from './routeMap'
 import store from '../store'
-import { Page } from '../modules/Page'
+import { Page } from '@/kd/modules/Page'
 
 /**
  * @description 权限控制，注册路由
@@ -115,6 +115,6 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
   document.body.scrollTop = document.documentElement.scrollTop = 0
 }
 
-export const afterEach = () => {
+export const afterEach = (to: Route) => {
   // localStorage.setItem('routeName', to.name!)
 }

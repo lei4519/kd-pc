@@ -12,22 +12,27 @@ const on = createCatch(['keydown', 'mousedown'])
  * @desc 捕获事件，包裹在组件上，防止组件在编辑中被操作。
  */
 export const CatchEvents = {
+  name: 'CatchEvents',
   functional: true,
-  render(c: CreateElement, ctx: RenderContext) {
+  render(c: CreateElement, { data, children, listeners }: RenderContext) {
     return c(
       'div',
       {
-        class: ctx.data.class || {},
-        staticClass: ctx.data.staticClass || '',
+        key: data.key,
+        class: data.class || {},
+        staticClass: data.staticClass || '',
         staticStyle: {
-          ...(ctx.data.staticStyle || {}),
+          ...(data.staticStyle || {}),
           height: '100%',
           width: '100%'
         },
-        style: ctx.data.style || {},
-        on
+        style: data.style || {},
+        on: {
+          ...on,
+          ...listeners
+        }
       },
-      ctx.children
+      children
     )
   }
 }

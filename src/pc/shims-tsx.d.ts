@@ -15,6 +15,7 @@ declare global {
 declare module 'vue/types/options' {
   interface ComponentOptions<V extends Vue> {
     zhName?: string
+    iconClass?: string
     minSpan?: number
     editorProps?: EditorProps
   }
