@@ -1,0 +1,43 @@
+@import './reset.css';
+@import './class.scss';
+html, body {
+  box-sizing: border-box;
+  * {
+    box-sizing: inherit;
+  }
+}
+html {
+  $designSize: 19.2; /* 设计稿尺寸 */
+  $minWidth: 1000;
+  $maxWidth: 1920;
+  font-size: calc(100vw / #{$designSize});
+  height: 100%;
+  box-sizing: border-box;
+  min-width: $minWidth + PX;
+  max-width: $maxWidth + PX;
+  margin: 0 auto;
+  @media screen and (max-width: #{$minWidth}px) {
+    font-size: #{$minWidth / $designSize}PX;
+  }
+  @media screen and (min-width: #{$maxWidth}px) {
+    font-size: #{$maxWidth / $designSize}PX;
+  }
+}
+body {
+  font-size: 14px;
+}
+::-webkit-scrollbar {
+  width:5px;
+  height: 5px;
+	background-color:#F5F5F5;
+}
+::-webkit-scrollbar-track {
+	box-shadow:inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius:10px;
+	background-color:#F5F5F5;
+}
+::-webkit-scrollbar-thumb {
+	border-radius:10px;
+	box-shadow:inset 0 0 6px rgba(0,0,0,.3);
+	background-color:rgba(0,0,0,.3);
+}
