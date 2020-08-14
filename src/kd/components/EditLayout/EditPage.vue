@@ -11,22 +11,24 @@
     <transition-group
       tag="div"
       class="components-wrapper"
-      enter-active-class="animate__animated animate__fadeInUp"
-      leave-active-class="animate__animated animate__fadeOutUp"
+      enter-active-class="animate__animated animate__fadeIn"
+      leave-active-class="animate__animated animate__fadeOut"
     >
       <el-row v-for="row in page.rows" :key="row.id">
-        <el-col
-          tag="transition-group"
-          :span="8"
-          v-for="el in row.elements"
-          :key="el.id + 't'"
-          enter-active-class="animate__animated animate__fadeInUp"
-          leave-active-class="animate__animated animate__fadeOutUp"
-        >
-          <CatchEvents :key="el.id">
-            <component :is="pathToComp[el.path]" v-bind="el.props" />
-          </CatchEvents>
-        </el-col>
+        <VDR w="100%" h="auto" :draggable="false" :handles="['bm']">
+          <transition-group
+            tag="div"
+            class="clearfix"
+            enter-active-class="animate__animated animate__fadeIn"
+            leave-active-class="animate__animated animate__fadeOut"
+          >
+            <el-col :span="8" v-for="el in row.elements" :key="el.id + 't'">
+              <CatchEvents :key="el.id">
+                <component :is="pathToComp[el.path]" v-bind="el.props" />
+              </CatchEvents>
+            </el-col>
+          </transition-group>
+        </VDR>
       </el-row>
     </transition-group>
     <div class="select-component-wrapper">
@@ -68,6 +70,7 @@
 <script>
 import { getComponents, pathToComp } from '../../utils/getComponents'
 import { CatchEvents } from '../utils/CatchEvents'
+import VDR from 'vue-draggable-resizable-gorkys'
 /**
  *   @desc 编辑区
  *   @params page 当前编辑的页面，Page实例
@@ -75,7 +78,8 @@ import { CatchEvents } from '../utils/CatchEvents'
 export default {
   name: 'EditPage',
   components: {
-    CatchEvents
+    CatchEvents,
+    VDR
   },
   props: {
     page: {
@@ -98,9 +102,9 @@ export default {
     this.normalList()
   },
   mounted() {
-    document
-      .querySelector('.el-aside')
-      .appendChild(document.querySelector('.select-component-wrapper'))
+    // document
+    //   .querySelector('.el-aside')
+    //   .appendChild(document.querySelector('.select-component-wrapper'))
   },
   methods: {
     normalList() {
@@ -175,6 +179,7 @@ export default {
   bottom: 16px;
   padding: 8px;
   border: 3px dashed #409eff;
+  background-color: #409eff;
   user-select: none;
   .component-item {
     margin: 8px;
@@ -198,6 +203,24 @@ export default {
   transition: all 0.3s;
   &.enter {
     background-color: rgba(39, 209, 152, 0.5);
+  }
+}
+</style>
+<style lang="scss">
+.vdr {
+  position: relative;
+  &:hover {
+    border: 2px dashed #409eff;
+  }
+  &.active {
+    border: 2px solid #409eff;
+  }
+  .handle {
+    position: absolute;
+  }
+  .handle-bm {
+    bottom: 0;
+    background-color: #4093ff;
   }
 }
 </style>
