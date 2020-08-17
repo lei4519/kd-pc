@@ -454,10 +454,11 @@ export default {
 }
 .row-vdr {
   margin-bottom: 16px;
+  padding: 8px;
+
   &:hover {
-    padding: 16px;
     .component-drag-box {
-      padding: 16px;
+      // padding: 16px;
     }
   }
 }

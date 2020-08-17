@@ -11,21 +11,21 @@
     <div style="width:500px;height: 500px;">
         <div id="city" ></div>
     </div>
-    <inpit type="hidden" id="input"></inpit>
-    
+    <inpit type="hidden" id="input"></inpit>   
 </body>
 <script>
     new comps.City({
         el: '#city',
         propsData: {
             // filterable:true,
+            cityall:'a',
             multiple:true,
-            data: {'a':'a','b':'b','c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','j':'j','k':'k'}
+            data: {'all':'all','a':'a','b':'b','c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','j':'j','k':'k'}
         },
         mixins: [{
             methods: {
                 callback(res) {
-                    console.log(res)
+                    console.log(res.toString())
                 }
             }
         }]

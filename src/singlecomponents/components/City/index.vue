@@ -26,12 +26,17 @@
 import Vue from 'vue'
 import Element from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css';
+import { stringify } from 'uuid';
 Vue.use(Element)
 
 export default Vue.extend({
   name: 'City',
   zhName: '城市组件',
   props: {
+    cityall:{
+      type:String,
+      default:'all'
+    },
     multiple: {
       type: Boolean,
       default: false
@@ -58,9 +63,20 @@ export default Vue.extend({
       city: '',
     }
   },
+  watch:{
+    city(newVal, oldVal) {
+      if ( newVal.includes(this.cityall) && this.multiple) {
+          this.multiple = false
+          this.city = this.cityall
+        } else if (!newVal.includes(this.cityall) && !this.multiple) {
+          // 多选情况下，没有全部选项，开启多选功能
+          this.multiple = true
+           this.city = [newVal]
+        }
+    }
+  },
   methods: {
     cityChange(){
-      console.log(this.city)
       this.callback(this.city)
     }
   } 

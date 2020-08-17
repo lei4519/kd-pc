@@ -20,7 +20,10 @@
             </el-tooltip>
           </template>
           <template v-else>
-            <i class="el-icon-info hover" @click="showDialog(item.prop)"></i>
+            <i
+              class="el-icon-info hover csp"
+              @click="showDialog(item.prop)"
+            ></i>
             <el-dialog
               :title="item.label"
               :visible.sync="dialogVisibles[item.prop]"
@@ -196,7 +199,6 @@ export default {
       }
     }
     .el-icon-info {
-      cursor: pointer;
       &.hover:hover {
         color: $theme-color;
       }

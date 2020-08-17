@@ -24,6 +24,9 @@
   .layout-col {
     flex: 1;
     transition: all .3s;
+    + .layout-col {
+      margin-left: 8px;
+    }
   }
   @for $i from 1 through 24 {
     .layout-col.min-span-#{$i} {
