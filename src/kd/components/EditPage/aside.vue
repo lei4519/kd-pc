@@ -41,7 +41,7 @@
           />
           <el-alert
             v-else
-            class="mt-32 ml-8 mr-8 w-auto"
+            class="mt-16 ml-8 mr-8 w-auto"
             title="请先选择组件"
             type="info"
             show-icon
