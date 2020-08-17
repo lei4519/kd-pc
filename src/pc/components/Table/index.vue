@@ -161,7 +161,7 @@ export default {
                     show-icon
                     closable={false}
                   />
-                  <DocumentTable
+                  <InterfaceDoc
                     title="表格数据接口文档"
                     columns={[
                       {
@@ -273,8 +273,8 @@ export default {
             type: 'dataSource'
           },
           {
-            tips: 'tips 值：String类型 使用el-tooltip渲染',
             label: '标题',
+            tips: 'tips 值：String类型 使用el-tooltip渲染',
             prop: 'tableTitle',
             type: 'input'
           },
@@ -337,7 +337,7 @@ export default {
         obj[item.prop] = 'Mock数据'
         return obj
       }, {})
-      this.tableData = [data]
+      this.tableData = Array(5).fill(data)
     },
     processOptions() {
       // this.selfColumns.forEach(item => {

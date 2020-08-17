@@ -48,7 +48,7 @@
 
 <script>
 /**
- * @description 生成接口文档说明
+ * @description 接口文档表格
  * @param title 表格标题
  * @param code 接口代码示例
  * @param data 表格数据
