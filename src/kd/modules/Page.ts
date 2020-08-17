@@ -1,5 +1,5 @@
 import { Menu } from './Menu'
-import { Row, RowProps } from './Element'
+import { Row, RowProps, ColElement } from './Element'
 let id = 0
 interface Permission {
   name: string
@@ -28,6 +28,7 @@ export class Page implements PageProps {
   readonly routeID = 'page_' + id++
   parent?: Menu
   routeName?: string
+  editingElement: ColElement | null = null
   name = ''
   show = true
   edit = false
@@ -45,14 +46,47 @@ export class Page implements PageProps {
     permission
     // ..
   }
-  addRows(rows: RowProps | RowProps[]) {
+  addRows(rows: RowProps | RowProps[]): Row[] {
     if (!Array.isArray(rows)) rows = [rows]
-    rows.forEach(r => {
-      this.rows.push(new Row(r))
+    return rows.map(r => {
+      const row = new Row(r)
+      row.parent = this
+      this.rows.push(row)
+      return row
     })
+  }
+  delRow(rows: Row) {
+    this.rows.splice(this.rows.findIndex(r => r.id === rows.id)!, 1)
+  }
+  swapElement(indexs: {
+    formRowIndex: number
+    formColIndex: number
+    toRowIndex: number
+    toColIndex: number
+  }) {
+    const { formRowIndex, formColIndex, toRowIndex, toColIndex } = indexs
+    const formElements = this.rows[formRowIndex].elements
+    const toElements = this.rows[toRowIndex].elements
+    // 同行不需要等待动画过渡
+    if (formRowIndex === toRowIndex) {
+      const toEl: ColElement = toElements[toColIndex]
+      const formEl: ColElement = formElements.splice(formColIndex, 1, toEl)[0]
+      toElements.splice(toColIndex, 1, formEl)
+    } else {
+      const formEl: ColElement = formElements.splice(formColIndex, 1)[0]
+      const toEl: ColElement = toElements.splice(toColIndex, 1)[0]
+      setTimeout(() => {
+        formElements.splice(formColIndex, 0, toEl)
+        toElements.splice(toColIndex, 0, formEl)
+        // FIXME css 动画变量
+      }, 300)
+    }
   }
   remove() {
     this.parent?.delChild(this)
+  }
+  setEditingElement(el: ColElement | null) {
+    this.editingElement = el
   }
   toJSON() {
     return { ...this, parent: void 0 }

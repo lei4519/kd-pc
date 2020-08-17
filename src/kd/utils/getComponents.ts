@@ -74,7 +74,6 @@ function createComponentList(modules: RC): ComponentList {
           path2dir[path].dirName = dirName
         } else {
           const ctor = modules(item).default
-          addMap(`${path}/${name}`, ctor)
           // {} || Vue.extend({})
           const options = typeof ctor === 'function' ? ctor.options : ctor
           const {
@@ -85,6 +84,10 @@ function createComponentList(modules: RC): ComponentList {
             props,
             minSpan = 4
           } = options
+          addMap(`${path}/${name}`, {
+            ctor,
+            editorProps: getEditorProps(editorProps(), path, modules)
+          })
           res.push(
             new ColElement({
               name: compName,
@@ -92,8 +95,7 @@ function createComponentList(modules: RC): ComponentList {
               iconClass,
               minSpan,
               path: `${path}/${name}`,
-              props: getDefaultProps(props),
-              editorProps: getEditorProps(editorProps(), path, modules)
+              props: getDefaultProps(props)
             })
           )
         }
@@ -128,12 +130,18 @@ function getDefaultProps(props: object = {}): object {
   }, {} as any)
 }
 
+interface PathToComp {
+  [path: string]: {
+    ctor: any
+    editorProps: EditorSection[]
+  }
+}
 /**
- * @description 路径 -> 组件对象的映射表，编辑区渲染组件时使用
+ * @description 路径 -> 组件对象、组件editorProps的映射表
  */
-export const pathToComp: any = {}
-function addMap(comPath: string, ctor: any) {
-  pathToComp[comPath] = ctor
+export const pathToComp: PathToComp = {}
+function addMap(comPath: string, obj: any) {
+  pathToComp[comPath] = obj
 }
 
 /**
@@ -149,8 +157,8 @@ function getEditorProps(
     (prop as CustomEditor).custom
   editorProps.forEach(section => {
     section.props.forEach(prop => {
-      if (isCustom(prop) && typeof prop.component === 'string') {
-        let componentPath = prop.component
+      if (isCustom(prop) && !prop.component && prop.componentPath) {
+        let componentPath = prop.componentPath
         // 解析路径 ./ ../ ../../
         while (componentPath.startsWith('../')) {
           path = path.replace(/\/[A-Za-z0-9_-]+$/, '')

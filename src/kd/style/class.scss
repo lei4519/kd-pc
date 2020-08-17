@@ -6,6 +6,9 @@
 .deselect {
   user-select: none;
 }
+.csp {
+  cursor: pointer;
+}
 .clearfix::after {
   content: '';
   display: block;
@@ -14,10 +17,36 @@
   visibility: hidden;
   clear: both;
 }
-// 以4的倍数递增，生成2倍到8倍4个方向的margin
+// 实现el-row el-col功能
+.layout-row {
+  display: flex;
+  flex-wrap: wrap;
+  .layout-col {
+    flex: 1;
+    transition: all .3s;
+  }
+  @for $i from 1 through 24 {
+    .layout-col.min-span-#{$i} {
+      min-width: $i / 24 * 100%;
+    }
+    .layout-col.max-span-#{$i} {
+      max-width: $i / 24 * 100%;
+    }
+  }
+}
+.w-auto {
+  width: auto !important;
+}
+.pos-a {
+  position: absolute;
+}
+.pos-r {
+  position: relative;
+}
+// 以4的倍数递增，生成1倍到8倍4个方向的margin
 // 简写 mt-8 mb-8 ml-8 mr-8
 $direction: ('t', 'top'), ('b', 'bottom'), ('l', 'left'), ('r', 'right');
-@for $i from 2 through 8 {
+@for $i from 1 through 8 {
   @each $d1, $d2 in $direction {
     .m#{$d1}-#{$i * 4} {
       margin-#{$d2}: $i * 4 * 1px !important;

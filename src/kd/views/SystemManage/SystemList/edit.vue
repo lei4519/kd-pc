@@ -10,7 +10,7 @@
 
 <script>
 import EditLayout from '@/kd/components/EditLayout'
-import { Project } from '../../modules/Project'
+import { Project } from '@/kd/modules/Project'
 export default {
   name: 'Edit',
   components: {

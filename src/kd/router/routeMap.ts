@@ -13,24 +13,33 @@ export const routeMap: RouteMap = {
     {
       path: 'SystemList',
       name: 'SystemList',
-      component: () => import('@/kd/views/system/list.vue')
+      component: () => import('@/kd/views/SystemManage/SystemList/index.vue')
     },
     {
       path: 'SystemEdit',
       name: 'SystemEdit',
-      component: () => import('@/kd/views/system/edit.vue')
+      component: () => import('@/kd/views/SystemManage/SystemList/edit.vue')
+    }
+  ],
+  SinglePageList: [
+    {
+      path: 'SinglePageList',
+      name: 'SinglePageList',
+      component: () =>
+        import('@/kd/views/SystemManage/SinglePageList/index.vue')
     },
     {
       path: 'EditSinglePage',
       name: 'EditSinglePage',
-      component: () => import('@/kd/views/system/EditSinglePage.vue')
+      component: () =>
+        import('@/kd/views/SystemManage/SinglePageList/EditSinglePage.vue')
     }
   ],
-  RoleEdit: [
+  RoleSetting: [
     {
-      path: 'RoleEdit',
-      name: 'RoleEdit',
-      component: () => import('@/kd/views/role/edit.vue')
+      path: 'RoleSetting',
+      name: 'RoleSetting',
+      component: () => import('@/kd/views/SystemManage/RoleSetting/index.vue')
     }
   ]
 }

@@ -1,45 +1,49 @@
-// import { cloneDeep } from 'lodash'
-// import { RootStore } from '../..'
+import { cloneDeep } from 'lodash'
 
-// class UndoRedoHistory {
-//     store: RootStore | null = null
-//     history: any[] = []
-//     currentIndex = -1
+class UndoRedoHistory {
+  history: any[] = []
+  currentIndex = -1
+  listeners: Set<Function> = new Set()
+  get canUndo() {
+    return this.currentIndex > 0
+  }
 
-//     get canUndo () {
-//       return this.currentIndex > 0
-//     }
+  get canRedo() {
+    return this.history.length > this.currentIndex + 1
+  }
 
-//     get canRedo () {
-//       return this.history.length > this.currentIndex + 1
-//     }
+  addState(state: any) {
+    // 撤销后加入了新的操作
+    if (this.currentIndex + 1 < this.history.length) {
+      this.history.splice(this.currentIndex + 1)
+    }
+    this.history.push(cloneDeep(state))
+    this.currentIndex++
+  }
 
-//     init (store: RootStore) {
-//       this.store = store
-//     }
+  undo() {
+    if (!this.canUndo) return
+    const prevState = this.history[--this.currentIndex]
+    this.emit(cloneDeep(prevState))
+  }
 
-//     addState (state: any) {
-//       // 撤销后加入了新的操作
-//       if (this.currentIndex + 1 < this.history.length) {
-//         this.history.splice(this.currentIndex + 1)
-//       }
-//       this.history.push(state)
-//       this.currentIndex++
-//     }
+  redo() {
+    if (!this.canRedo) return
+    const nextState = this.history[++this.currentIndex]
+    this.emit(cloneDeep(nextState))
+  }
 
-//     undo () {
-//       if (!this.canUndo) return
-//       const prevState = this.history[--this.currentIndex]
-//       this.store?.replaceState(cloneDeep(prevState))
-//     }
+  on(fn: Function) {
+    this.listeners.add(fn)
+  }
 
-//     redo () {
-//       if (!this.canRedo) return
-//       const nextState = this.history[++this.currentIndex]
-//       this.store?.replaceState(cloneDeep(nextState))
-//     }
-// }
+  off(fn: Function) {
+    this.listeners.delete(fn)
+  }
 
-// const undoRedoHistory = new UndoRedoHistory()
+  emit(state: any) {
+    this.listeners.forEach(fn => fn(state))
+  }
+}
 
-// export default undoRedoHistory
+export default UndoRedoHistory

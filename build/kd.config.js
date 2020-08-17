@@ -13,6 +13,13 @@ module.exports = {
       config.devtool = 'source-map'
     }
   },
+  css: {
+    loaderOptions: {
+      sass: {
+        prependData: `@import "~@/kd/style/global-variable.scss";`
+      }
+    }
+  },
   devServer: {
     proxy: 'http://localhost:4000'
   }

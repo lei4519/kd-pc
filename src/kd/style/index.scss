@@ -1,5 +1,6 @@
 @import './reset.css';
 @import './class.scss';
+
 html,
 body {
   box-sizing: border-box;
@@ -27,6 +28,7 @@ html {
 }
 body {
   font-size: 14px;
+  --animate-duration: .3s;
 }
 
 // 滚动条

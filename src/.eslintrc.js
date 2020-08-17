@@ -26,6 +26,7 @@ module.exports = {
     'vue/array-bracket-spacing': 'warn',
     'vue/arrow-spacing': 'warn',
     'vue/block-spacing': 'warn',
+    'vue/valid-v-for': 'off',
     '@typescript-eslint/member-delimiter-style': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',

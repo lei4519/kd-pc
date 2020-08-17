@@ -14,24 +14,11 @@ module.exports = {
     }
   },
   css: {
-    // loaderOptions: {
-    //   postcss: {
-    //     plugins: [
-    //       require('autoprefixer')(),
-    //       css => {
-    //         css.walkDecls(decl => {
-    //           if (decl.value === '1px') {
-    //             decl.value = '1PX'
-    //           }
-    //         })
-    //       },
-    //       require('postcss-pxtorem')({
-    //         rootValue: 100,
-    //         propList: ['*'],
-    //       }),
-    //     ],
-    //   }
-    // }
+    loaderOptions: {
+      sass: {
+        prependData: `@import "~@/kd/style/global-variable.scss";`
+      }
+    }
   },
   devServer: {
     proxy: 'http://localhost:4000'

@@ -2,22 +2,134 @@
   "id": "2005497",
   "name": "kd-pc",
   "font_family": "iconfont",
-  "css_prefix_text": "icon-",
+  "css_prefix_text": "",
   "description": "",
   "glyphs": [
     {
-      "icon_id": "8074631",
-      "name": "redo",
-      "font_class": "redo",
-      "unicode": "e602",
-      "unicode_decimal": 58882
-    },
-    {
-      "icon_id": "8074641",
+      "icon_id": "4765837",
       "name": "undo",
       "font_class": "undo",
-      "unicode": "e603",
-      "unicode_decimal": 58883
+      "unicode": "e787",
+      "unicode_decimal": 59271
+    },
+    {
+      "icon_id": "4765838",
+      "name": "redo",
+      "font_class": "redo",
+      "unicode": "e788",
+      "unicode_decimal": 59272
+    },
+    {
+      "icon_id": "1174253",
+      "name": "布局",
+      "font_class": "buju",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "6476391",
+      "name": "置换",
+      "font_class": "zhihuan",
+      "unicode": "ec8d",
+      "unicode_decimal": 60557
+    },
+    {
+      "icon_id": "8094818",
+      "name": "insert row right",
+      "font_class": "insertrowright",
+      "unicode": "e902",
+      "unicode_decimal": 59650
+    },
+    {
+      "icon_id": "8094820",
+      "name": "insert row left",
+      "font_class": "insertrowleft",
+      "unicode": "e903",
+      "unicode_decimal": 59651
+    },
+    {
+      "icon_id": "12638990",
+      "name": "左右",
+      "font_class": "zuoyou",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
+      "icon_id": "12896710",
+      "name": "左右布局",
+      "font_class": "zuoyoubuju",
+      "unicode": "e734",
+      "unicode_decimal": 59188
+    },
+    {
+      "icon_id": "10548754",
+      "name": "选择",
+      "font_class": "xuanze",
+      "unicode": "e661",
+      "unicode_decimal": 58977
+    },
+    {
+      "icon_id": "12430204",
+      "name": "选择",
+      "font_class": "xuanze-",
+      "unicode": "e64b",
+      "unicode_decimal": 58955
+    },
+    {
+      "icon_id": "2074593",
+      "name": "组件",
+      "font_class": "zujian",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "6216580",
+      "name": "组件",
+      "font_class": "zujianicon",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "3112959",
+      "name": "退出",
+      "font_class": "tuichu",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "4765896",
+      "name": "eye",
+      "font_class": "eye",
+      "unicode": "e78f",
+      "unicode_decimal": 59279
+    },
+    {
+      "icon_id": "4765959",
+      "name": "save",
+      "font_class": "save",
+      "unicode": "e791",
+      "unicode_decimal": 59281
+    },
+    {
+      "icon_id": "8157229",
+      "name": "submit",
+      "font_class": "submit",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "15211279",
+      "name": "删除_键盘",
+      "font_class": "delete",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "13904029",
+      "name": "交换 (1)",
+      "font_class": "jiaohuan",
+      "unicode": "e647",
+      "unicode_decimal": 58951
     },
     {
       "icon_id": "11319040",

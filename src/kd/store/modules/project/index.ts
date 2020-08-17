@@ -24,15 +24,15 @@ const mutations: Mutation = {
             children: [
               {
                 type: 'page',
-                name: '系统列表',
+                name: '单页列表',
                 show: true,
-                routeName: 'SystemList'
+                routeName: 'SinglePageList'
               },
               {
                 type: 'page',
                 name: '角色设置',
                 show: true,
-                routeName: 'RoleEdit'
+                routeName: 'RoleSetting'
               }
             ]
           }

@@ -7,7 +7,7 @@ function createCatch(events: Array<keyof WindowEventMap>): On {
     return res
   }, {} as On)
 }
-const on = createCatch(['keydown', 'mousedown'])
+const on = createCatch(['keydown', 'click'])
 /**
  * @desc 捕获事件，包裹在组件上，防止组件在编辑中被操作。
  */
@@ -18,9 +18,7 @@ export const CatchEvents = {
     return c(
       'div',
       {
-        key: data.key,
-        class: data.class || {},
-        staticClass: data.staticClass || '',
+        ...data,
         staticStyle: {
           ...(data.staticStyle || {}),
           height: '100%',

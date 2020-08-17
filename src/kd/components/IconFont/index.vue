@@ -1,8 +1,13 @@
 <template>
-  <span :class="`iconfont icon-${type}`" :style="`font-size: ${size}px`"></span>
+  <span :class="`iconfont ${type}`" :style="`font-size: ${size}px`"></span>
 </template>
 
 <script>
+/**
+ * @desc 全局组件 - 字体图标
+ * @param type iconfont 类名
+ * @param size 字体大小
+ */
 export default {
   props: {
     type: {

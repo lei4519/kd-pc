@@ -130,7 +130,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-::v-deep .btn-box [class^='el-icon-'] {
+/deep/ .btn-box [class^='el-icon-'] {
   vertical-align: baseline;
   margin-right: 0;
   width: auto;
