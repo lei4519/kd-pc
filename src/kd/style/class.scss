@@ -17,26 +17,7 @@
   visibility: hidden;
   clear: both;
 }
-// 实现el-row el-col功能
-.layout-row {
-  display: flex;
-  flex-wrap: wrap;
-  .layout-col {
-    flex: 1;
-    transition: all .3s;
-    + .layout-col {
-      margin-left: 8px;
-    }
-  }
-  @for $i from 1 through 24 {
-    .layout-col.min-span-#{$i} {
-      min-width: $i / 24 * 100%;
-    }
-    .layout-col.max-span-#{$i} {
-      max-width: $i / 24 * 100%;
-    }
-  }
-}
+
 .w-auto {
   width: auto !important;
 }

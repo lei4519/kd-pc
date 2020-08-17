@@ -85,15 +85,18 @@
                 <transition-group
                   tag="div"
                   class="clearfix layout-row"
+                  v-bind="row.getStyle()"
                   enter-active-class="animate__animated animate__fadeIn"
                   leave-active-class="animate__animated animate__fadeOut"
                 >
                   <div
-                    :class="
-                      `layout-col min-span-${el.minSpan} max-span-${el.maxSpan}`
-                    "
+                    class="layout-col"
+                    v-bind="el.getStyle()"
                     v-for="(el, colIndex) in row.elements"
                     :key="el.id"
+                    @click="
+                      handleComponentOperate({ type: 'setting' }, row, el)
+                    "
                   >
                     <CatchEvents
                       draggable
@@ -149,6 +152,7 @@
                 </transition-group>
               </Interact>
               <div
+                ref="rowDropDom"
                 key="row-drop-section"
                 class="row drop-section"
                 :class="{
@@ -209,8 +213,9 @@ export default {
     },
     page: {
       type: Object,
+      required: true,
       default() {
-        return null
+        return {}
       }
     }
   },
@@ -221,6 +226,19 @@ export default {
       dragingComponent: null, // 正在从组件列表中拖拽的组件
       swapingComponentInfo: null, // 正在交换位置的组件
       dropPosAbs: false // 元素添加和拖放区域提示冲突 以此flag控制动画效果
+    }
+  },
+  watch: {
+    'page.editingElement'(v) {
+      if (v) {
+        if (this.activeTab === 'select') {
+          this.activeTab = 'setting'
+        }
+      } else {
+        if (this.activeTab === 'setting') {
+          this.activeTab = 'select'
+        }
+      }
     }
   },
   created() {
@@ -254,9 +272,14 @@ export default {
         element = this.page.addRows({
           elements: [component]
         })[0].elements[0]
+        setTimeout(() => {
+          this.$refs.rowDropDom.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
+          })
+        }, this.animateDuration)
       }
       element && this.page.setEditingElement(element)
-      this.activeTab = 'setting'
     },
     onDropEvent(type, e) {
       if (!this.dropHandler) {
@@ -383,7 +406,6 @@ export default {
         },
         setting: () => {
           this.page.setEditingElement(element)
-          this.activeTab = 'setting'
         }
       }[type]())
     },
@@ -396,7 +418,8 @@ export default {
           this.undoRedoHistory.redo()
         },
         save: () => {
-          //
+          localStorage.setItem('page', JSON.stringify(this.page))
+          this.$message.success('保存成功')
         },
         exit: () => {
           this.$emit('update:visible', false)
@@ -453,13 +476,9 @@ export default {
   }
 }
 .row-vdr {
-  margin-bottom: 16px;
   padding: 8px;
-
-  &:hover {
-    .component-drag-box {
-      // padding: 16px;
-    }
+  .component-drag-box {
+    padding: 8px;
   }
 }
 .component-drag-box {
@@ -474,7 +493,6 @@ export default {
   }
   &.active {
     padding: 4px;
-    border-width: 1px;
     border-style: solid;
     border-color: #409eff;
   }

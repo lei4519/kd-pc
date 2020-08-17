@@ -55,8 +55,10 @@ export class Page implements PageProps {
       return row
     })
   }
-  delRow(rows: Row) {
-    this.rows.splice(this.rows.findIndex(r => r.id === rows.id)!, 1)
+  delRow(rows: Row): number {
+    const i = this.rows.findIndex(r => r.id === rows.id)!
+    this.rows.splice(i, 1)
+    return i
   }
   swapElement(indexs: {
     formRowIndex: number
@@ -89,6 +91,6 @@ export class Page implements PageProps {
     this.editingElement = el
   }
   toJSON() {
-    return { ...this, parent: void 0 }
+    return { ...this, editingElement: null, parent: void 0 }
   }
 }

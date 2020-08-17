@@ -40,7 +40,9 @@ export class Row {
   style: Partial<CSSStyleDeclaration>
   elements: ColElement[] = []
   constructor(row: RowProps) {
-    this.style = row.style || {}
+    this.style = row.style || {
+      marginBottom: '16px'
+    }
     row.elements && this.addElements(row.elements)
   }
   getFreeSpace() {
@@ -56,20 +58,41 @@ export class Row {
     if (!Array.isArray(elements)) elements = [elements]
     return elements.map(element => {
       const colEl = new ColElement(element)
+      colEl.parent = this
       this.elements.push(colEl)
       return colEl
     })
   }
   delElement(element: ColElement) {
-    this.elements.splice(this.elements.findIndex(e => e.id === element.id)!, 1)
-    if (this.elements.length === 0) {
-      this.parent?.delRow(this)
+    const page = this.parent!
+    let elements = this.elements
+    elements.splice(elements.findIndex(e => e.id === element.id)!, 1)
+    // 删除后再取值
+    let len = this.elements.length
+
+    if (len === 0) {
+      const delIdx = page.delRow(this)
+       // 页面已经没有任何元素了
+      if (delIdx === 0) return page.setEditingElement(null)
+      // 上一行的元素
+      elements = page.rows[delIdx - 1].elements 
+      len = elements.length
     }
+    page.setEditingElement(elements[len - 1])
   }
   setStyle(style: Partial<CSSStyleDeclaration>) {
     Object.entries(style).forEach(([key, val]) => {
       this.style[key as any] = val as any
     })
+  }
+  getStyle() {
+    return {
+      style: {
+        ...this.style,
+        display: 'flex',
+        flexWrap: 'wrap'
+      }
+    }
   }
   toJSON() {
     return { ...this, parent: void 0 }
@@ -100,6 +123,7 @@ let componentID = 0
 export class ColElement {
   readonly id = genUUID()
   readonly type = 'element'
+  parent?: Row
   name: string
   zhName: string
   minSpan: number
@@ -125,6 +149,16 @@ export class ColElement {
       // this.props[key] = val
       Vue.set(this.props, key, val)
     })
+  }
+  getStyle() {
+    return {
+      style: {
+        flex: 1,
+        transition: 'all .3s',
+        minWidth: `${this.minSpan / 24 * 100}%`,
+        maxWidth: `${this.maxSpan / 24 * 100}%`,
+      }
+    }
   }
   toJSON() {
     return { ...this, parent: void 0 }

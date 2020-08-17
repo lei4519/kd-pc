@@ -1,10 +1,16 @@
 <template>
-  <div class="edit-wrapper">设置</div>
+  <div class="edit-wrapper">
+    <Loading />
+  </div>
 </template>
 
 <script>
+import Loading from '@/kd/components/Loading/index.vue'
 export default {
-  name: 'RoleEdit'
+  name: 'RoleEdit',
+  components: {
+    Loading
+  }
 }
 </script>
 

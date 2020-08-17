@@ -9,14 +9,13 @@
       popper-class="operation-popper"
     >
       <i class="el-icon-delete"></i>
-      <div slot="content" class="content">
+      <div slot="content" cslass="content">
         删除
-        <IconFont
+        <!-- <IconFont
           style="margin-left: 0.12rem; line-height: 1"
           type="delete"
           size="22"
-          v-if="showShortcut"
-        />
+        /> -->
       </div>
     </el-tooltip>
     <el-tooltip
@@ -28,15 +27,6 @@
       placement="right"
     >
       <i class="el-icon-copy-document"></i>
-    </el-tooltip>
-    <el-tooltip
-      @click.native.stop="edit('setting')"
-      class="operation"
-      effect="dark"
-      content="设置"
-      placement="right"
-    >
-      <i class="el-icon-setting"></i>
     </el-tooltip>
   </div>
 </template>
@@ -56,10 +46,6 @@ export default {
     showCopy: {
       type: Boolean,
       default: true
-    },
-    showShortcut: {
-      type: Boolean,
-      default: false
     }
   },
   methods: {

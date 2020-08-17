@@ -43,7 +43,7 @@
       <el-input
         v-if="item.type === 'input'"
         v-model="form[item.prop]"
-        @change="setElementProps(i, item.prop, ...arguments)"
+        @input="setElementProps(i, item.prop, ...arguments)"
       >
       </el-input>
       <div class="dataSource" v-else-if="item.type === 'dataSource'">
@@ -60,7 +60,7 @@
         v-else-if="item.type === 'inputNumber'"
         controls-position="right"
         v-model="form[item.prop]"
-        @change="setElementProps(i, item.prop, ...arguments)"
+        @input="setElementProps(i, item.prop, ...arguments)"
       >
       </el-input-number>
       <el-radio-group
