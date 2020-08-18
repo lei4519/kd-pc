@@ -50,10 +50,12 @@ export default {
   },
   computed: {
     width() {
-      return parseFloat(this.w) ? this.w + 'px' : 'auto'
+      const w = parseFloat(this.w)
+      return w ? w + 'px' : 'auto'
     },
     height() {
-      return parseFloat(this.h) ? this.h + 'px' : 'auto'
+      const h = parseFloat(this.h)
+      return h ? h + 'px' : 'auto'
     }
   },
   watch: {
@@ -114,6 +116,9 @@ export default {
               transform: `translate(${event.deltaRect.left}px, ${event.deltaRect.top}px)`
             })
             Object.assign(event.target.dataset, { x, y })
+          })
+          .on('resizeend', event => {
+            this.$emit('resizeEnd', event.rect)
           })
       }
     }

@@ -1,9 +1,10 @@
 <template>
   <Interact
     :edges="[asideLayout === 'left' ? 'right' : 'left']"
-    :w="300"
+    :w="editPageAsideWidth"
     :maxWidth="500"
     :minWidth="200"
+    @resizeEnd="onResizeEnd"
     v-if="page"
   >
     <el-aside>
@@ -56,7 +57,6 @@
 <script>
 import Interact from '../utils/Interact.vue'
 import EditorProps from '../EditorProps/index'
-import { getComponents } from '../../utils/getComponents'
 
 export default {
   name: 'EditPageAside',
@@ -79,6 +79,12 @@ export default {
         return null
       }
     },
+    componentList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     dragingComponent: {
       type: Object,
       default() {
@@ -88,27 +94,12 @@ export default {
   },
   data() {
     return {
-      componentList: [] // 组件列表
+      editPageAsideWidth: localStorage.getItem('editPageAsideWidth') || 300
     }
   },
-  created() {
-    // 拍平找组件
-    this.normalList()
-  },
   methods: {
-    normalList() {
-      const comps = getComponents()
-      const res = []
-      while (comps.length) {
-        const item = comps.shift()
-        if (item.type === 'element') {
-          res.push(item)
-        }
-        if (item.children) {
-          comps.unshift(...item.children)
-        }
-      }
-      this.componentList = res
+    onResizeEnd({ width }) {
+      localStorage.setItem('editPageAsideWidth', `${width | 0}px`)
     },
     onDragEvent(type, c) {
       if (!this.dragHandler) {

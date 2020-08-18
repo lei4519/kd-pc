@@ -323,6 +323,7 @@ export default {
     }
   },
   created() {
+    window.table = this
     this._params = {}
     this.alignMap = {
       string: 'left',
@@ -376,6 +377,14 @@ export default {
       this.$loadManage.exec(this.fetchData)
     },
     fetchData(params = {}) {
+      return new Promise((resolve, reject) => {
+        // FIXME 測試
+        setTimeout(() => {
+          // reject()
+        }, 500)
+      })
+      // FIXME 測試
+      /* eslint-disable no-unreachable */
       if (this.url) {
         params = {
           ...this._params,

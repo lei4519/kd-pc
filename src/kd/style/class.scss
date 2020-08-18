@@ -27,6 +27,9 @@
 .pos-r {
   position: relative;
 }
+.text-c {
+  text-align: center;
+}
 // 以4的倍数递增，生成1倍到8倍4个方向的margin
 // 简写 mt-8 mb-8 ml-8 mr-8
 $direction: ('t', 'top'), ('b', 'bottom'), ('l', 'left'), ('r', 'right');

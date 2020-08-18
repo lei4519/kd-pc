@@ -13,6 +13,7 @@
       <EditPageAside
         v-if="asideLayout === 'left'"
         :asideLayout="asideLayout"
+        :componentList="componentList"
         :page="page"
         :activeTab.sync="activeTab"
         :dragingComponent.sync="dragingComponent"
@@ -38,7 +39,11 @@
               >
                 <IconFont type="undo" />
               </div>
-              <div slot="content">撤销</div>
+              <div slot="content">
+                撤销
+                <IconFont class="ml-4" type="command" size="12" />
+                + Z
+              </div>
             </el-tooltip>
             <el-tooltip class="operation" effect="dark" placement="bottom">
               <div
@@ -52,13 +57,21 @@
               >
                 <IconFont type="redo" />
               </div>
-              <div slot="content">重做</div>
+              <div slot="content">
+                重做
+                <IconFont class="ml-4" type="command" size="12" />
+                + Shift + Z
+              </div>
             </el-tooltip>
             <el-tooltip class="operation" effect="dark" placement="bottom">
               <div class="operate-item" @click="handleOperate('save')">
                 <IconFont type="save" />
               </div>
-              <div slot="content">保存</div>
+              <div slot="content">
+                保存
+                <IconFont class="ml-4" type="command" size="12" />
+                + S
+              </div>
             </el-tooltip>
             <el-tooltip class="operation" effect="dark" placement="bottom">
               <div class="operate-item" @click="handleOperate('exit')">
@@ -81,22 +94,22 @@
                 :edges="['bottom']"
                 v-for="(row, rowIndex) in page.rows"
                 :key="row.id"
+                :h="row.getStyle().height || 'auto'"
+                @resizeEnd="onResizeEnd(row, ...arguments)"
               >
                 <transition-group
                   tag="div"
                   class="clearfix layout-row"
-                  v-bind="row.getStyle()"
+                  :style="row.getStyle()"
                   enter-active-class="animate__animated animate__fadeIn"
                   leave-active-class="animate__animated animate__fadeOut"
                 >
                   <div
                     class="layout-col"
-                    v-bind="el.getStyle()"
+                    :style="el.getStyle()"
                     v-for="(el, colIndex) in row.elements"
                     :key="el.id"
-                    @click="
-                      handleComponentOperate({ type: 'setting' }, row, el)
-                    "
+                    @click="handleComponentOperate('setting', row, el)"
                   >
                     <CatchEvents
                       draggable
@@ -114,7 +127,9 @@
                       :data-el_id="el.id"
                       :data-row_free_space="row.getFreeSpace()"
                       :class="{
-                        active: page.editingElement.id === el.id,
+                        active:
+                          page.editingElement &&
+                          page.editingElement.id === el.id,
                         swap:
                           swapingComponentInfo &&
                           swapingComponentInfo.id !== el.id
@@ -173,6 +188,7 @@
       <EditPageAside
         v-if="asideLayout === 'right'"
         :asideLayout="asideLayout"
+        :componentList="componentList"
         :page="page"
         :activeTab.sync="activeTab"
         :dragingComponent.sync="dragingComponent"
@@ -183,7 +199,7 @@
 </template>
 
 <script>
-import { pathToComp } from '../../utils/getComponents'
+import { getComponents, pathToComp } from '@/kd/utils/getComponents'
 import { CatchEvents } from '../utils/CatchEvents'
 import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
@@ -242,6 +258,7 @@ export default {
     }
   },
   created() {
+    this.normalList()
     this.pathToComp = pathToComp
     // FIXME css变量
     this.animateDuration = 300
@@ -251,19 +268,19 @@ export default {
     window.removeEventListener('keydown', this.onShortcutKey)
   },
   methods: {
-    onShortcutKey({
-      metaKey,
-      shiftKey,
-      altKey,
-      ctrlKey,
-      keyCode,
-      preventDefault
-    }) {
-      const commandKey = metaKey || ctrlKey
-      console.log({ shiftKey, altKey, commandKey, keyCode })
-      if (keyCode === 90 && commandKey && !shiftKey) {
-        // ctrl + z 撤销
+    normalList() {
+      const comps = getComponents()
+      const res = []
+      while (comps.length) {
+        const item = comps.shift()
+        if (item.type === 'element') {
+          res.push(item)
+        }
+        if (item.children) {
+          comps.unshift(...item.children)
+        }
       }
+      this.componentList = res
     },
     addComponent(component, rowIndex) {
       let element = null
@@ -414,7 +431,10 @@ export default {
       }
       this.swapHandler[type](e)
     },
-    handleComponentOperate({ type }, row, element) {
+    onResizeEnd(row, { height }) {
+      row.setStyle({ height: `${height | 0}px` })
+    },
+    handleComponentOperate(type, row, element) {
       ;({
         del: () => {
           row.delElement(element)
@@ -448,6 +468,32 @@ export default {
           localStorage.setItem('edit-aside-layout', this.asideLayout)
         }
       }[type]())
+    },
+    onShortcutKey(e) {
+      const { metaKey, shiftKey, altKey, ctrlKey, keyCode } = e
+      const commandKey = metaKey || ctrlKey
+      console.log({ shiftKey, altKey, commandKey, keyCode })
+      if (keyCode === 90 && commandKey && !shiftKey) {
+        // ctrl + z 撤销
+        e.preventDefault()
+        this.handleOperate('undo')
+      } else if (keyCode === 90 && commandKey && shiftKey) {
+        // ctrl + shift + z 反撤销
+        e.preventDefault()
+        this.handleOperate('redo')
+      } else if (keyCode === 8 && !commandKey && !shiftKey) {
+        // del 删除
+        e.preventDefault()
+        const el = this.page.editingElement
+        const tagName = e.target.tagName
+        if (el && !/INPUT|TEXTAREA/i.test(tagName)) {
+          this.handleComponentOperate('del', el.parent, el)
+        }
+      } else if (keyCode === 83 && commandKey && !shiftKey) {
+        // ctrl + s 保存
+        e.preventDefault()
+        this.handleOperate('save')
+      }
     }
   }
 }

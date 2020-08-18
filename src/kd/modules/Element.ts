@@ -87,11 +87,9 @@ export class Row {
   }
   getStyle() {
     return {
-      style: {
-        ...this.style,
-        display: 'flex',
-        flexWrap: 'wrap'
-      }
+      ...this.style,
+      display: 'flex',
+      flexWrap: 'wrap'
     }
   }
   toJSON() {
@@ -152,12 +150,10 @@ export class ColElement {
   }
   getStyle() {
     return {
-      style: {
-        flex: 1,
-        transition: 'all .3s',
-        minWidth: `${this.minSpan / 24 * 100}%`,
-        maxWidth: `${this.maxSpan / 24 * 100}%`,
-      }
+      flex: 1,
+      transition: 'all .3s',
+      minWidth: `${this.minSpan / 24 * 100}%`,
+      maxWidth: `${this.maxSpan / 24 * 100}%`,
     }
   }
   toJSON() {

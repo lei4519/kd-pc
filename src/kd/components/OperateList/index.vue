@@ -9,13 +9,9 @@
       popper-class="operation-popper"
     >
       <i class="el-icon-delete"></i>
-      <div slot="content" cslass="content">
+      <div slot="content">
         删除
-        <!-- <IconFont
-          style="margin-left: 0.12rem; line-height: 1"
-          type="delete"
-          size="22"
-        /> -->
+        <IconFont class="ml-4" style="line-height: 1" type="delete" />
       </div>
     </el-tooltip>
     <el-tooltip
@@ -49,8 +45,8 @@ export default {
     }
   },
   methods: {
-    edit(type, payload) {
-      this.$emit('click', { type, payload })
+    edit(type) {
+      this.$emit('click', type)
     }
   }
 }

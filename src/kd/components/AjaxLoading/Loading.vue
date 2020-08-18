@@ -101,5 +101,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 2000;
+  background-color: hsla(0, 0%, 100%, 0.9);
 }
 </style>

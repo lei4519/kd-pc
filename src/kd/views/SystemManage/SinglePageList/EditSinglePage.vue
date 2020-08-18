@@ -13,7 +13,6 @@ import EditPage from '@/kd/components/EditPage/index.vue'
 import { Page } from '@/kd/modules/Page'
 import UndoRedoHistory from '@/kd/plugins/UndoRedo/History'
 import { debounce } from 'lodash'
-
 export default {
   name: 'EditSinglePage',
   components: {
@@ -21,7 +20,9 @@ export default {
   },
   data() {
     return {
-      page: new Page({ name: '测试', show: true }),
+      page: new Page(
+        JSON.parse(localStorage.getItem('page')) || { name: '测试', show: true }
+      ),
       visiblePage: true,
       undoRedoHistory: new UndoRedoHistory()
     }

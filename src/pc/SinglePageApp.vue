@@ -1,7 +1,6 @@
 <template>
   <div class="single-page-app">
-    <Loading v-if="!page" />
-    <div class="single-main-wrap" v-else>
+    <div class="single-main-wrap">
       <div
         class="layout-row"
         v-for="row in page.rows"
@@ -14,7 +13,9 @@
           :key="el.id"
           :style="el.getStyle()"
         >
-          <component :is="getComponent(el)" v-bind="el.props" />
+          <AjaxLoading>
+            <component :is="getComponent(el)" v-bind="el.props" />
+          </AjaxLoading>
         </div>
       </div>
     </div>
@@ -22,12 +23,8 @@
 </template>
 
 <script>
-import Loading from '@/kd/components/Loading/index.vue'
 import { Page } from '@/kd/modules/Page'
 export default {
-  components: {
-    Loading
-  },
   data() {
     return {
       page: null
@@ -38,13 +35,13 @@ export default {
   },
   methods: {
     async getPage() {
-      return new Promise(r => {
+      setTimeout(() => {
+        const pageConfig = JSON.parse(localStorage.getItem('page'))
+        this.page = pageConfig ? new Page(pageConfig) : null
         setTimeout(() => {
-          const pageConfig = JSON.parse(localStorage.getItem('page'))
-          this.page = pageConfig ? new Page(pageConfig) : null
-          r()
-        }, 1000)
-      })
+          this.$loadManage.exec()
+        })
+      }, 500)
     },
     getComponent({ path }) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
