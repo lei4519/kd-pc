@@ -1,17 +1,21 @@
 <template>
   <div class="edit-wrapper">
-    <Loading />
+    <SinglePageApp />
   </div>
 </template>
 
 <script>
-import Loading from '@/kd/components/Loading/index.vue'
+import SinglePageApp from '@/pc/SinglePageApp.vue'
 export default {
   name: 'RoleEdit',
   components: {
-    Loading
+    SinglePageApp
   }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.edit-wrapper {
+  height: 100%
+}
+</style>

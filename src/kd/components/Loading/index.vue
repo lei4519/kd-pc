@@ -1,25 +1,19 @@
 <template>
-  <div
-    :class="`sk-${mode}`"
-    :style="{
-      '--sk-size': size,
-      '--sk-color': color
-    }"
-  >
+  <div class="loading-wrapper">
     <div
-      :class="`sk-${mode}-${classMap[mode].childClass}`"
-      v-for="i in classMap[mode].childNum"
-      :key="i"
-    ></div>
+      :class="`loading-item sk-${mode}`"
+      :style="{
+        '--sk-size': size,
+        '--sk-color': color
+      }"
+    >
+      <div
+        :class="`sk-${mode}-${classMap[mode].childClass}`"
+        v-for="i in classMap[mode].childNum"
+        :key="i"
+      ></div>
+    </div>
   </div>
-  <!-- <el-select v-model="mode" class="mt-32">
-      <el-option
-        v-for="item in Object.keys(classMap)"
-        :key="item"
-        :value="item"
-        >{{ item }}</el-option
-      >
-    </el-select> -->
 </template>
 
 <script>
@@ -97,3 +91,15 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.loading-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>

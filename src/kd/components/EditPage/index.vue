@@ -245,8 +245,26 @@ export default {
     this.pathToComp = pathToComp
     // FIXME css变量
     this.animateDuration = 300
+    window.addEventListener('keydown', this.onShortcutKey)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keydown', this.onShortcutKey)
   },
   methods: {
+    onShortcutKey({
+      metaKey,
+      shiftKey,
+      altKey,
+      ctrlKey,
+      keyCode,
+      preventDefault
+    }) {
+      const commandKey = metaKey || ctrlKey
+      console.log({ shiftKey, altKey, commandKey, keyCode })
+      if (keyCode === 90 && commandKey && !shiftKey) {
+        // ctrl + z 撤销
+      }
+    },
     addComponent(component, rowIndex) {
       let element = null
       if (rowIndex) {

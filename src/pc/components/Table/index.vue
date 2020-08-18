@@ -9,7 +9,7 @@
       :data="tableData"
       fit
       border
-      :stripe="!$attrs['highlight-current-row']"
+      :stripe="false"
       v-bind="$attrs"
       v-on="{ ...$listeners }"
       @sort-change="sortChange"
