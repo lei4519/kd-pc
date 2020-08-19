@@ -1,5 +1,5 @@
 import 'vue-tsx-support/enable-check'
-
+import { EditorProps } from '@/kd/types/editor-props'
 import Vue, { VNode } from 'vue'
 
 declare global {

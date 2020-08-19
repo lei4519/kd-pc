@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     getPage() {
-      return new Promise((r, j) => {
+      return new Promise(r => {
         setTimeout(() => {
           const pageConfig = JSON.parse(localStorage.getItem('page'))
           this.page = pageConfig ? new Page(pageConfig) : null

@@ -373,13 +373,13 @@ export default {
       } else {
         delete this._params.sort
       }
-      this.$loadManage.exec(this.fetchData)
+      this.fetchData()
     },
     fetchData(params = {}) {
       return new Promise((resolve, reject) => {
         // FIXME 測試
         setTimeout(() => {
-          // reject()
+          reject()
         }, 500)
       })
       // FIXME 測試
@@ -487,7 +487,7 @@ export default {
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage
       this.$emit('current-change', currentPage)
-      this.$loadManage.exec(this.fetchData)
+      this.fetchData()
     }
   }
 }

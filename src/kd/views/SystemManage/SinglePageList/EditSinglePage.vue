@@ -11,7 +11,7 @@
 <script>
 import EditPage from '@/kd/components/EditPage/index.vue'
 import { Page } from '@/kd/modules/Page'
-import UndoRedoHistory from '@/kd/plugins/UndoRedo/History'
+import UndoRedoHistory from '@/kd/modules/History'
 import { debounce } from 'lodash'
 export default {
   name: 'EditSinglePage',

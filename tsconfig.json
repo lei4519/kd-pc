@@ -17,7 +17,8 @@
     "types": ["webpack-env"],
     "paths": {
       "@/*": ["src/*"],
-      "kd/*": ["src/kd/*"]
+      "kd/*": ["src/kd/*"],
+      "pc/*": ["src/pc/*"]
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },

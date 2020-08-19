@@ -1,13 +1,19 @@
 <script>
 /* eslint-disable @typescript-eslint/camelcase */
-/**
- * @description 发起请求时为组件加入loading效果
- * @wraning 如果不传入getData 则会从渲染元素上获取 fetchData方法作为 getData值
- * @wraning getData、fetchData 函数必须返回Promise。loading状态根据promise状态改变
- * @wraning 组件定义的 fetchData 会被Loading组件装饰，装饰后直接调用 fetchData 即可自动触发loading效果
- */
 import Loading from './Loading.vue'
 
+/**
+ * @description 发起请求时为组件加入loading效果
+ *
+ * @wraning 如果不传入getData 并且也没有使用AjaxLoadingGroup组件传入getData 则会从渲染元素上获取 fetchData方法作为 getData值
+ * @wraning getData、fetchData 函数必须返回Promise。loading状态根据promise状态改变
+ * @wraning 组件定义的 fetchData 会被Loading组件装饰，装饰后直接调用 fetchData 即可自动触发loading效果
+ *
+ * @param tag 渲染标签名称 也可传入组件对象进行渲染
+ * @param getData 请求方法
+ * @param once getData 只控制loading状态一次，请求成功后解除其与loading态的关联性
+ * @param lazy 默认在 mounted 时机进行初始化请求，如果需要改为手动控制请求时机，可以通过此属性控制
+ */
 export default {
   components: {
     Loading
@@ -32,8 +38,7 @@ export default {
   },
   data() {
     return {
-      loadingStatus: 'close',
-      $lazy: false
+      loadingStatus: 'close'
     }
   },
   inject: {
@@ -52,40 +57,32 @@ export default {
         slot => slot.componentInstance?.fetchData
       )?.componentInstance
       if (!vm) {
-        return console.error(
-          'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
-        )
+        return
+        // return console.error(
+        //   'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
+        // )
       }
       // 原始fetchData
-      const RawFetchData = (this.$_getData = vm.fetchData)
+      const rawFetchData = (this.$_getData = vm.fetchData)
       // 装饰：调用时自动执行 this.$loadManage.exec
       vm.fetchData = function() {
-        return this.$loadManage.exec(RawFetchData)
+        return this.$loadManage.exec(rawFetchData)
       }
-      vm.$on('mounted', () => {
-        debugger
-      })
-      this.$lazy = true
     } else {
       this.$_getData = this.getData || this.ajaxLoadingGroup.getData
     }
-    this.$loadManage.add(this.$_getData, this.$_execEffect, this.once)
-    if (!this.lazy && !this.$lazy) {
+    this.$loadManage.addEffect(this.$_getData, this.$_execEffect, this.once)
+    if (!this.lazy) {
       this.$loadManage.exec(this.$_getData)
     }
   },
   beforeDestroy() {
-    this.$loadManage.del(this.$_getData, this.$_execEffect)
+    this.$loadManage.delEffect(this.$_getData, this.$_execEffect)
   },
   methods: {
     refresh(e) {
-      if (
-        e?.path
-          ?.slice(0, 3)
-          ?.find(el => el.classList.contains('el-loading-mask'))
-      ) {
-        this.$loadManage.exec(this.$_getData)
-      }
+      e.stopPropagation()
+      this.$loadManage.exec(this.$_getData)
     },
     $_execEffect(status) {
       this.loadingStatus = status
@@ -97,9 +94,6 @@ export default {
       {
         props: {
           ...this.$attrs
-        },
-        [typeof this.tag === 'string' ? 'on' : 'nativeOn']: {
-          click: this.refresh
         },
         class: 'ajax-loading',
         scopedSlots: {
@@ -121,7 +115,12 @@ export default {
               ? c('Loading')
               : this.loadingStatus === 'error'
               ? c('div', { class: 'ajax-loading__error' }, [
-                  c('i', { class: 'el-icon-refresh' })
+                  c('span', {
+                    class: 'el-icon-refresh',
+                    on: {
+                      click: this.refresh
+                    }
+                  })
                 ])
               : c(null)
           ]
