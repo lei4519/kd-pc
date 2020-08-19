@@ -1,6 +1,7 @@
 <template>
   <div style="height: 100%">
     <EditPage
+      v-if="page"
       :visible.sync="visiblePage"
       :undoRedoHistory="undoRedoHistory"
       :page="page"
@@ -21,7 +22,10 @@ export default {
   data() {
     return {
       page: new Page(
-        JSON.parse(localStorage.getItem('page')) || { name: '测试', show: true }
+        JSON.parse(localStorage.getItem('page')) || {
+          name: '测试',
+          show: true
+        }
       ),
       visiblePage: true,
       undoRedoHistory: new UndoRedoHistory()

@@ -1,9 +1,13 @@
 /**
   全局scss，声明的scss变量或函数在 .vue 文件的 style 模块中可以直接使用，无需手动引入
 */
-
+// 主题色
 $theme-color: #409eff;
+// 过度、动画持续时长
+$duration: .3s;
 
-@function px($px) {
-  @return $px + PX
+// 导出供vuex使用
+:export {
+  themeColor: $theme-color;
+  duration: $duration;
 }

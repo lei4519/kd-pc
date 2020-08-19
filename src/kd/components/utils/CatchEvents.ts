@@ -20,9 +20,7 @@ export const CatchEvents = {
       {
         ...data,
         staticStyle: {
-          ...(data.staticStyle || {}),
-          height: '100%',
-          width: '100%'
+          ...(data.staticStyle || {})
         },
         style: data.style || {},
         on: {

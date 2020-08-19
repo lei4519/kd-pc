@@ -307,6 +307,7 @@ export default {
       }
     ]
   },
+  inject: ['buildMode'],
   data() {
     return {
       selfColumns: this.columns,
@@ -324,12 +325,7 @@ export default {
   },
   created() {
     this._params = {}
-    this.alignMap = {
-      string: 'left',
-      number: 'right'
-    }
     // this.processOptions()
-    this.fillMockData()
   },
   methods: {
     fillMockData() {
@@ -341,7 +337,6 @@ export default {
     },
     processOptions() {
       // this.selfColumns.forEach(item => {
-      //   this.processContentType(item)
       //   if (item.sortable && !item['sort-orders']) {
       //     item['sort-orders'] = ['ascending', 'descending']
       //   }
@@ -356,13 +351,6 @@ export default {
       //   })
       // }
     },
-    processContentType(item) {
-      if (!item.align) {
-        item.align = item.contentType
-          ? this.alignMap[item.contentType] || 'left'
-          : 'left'
-      }
-    },
     sortChange({ prop, order }) {
       if (order) {
         const map = {
@@ -376,19 +364,17 @@ export default {
       this.fetchData()
     },
     fetchData(params = {}) {
-      return new Promise((resolve, reject) => {
-        // FIXME 測試
-        setTimeout(() => {
-          reject()
-        }, 500)
-      })
-      // FIXME 測試
-      /* eslint-disable no-unreachable */
-      if (this.url) {
+      if (this.buildMode && !this.url) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            this.fillMockData()
+            resolve()
+          }, 1500)
+        })
+      } else if (this.url) {
         params = {
           ...this._params,
           ...this.params,
-          ...this.searchModel,
           ...params,
           ...(this.showPage
             ? {
@@ -418,7 +404,7 @@ export default {
             a.click()
           })
         }
-        return this.$http({
+        return this.$ajax({
           url: this.url,
           method: 'post',
           params

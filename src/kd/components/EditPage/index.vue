@@ -64,6 +64,16 @@
               </div>
             </el-tooltip>
             <el-tooltip class="operation" effect="dark" placement="bottom">
+              <div class="operate-item" @click="handleOperate('preview')">
+                <IconFont type="eye" />
+              </div>
+              <div slot="content">
+                预览
+                <IconFont class="ml-4" type="command" size="12" />
+                + P
+              </div>
+            </el-tooltip>
+            <el-tooltip class="operation" effect="dark" placement="bottom">
               <div class="operate-item" @click="handleOperate('save')">
                 <IconFont type="save" />
               </div>
@@ -135,10 +145,12 @@
                           swapingComponentInfo.id !== el.id
                       }"
                     >
-                      <component
-                        :is="pathToComp[el.path].ctor"
-                        v-bind="el.props"
-                      />
+                      <AjaxLoading>
+                        <component
+                          :is="pathToComp[el.path].ctor"
+                          v-bind="el.props"
+                        />
+                      </AjaxLoading>
                       <OperateList
                         :layout="asideLayout"
                         @click="handleComponentOperate(...arguments, row, el)"
@@ -195,6 +207,16 @@
         @addComponent="addComponent"
       />
     </el-container>
+    <el-dialog
+      title="预览"
+      :visible.sync="visiblePreviewPage"
+      fullscreen
+      :close-on-click-modal="false"
+      append-to-body
+      custom-class="editpage-fc-preview-dialog"
+    >
+      <SinglePageApp v-if="visiblePreviewPage" />
+    </el-dialog>
   </el-dialog>
 </template>
 
@@ -204,6 +226,8 @@ import { CatchEvents } from '../utils/CatchEvents'
 import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
+import SinglePageApp from '@/pc/SinglePageApp.vue'
+
 /**
  *   @desc 编辑区
  *   @params page 当前编辑的页面，Page实例
@@ -211,6 +235,7 @@ import EditPageAside from './aside.vue'
 export default {
   name: 'EditPage',
   components: {
+    SinglePageApp,
     CatchEvents,
     OperateList,
     Interact,
@@ -237,6 +262,7 @@ export default {
   },
   data() {
     return {
+      visiblePreviewPage: false,
       asideLayout: localStorage.getItem('edit-aside-layout') || 'left',
       activeTab: 'select', // 当前选中的tab
       dragingComponent: null, // 正在从组件列表中拖拽的组件
@@ -267,6 +293,11 @@ export default {
   beforeDestroy() {
     window.removeEventListener('keydown', this.onShortcutKey)
   },
+  provide() {
+    return {
+      buildMode: true
+    }
+  },
   methods: {
     normalList() {
       const comps = getComponents()
@@ -294,6 +325,7 @@ export default {
             this.page.setEditingElement(element)
           })
           // 300 毫秒动画结束
+          // TODO animationend on
           setTimeout(() => {
             this.dropPosAbs = false
           }, this.animateDuration)
@@ -455,6 +487,10 @@ export default {
         redo: () => {
           this.undoRedoHistory.redo()
         },
+        preview: () => {
+          this.handleOperate('save')
+          this.visiblePreviewPage = true
+        },
         save: () => {
           localStorage.setItem('page', JSON.stringify(this.page))
           this.$message.success('保存成功')
@@ -470,9 +506,9 @@ export default {
       }[type]())
     },
     onShortcutKey(e) {
-      const { metaKey, shiftKey, altKey, ctrlKey, keyCode } = e
+      const { metaKey, shiftKey, ctrlKey, keyCode } = e
       const commandKey = metaKey || ctrlKey
-      console.log({ shiftKey, altKey, commandKey, keyCode })
+      // console.log({ shiftKey, altKey, commandKey, keyCode })
       if (keyCode === 90 && commandKey && !shiftKey) {
         // ctrl + z 撤销
         e.preventDefault()
@@ -493,6 +529,10 @@ export default {
         // ctrl + s 保存
         e.preventDefault()
         this.handleOperate('save')
+      } else if (keyCode === 80 && commandKey && !shiftKey) {
+        // ctrl + p 预览
+        e.preventDefault()
+        this.handleOperate('preview')
       }
     }
   }
@@ -742,5 +782,8 @@ export default {
       }
     }
   }
+}
+.editpage-fc-preview-dialog .el-dialog__body {
+  height: 100%;
 }
 </style>

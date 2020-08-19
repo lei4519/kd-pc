@@ -72,10 +72,11 @@ export class Row {
 
     if (len === 0) {
       const delIdx = page.delRow(this)
-       // 页面已经没有任何元素了
-      if (delIdx === 0) return page.setEditingElement(null)
-      // 上一行的元素
-      elements = page.rows[delIdx - 1].elements 
+      const rowSize = page.rows.length
+      // 页面已经没有任何元素了
+      if (delIdx === 0 && rowSize === 0) return page.setEditingElement(null)
+      // 如果删的是第一行 聚焦下一行 否则聚焦上一行
+      elements = page.rows[delIdx === 0 ? 0 : delIdx - 1].elements
       len = elements.length
     }
     page.setEditingElement(elements[len - 1])
@@ -152,8 +153,8 @@ export class ColElement {
     return {
       flex: 1,
       transition: 'all .3s',
-      minWidth: `${this.minSpan / 24 * 100}%`,
-      maxWidth: `${this.maxSpan / 24 * 100}%`,
+      minWidth: `${(this.minSpan / 24) * 100}%`,
+      maxWidth: `${(this.maxSpan / 24) * 100}%`
     }
   }
   toJSON() {

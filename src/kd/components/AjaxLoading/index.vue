@@ -7,7 +7,7 @@ import Loading from './Loading.vue'
  *
  * @wraning 如果不传入getData 并且也没有使用AjaxLoadingGroup组件传入getData 则会从渲染元素上获取 fetchData方法作为 getData值
  * @wraning getData、fetchData 函数必须返回Promise。loading状态根据promise状态改变
- * @wraning 组件定义的 fetchData 会被Loading组件装饰，装饰后直接调用 fetchData 即可自动触发loading效果
+ * @wraning getData、fetchData 会被Loading组件装饰，装饰后直接调用 即可触发loading效果
  *
  * @param tag 渲染标签名称 也可传入组件对象进行渲染
  * @param getData 请求方法
@@ -50,7 +50,7 @@ export default {
     if (!this.getData && !this.ajaxLoadingGroup.getData) {
       if (!this.$slots.default) {
         return console.error(
-          'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
+          '没有传入getData函数，ajax-loading子元素不能异步渲染'
         )
       }
       const vm = this.$slots.default.find(
@@ -69,7 +69,29 @@ export default {
         return this.$loadManage.exec(rawFetchData)
       }
     } else {
-      this.$_getData = this.getData || this.ajaxLoadingGroup.getData
+      const rawFetchData = (this.$_getData =
+        this.getData || this.ajaxLoadingGroup.getData)
+      // 找到父组件装饰方法
+      let p = this.$parent,
+        methodName = ''
+      while (p) {
+        if (
+          Object.keys(p.$options.methods).some(method => {
+            if (p[method] === rawFetchData) {
+              methodName = method
+              return true
+            }
+          })
+        ) {
+          break
+        }
+        p = p.$parent
+      }
+      if (methodName) {
+        p[methodName] = function() {
+          return this.$loadManage.exec(rawFetchData)
+        }
+      }
     }
     this.$loadManage.addEffect(this.$_getData, this.$_execEffect, this.once)
     if (!this.lazy) {

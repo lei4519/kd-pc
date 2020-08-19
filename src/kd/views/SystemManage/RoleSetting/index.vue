@@ -1,21 +1,15 @@
 <template>
-  <div class="edit-wrapper">
-    <SinglePageApp />
-  </div>
+  <div class="edit-wrapper">设置</div>
 </template>
 
 <script>
-import SinglePageApp from '@/pc/SinglePageApp.vue'
 export default {
-  name: 'RoleEdit',
-  components: {
-    SinglePageApp
-  }
+  name: 'RoleEdit'
 }
 </script>
 
 <style lang="scss" scoped>
 .edit-wrapper {
-  height: 100%
+  height: 100%;
 }
 </style>

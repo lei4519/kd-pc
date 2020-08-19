@@ -39,9 +39,6 @@ export default {
           const pageConfig = JSON.parse(localStorage.getItem('page'))
           this.page = pageConfig ? new Page(pageConfig) : null
           r()
-          setTimeout(() => {
-            this.$loadManage.exec()
-          })
         }, 500)
       })
     },

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex, { Store } from 'vuex'
 import project from './modules/project'
+import theme from './modules/theme'
 Vue.use(Vuex)
 export type RootStore = Store<RootState>
 interface RootState {
@@ -11,7 +12,8 @@ const store = new Vuex.Store<RootState>({
   mutations: {},
   actions: {},
   modules: {
-    project
+    project,
+    theme
   }
 })
 
