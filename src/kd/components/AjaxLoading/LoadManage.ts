@@ -3,15 +3,25 @@
 import { Message } from 'element-ui'
 class LoadManage {
   constructor() {
+    this.onceList = new Set()
     this.loadMap = new Map()
     this.loadingList = new Set()
   }
-  add(getDataFn, callback) {
+  add(getDataFn, callback, once) {
     if (!this.loadMap.has(getDataFn)) {
       this.loadMap.set(getDataFn, new Set())
     }
+    if (once) {
+      this.onceList.add(getDataFn)
+    }
     this.loadMap.get(getDataFn).add(callback)
     return this
+  }
+  del(getDataFn, callback) {
+    this.loadMap.get(getDataFn)?.delete(callback)
+    if (this.loadMap.get(getDataFn)?.size === 0) {
+      this.remove(getDataFn)
+    }
   }
   remove(getDataFn) {
     if (this.loadMap.has(getDataFn)) {
@@ -48,6 +58,11 @@ class LoadManage {
       }
       this.run(getDataFn, 'error')
       return Promise.reject(err)
+    }).finally(() => {
+      if (this.onceList.has(getDataFn)) {
+        this.onceList.delete(getDataFn)
+        this.remove(getDataFn)
+      }
     })
   }
   exec(getDataFn) {

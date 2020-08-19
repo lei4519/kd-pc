@@ -21,14 +21,19 @@ export default {
       type: [Function, Object],
       default: null
     },
-    customLoadingImg: {
-      type: String,
-      default: ''
+    once: {
+      type: Boolean,
+      default: false
+    },
+    lazy: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      openLoading: false
+      openLoading: false,
+      $lazy: false
     }
   },
   inject: {
@@ -37,17 +42,18 @@ export default {
     }
   },
   mounted() {
-    if (this.$slots.default.length === 0) {
-      return console.error('ajax-loading组件必须要有一个同步渲染子元素')
-    }
-    if (this.$slots.default.length > 1) {
-      return console.error('ajax-loading组件只能有一个子元素')
-    }
     if (!this.getData && !this.ajaxLoadingGroup.getData) {
-      const vm = this.$slots.default[0].componentInstance
-      if (!vm.fetchData) {
+      if (!this.$slots.default) {
         return console.error(
-          'ajax-loading组件必须传入getData函数（函数返回值需要为promise），或者为你的组件设置 fetchData 方法'
+          'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
+        )
+      }
+      const vm = this.$slots.default.find(
+        slot => slot.componentInstance?.fetchData && slot.componentInstance
+      )
+      if (!vm) {
+        return console.error(
+          'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
         )
       }
       // 原始fetchData
@@ -56,16 +62,17 @@ export default {
       vm.fetchData = function() {
         return this.$loadManage.exec(RawFetchData)
       }
+      this.$lazy = true
     } else {
       this.$_getData = this.getData || this.ajaxLoadingGroup.getData
     }
-    this.$loadManage.add(this.$_getData, this.$_ajaxLoading)
+    this.$loadManage.add(this.$_getData, this.$_ajaxLoading, this.once)
+    if (!this.lazy && !this.$lazy) {
+      this.$loadManage.exec(this.$_getData)
+    }
   },
   beforeDestroy() {
-    this.$loadManage.loadMap.get(this.$_getData)?.delete(this.$_ajaxLoading)
-    if (this.$loadManage.loadMap.get(this.$_getData)?.size === 0) {
-      this.$loadManage.remove(this.$_getData)
-    }
+    this.$loadManage.del(this.$_getData, this.$_ajaxLoading)
   },
   methods: {
     refresh(e) {
@@ -119,7 +126,10 @@ export default {
           ...this.$scopedSlots
         }
       },
-      [...this.$slots.default, this.openLoading ? c('Loading') : c(null)]
+      [
+        ...(this.$slots.default || []),
+        this.openLoading ? c('Loading') : c(null)
+      ]
     )
   }
 }
@@ -127,6 +137,7 @@ export default {
 <style lang="scss" scoped>
 .ajax-loading-wrap {
   position: relative;
+  height: 100%;
 }
 ::v-deep .el-loading-spinner {
   cursor: pointer;

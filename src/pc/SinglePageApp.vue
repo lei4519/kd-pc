@@ -1,24 +1,26 @@
 <template>
   <div class="single-page-app">
-    <div class="single-main-wrap">
-      <div
-        class="layout-row"
-        v-for="row in page.rows"
-        :key="row.id"
-        :style="row.getStyle()"
-      >
+    <AjaxLoading :getData="getPage" once>
+      <div class="single-main-wrap" v-if="page">
         <div
-          class="layout-col"
-          v-for="el in row.elements"
-          :key="el.id"
-          :style="el.getStyle()"
+          class="layout-row"
+          v-for="row in page.rows"
+          :key="row.id"
+          :style="row.getStyle()"
         >
-          <AjaxLoading>
-            <component :is="getComponent(el)" v-bind="el.props" />
-          </AjaxLoading>
+          <div
+            class="layout-col"
+            v-for="el in row.elements"
+            :key="el.id"
+            :style="el.getStyle()"
+          >
+            <AjaxLoading>
+              <component :is="getComponent(el)" v-bind="el.props" />
+            </AjaxLoading>
+          </div>
         </div>
       </div>
-    </div>
+    </AjaxLoading>
   </div>
 </template>
 
@@ -30,18 +32,19 @@ export default {
       page: null
     }
   },
-  created() {
-    this.getPage()
-  },
   methods: {
-    async getPage() {
-      setTimeout(() => {
-        const pageConfig = JSON.parse(localStorage.getItem('page'))
-        this.page = pageConfig ? new Page(pageConfig) : null
+    getPage() {
+      return new Promise(r => {
         setTimeout(() => {
+          const pageConfig = JSON.parse(localStorage.getItem('page'))
+          this.page = pageConfig ? new Page(pageConfig) : null
+          r()
           this.$loadManage.exec()
-        })
-      }, 500)
+          setTimeout(() => {
+            // this.$loadManage.exec()
+          })
+        }, 500)
+      })
     },
     getComponent({ path }) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

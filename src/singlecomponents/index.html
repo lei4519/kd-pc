@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-    <div style="width:500px;height: 500px;">
+    <div style="display: flex;align-items: center; width: 500px;">
+        <div style="width: 100px;">城市选择：</div>
         <div id="city" ></div>
     </div>
     <inpit type="hidden" id="input"></inpit>   
@@ -19,6 +20,7 @@
         propsData: {
             // filterable:true,
             cityall:'a',
+            choosevalue:'b,c,d,f',
             multiple:true,
             data: {'all':'all','a':'a','b':'b','c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','j':'j','k':'k'}
         },
