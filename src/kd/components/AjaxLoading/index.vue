@@ -32,7 +32,7 @@ export default {
   },
   data() {
     return {
-      openLoading: false,
+      loadingStatus: 'close',
       $lazy: false
     }
   },
@@ -49,8 +49,8 @@ export default {
         )
       }
       const vm = this.$slots.default.find(
-        slot => slot.componentInstance?.fetchData && slot.componentInstance
-      )
+        slot => slot.componentInstance?.fetchData
+      )?.componentInstance
       if (!vm) {
         return console.error(
           'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
@@ -62,17 +62,20 @@ export default {
       vm.fetchData = function() {
         return this.$loadManage.exec(RawFetchData)
       }
+      vm.$on('mounted', () => {
+        debugger
+      })
       this.$lazy = true
     } else {
       this.$_getData = this.getData || this.ajaxLoadingGroup.getData
     }
-    this.$loadManage.add(this.$_getData, this.$_ajaxLoading, this.once)
+    this.$loadManage.add(this.$_getData, this.$_execEffect, this.once)
     if (!this.lazy && !this.$lazy) {
       this.$loadManage.exec(this.$_getData)
     }
   },
   beforeDestroy() {
-    this.$loadManage.del(this.$_getData, this.$_ajaxLoading)
+    this.$loadManage.del(this.$_getData, this.$_execEffect)
   },
   methods: {
     refresh(e) {
@@ -84,31 +87,8 @@ export default {
         this.$loadManage.exec(this.$_getData)
       }
     },
-    $_ajaxLoading(status) {
-      ;({
-        open: () => {
-          if (this.loadingInstance) {
-            this.loadingInstance.close()
-            this.loadingInstance = null
-          }
-          this.openLoading = true
-        },
-        close: () => {
-          if (this.loadingInstance) {
-            this.loadingInstance.close()
-            this.loadingInstance = null
-          }
-          this.openLoading = false
-        },
-        error: () => {
-          this.openLoading = false
-          this.loadingInstance = this.$loading({
-            target: this.$el,
-            text: '加载失败，请刷新重试',
-            spinner: 'el-icon-refresh-right'
-          })
-        }
-      }[status]())
+    $_execEffect(status) {
+      this.loadingStatus = status
     }
   },
   render(c) {
@@ -121,29 +101,65 @@ export default {
         [typeof this.tag === 'string' ? 'on' : 'nativeOn']: {
           click: this.refresh
         },
-        class: 'ajax-loading-wrap',
+        class: 'ajax-loading',
         scopedSlots: {
           ...this.$scopedSlots
         }
       },
       [
         ...(this.$slots.default || []),
-        this.openLoading ? c('Loading') : c(null)
+        c(
+          'transition',
+          {
+            props: {
+              'enter-active-class': 'animate__animated animate__fadeIn',
+              'leave-active-class': 'animate__animated animate__fadeOut'
+            }
+          },
+          [
+            this.loadingStatus === 'open'
+              ? c('Loading')
+              : this.loadingStatus === 'error'
+              ? c('div', { class: 'ajax-loading__error' }, [
+                  c('i', { class: 'el-icon-refresh' })
+                ])
+              : c(null)
+          ]
+        )
       ]
     )
   }
 }
 </script>
 <style lang="scss" scoped>
-.ajax-loading-wrap {
+.ajax-loading,
+.transition {
   position: relative;
   height: 100%;
 }
-::v-deep .el-loading-spinner {
-  cursor: pointer;
-  font-size: 30px;
-  .el-icon-loading {
-    margin-bottom: 8px;
+.ajax-loading__error {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  background-color: hsla(0, 0%, 100%, 0.9);
+  .el-icon-refresh {
+    font-size: 50px;
+    color: #409eff;
+    cursor: pointer;
+    transition: all 0.3s;
+    &:hover {
+      transform: scale(1.1) rotate(180deg);
+    }
+    &:active {
+      transform: scale(0.9) rotate(180deg);
+    }
   }
 }
 </style>

@@ -1,18 +1,17 @@
 // FIXME 改為TS
 // @ts-nocheck
-import { Message } from 'element-ui'
 class LoadManage {
   constructor() {
-    this.onceList = new Set()
+    this.execOnceList = new Set()
     this.loadMap = new Map()
-    this.loadingList = new Set()
+    this.execingList = new Set()
   }
   add(getDataFn, callback, once) {
     if (!this.loadMap.has(getDataFn)) {
       this.loadMap.set(getDataFn, new Set())
     }
     if (once) {
-      this.onceList.add(getDataFn)
+      this.execOnceList.add(getDataFn)
     }
     this.loadMap.get(getDataFn).add(callback)
     return this
@@ -29,40 +28,34 @@ class LoadManage {
     }
     return this
   }
-  run(getDataFn, status) {
-    const ajaxLoadingHandlers = this.loadMap.get(getDataFn)
-    if (ajaxLoadingHandlers) {
-      ajaxLoadingHandlers.forEach(fn => fn(status))
+  runEffect(status, getDataFn) {
+    const execEffects = this.loadMap.get(getDataFn)
+    if (execEffects) {
+      execEffects.forEach(fn => fn(status))
     }
-    this.loadingList.delete(getDataFn)
-  }
-  _exec(getDataFn) {
-    if (this.loadingList.has(getDataFn)) return
-    this.loadingList.add(getDataFn)
-    this.run(getDataFn, 'open')
-    const getDataPromise = getDataFn()
-    if (!getDataPromise.then) {
-      this.run(getDataFn, 'close')
-      return console.error('ajax-loading组件的getData函数，返回值必须为promise')
-    }
-    return getDataPromise.then((res) => {
-      this.run(getDataFn, 'close')
-      return res
-    }).catch(err => {
-      console.error(err)
-      if (err?.msg) {
-        Message({
-          message: err.msg,
-          type: 'error'
-        })
-      }
-      this.run(getDataFn, 'error')
-      return Promise.reject(err)
-    }).finally(() => {
-      if (this.onceList.has(getDataFn)) {
-        this.onceList.delete(getDataFn)
+    if (status !== 'open') {
+      this.execingList.delete(getDataFn)
+      if (this.execOnceList.has(getDataFn)) {
+        this.execOnceList.delete(getDataFn)
         this.remove(getDataFn)
       }
+    }
+  }
+  _exec(getDataFn) {
+    if (this.execingList.has(getDataFn)) return
+    this.runEffect('open', getDataFn)
+    const getDataPromise = getDataFn()
+    if (!getDataPromise.then) {
+      this.runEffect('close', getDataFn)
+      return console.error('ajax-loading组件的getData函数，返回值必须为promise')
+    }
+    this.execingList.add(getDataFn)
+    return getDataPromise.then((res) => {
+      this.runEffect('close', getDataFn)
+      return res
+    }).catch(err => {
+      this.runEffect('error', getDataFn)
+      return Promise.reject(err)
     })
   }
   exec(getDataFn) {

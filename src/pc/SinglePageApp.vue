@@ -34,14 +34,13 @@ export default {
   },
   methods: {
     getPage() {
-      return new Promise(r => {
+      return new Promise((r, j) => {
         setTimeout(() => {
           const pageConfig = JSON.parse(localStorage.getItem('page'))
           this.page = pageConfig ? new Page(pageConfig) : null
           r()
-          this.$loadManage.exec()
           setTimeout(() => {
-            // this.$loadManage.exec()
+            this.$loadManage.exec()
           })
         }, 500)
       })

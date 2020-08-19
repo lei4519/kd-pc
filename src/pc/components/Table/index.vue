@@ -323,7 +323,6 @@ export default {
     }
   },
   created() {
-    window.table = this
     this._params = {}
     this.alignMap = {
       string: 'left',
