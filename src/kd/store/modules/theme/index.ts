@@ -5,9 +5,12 @@ interface State {
   duration: number
 }
 interface Mutation {
-  SET_STATE: (state: State, payload: {
-    [key in keyof State]: any
-  }) => void
+  SET_STATE: (
+    state: State,
+    payload: {
+      [key in keyof State]: any
+    }
+  ) => void
   [key: string]: any
 }
 const state: State = {
@@ -17,7 +20,7 @@ const state: State = {
 const mutations: Mutation = {
   SET_STATE(state, payload) {
     Object.entries(payload).forEach(([key, val]) => {
-      (state as any)[key] = val
+      ;(state as any)[key] = val
     })
   }
 }
