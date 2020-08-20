@@ -154,10 +154,6 @@ export default {
       this.dialogVisibles[prop] = true
     },
     setElementProps(index, prop, value) {
-      const item = this.list[index]
-      if (typeof item.formatValue === 'function') {
-        value = item.formatValue(value)
-      }
       this.element.setProps({
         [prop]: value
       })
