@@ -98,7 +98,7 @@
       </el-slider>
       <component
         v-else-if="item.custom"
-        :is="item.component"
+        :is="getEditorComponent(item, element)"
         v-model="form[item.prop]"
         @change="setElementProps(i, item.prop, ...arguments)"
       ></component>
@@ -108,6 +108,7 @@
 
 <script>
 import Expand from './Expand'
+import { getEditorComponent } from '@/kd/utils/getComponents'
 
 export default {
   name: 'EditPropForm',
@@ -135,6 +136,7 @@ export default {
     }
   },
   created() {
+    this.getEditorComponent = getEditorComponent
     this.initForm()
   },
   methods: {

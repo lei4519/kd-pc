@@ -1,6 +1,6 @@
 import { noop } from '.'
 import { ColElement } from '../modules/Element'
-import { EditorSection, CustomEditor, Type } from '../types/editor-props'
+import { CustomEditor, EditorProps } from '../types/editor-props'
 /**
  * @description 目录
  */
@@ -62,7 +62,10 @@ function createComponentList(modules: RC): ComponentList {
     // 以 . 开头的文件不予处理
     if (/\/\.(.*?)\.vue$/.test(item)) return compInfo
     // -editor.vue文件 由getEditorProps 函数处理
-    if (/-editor\.vue$/.test(item)) return compInfo
+    if (/-editor\.vue$/.test(item)) {
+      addEditMap(item, modules(item).default)
+      return compInfo
+    }
     let res = compInfo
     const paths = item.split('/').slice(1)
     paths.forEach((name, i) => {
@@ -86,7 +89,7 @@ function createComponentList(modules: RC): ComponentList {
           } = options
           addMap(`${path}/${name}`, {
             ctor,
-            editorProps: getEditorProps(editorProps(), path, modules)
+            editorProps
           })
           res.push(
             new ColElement({
@@ -133,7 +136,7 @@ function getDefaultProps(props: object = {}): object {
 interface PathToComp {
   [path: string]: {
     ctor: any
-    editorProps: EditorSection[]
+    editorProps: EditorProps
   }
 }
 /**
@@ -147,30 +150,25 @@ function addMap(comPath: string, obj: any) {
 /**
  * @description 获取配置区自定义渲染组件
  */
-function getEditorProps(
-  editorProps: EditorSection[],
-  path: string,
-  modules: RC
-): EditorSection[] {
-  if (!editorProps) return []
-  const isCustom = (prop: Type): prop is CustomEditor =>
-    (prop as CustomEditor).custom
-  editorProps.forEach(section => {
-    section.props.forEach(prop => {
-      if (isCustom(prop) && !prop.component && prop.componentPath) {
-        let componentPath = prop.componentPath
-        // 解析路径 ./ ../ ../../
-        while (componentPath.startsWith('../')) {
-          path = path.replace(/\/[A-Za-z0-9_-]+$/, '')
-          componentPath = componentPath.replace('../', '')
-        }
-        if (componentPath.startsWith('./')) {
-          componentPath = componentPath.replace('./', '')
-        }
-        const editCompPath = `./${path}/${componentPath}`
-        prop.component = modules(editCompPath).default
-      }
-    })
-  })
-  return editorProps
+const pathToEditorComponent: {
+  [path: string]: Vue.VueConstructor | Vue.Component
+} = {}
+function addEditMap(path: string, payload: Vue.VueConstructor | Vue.Component) {
+  pathToEditorComponent[path] = payload
+}
+export function getEditorComponent(
+  customEditor: CustomEditor,
+  el: ColElement
+): Vue.VueConstructor | Vue.Component {
+  let componentPath = customEditor.componentPath
+  let path = el.path.replace(/\/[A-Za-z0-9_-]+\.vue$/, '')
+  while (componentPath.startsWith('../')) {
+    path = path.replace(/\/[A-Za-z0-9_-]+$/, '')
+    componentPath = componentPath.replace('../', '')
+  }
+  if (componentPath.startsWith('./')) {
+    componentPath = componentPath.replace('./', '')
+  }
+  const editCompPath = `./${path}/${componentPath}`
+  return pathToEditorComponent[editCompPath]
 }

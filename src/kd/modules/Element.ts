@@ -140,7 +140,10 @@ export class ColElement {
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
-    return cloneDeep([...pathToComp[this.path].editorProps])
+    const addDeps = () => {
+      // TODO
+    }
+    return cloneDeep([...pathToComp[this.path].editorProps(addDeps)])
   }
   setProps(props: object) {
     Object.entries(props).forEach(([key, val]) => {

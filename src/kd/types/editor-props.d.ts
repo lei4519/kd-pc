@@ -1,7 +1,10 @@
 /**
  * @description 返回组件的配置项描述
+ * @param addDeps 收集依赖的函数，传入prop字段名。传入的prop变化后会重新调用editorProps函数获取新的配置项
  */
-export type EditorProps = (env?: string) => EditorSection[]
+export type EditorProps = (
+  addDeps: (...args: string[]) => void
+) => EditorSection[]
 /**
  * @description 配置区域分组
  * @param title 分组名称
@@ -9,9 +12,9 @@ export type EditorProps = (env?: string) => EditorSection[]
  */
 interface EditorSection {
   title: string
-  props: Array<Type>
+  props: Array<EditorSectionProps>
 }
-type Type =
+type EditorSectionProps =
   | CustomEditor
   | Select
   | Input
@@ -28,7 +31,7 @@ type Type =
  * @param tips 属性相关提示 支持传入文字 或者 render函数; 文字使用el-tooltip渲染，render函数使用 el-dialog 渲染
  * @param formItemProps 此属性会作为 el-formItem 的props传入其中
  * @param formCompProps 此属性会作为 表单项(如el-input el-radio) 的props传入其中
- * @param defaultValue 默认的props值，可以不写。会自动从vue文件的props - default中取
+ * @param defaultValue 默认的props值，可以不写。会自动从vue文件的props - default中取。值为函数时会传入当前的prop值作为参数
  */
 interface FormItem {
   label?: string
@@ -48,7 +51,7 @@ interface FormItem {
  */
 export interface CustomEditor extends FormItem {
   custom: boolean
-  componentPath?: string
+  componentPath: string
   component?: Vue.ComponentOptions
 }
 /**
