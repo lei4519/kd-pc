@@ -174,16 +174,11 @@ export default {
 <style lang="scss">
 .edit-props-form-wrapper {
   .el-form-item {
-    display: flex;
     margin: 0;
     + .el-form-item {
       margin-top: 8px;
     }
-    .el-form-item__label {
-      width: auto !important;
-    }
     .el-form-item__content {
-      flex: 1;
       .el-select {
         width: 100%;
       }

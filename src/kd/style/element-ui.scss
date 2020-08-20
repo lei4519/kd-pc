@@ -1,0 +1,16 @@
+.el-form:not(.el-form--label-top) {
+  .el-form-item {
+    display: flex;
+    margin-bottom: 0;
+    + .el-form-item {
+      margin-top: 16px;
+    }
+    .el-form-item__label {
+      flex-shrink: 0;
+    }
+    .el-form-item__content {
+      flex: 1;
+      align-items: center;
+    }
+  }
+}
