@@ -15,6 +15,17 @@ export interface PageProps {
   routeName?: string
 }
 /**
+ * @description 页面布局信息
+ * @param counter 记录每个组件在当前页面的数量
+ * @param layouts 二维数组，记录每行里具体存放的组件名称
+ * @param dropRowIndx 放下元素所在的行数
+ */
+export interface LayoutInfo {
+  counter: { [cName: string]: number }
+  layouts: string[][]
+  dropRowIndx: number
+}
+/**
  * @description 页面
  * @class Page
  * @param name 页面名称
@@ -83,6 +94,24 @@ export class Page implements PageProps {
         // FIXME css 动画变量
       }, 300)
     }
+  }
+  getLayout(dropRowIndx: number) {
+    return this.rows.reduce(
+      (res, row, i) => {
+        res.layouts[i] = []
+        row.elements.forEach(el => {
+          if (!res.counter[el.name]) res.counter[el.name] = 0
+          res.counter[el.name]++
+          res.layouts[i].push(el.name)
+        })
+        return res
+      },
+      {
+        counter: {},
+        layouts: [],
+        dropRowIndx
+      } as LayoutInfo
+    )
   }
   remove() {
     this.parent?.delChild(this)

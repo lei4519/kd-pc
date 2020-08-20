@@ -1,10 +1,9 @@
 /**
  * @description 返回组件的配置项描述
- * @param addDeps 收集依赖的函数，传入prop字段名。传入的prop变化后会重新调用editorProps函数获取新的配置项
+ * @param props 传入组件的props对象，可以根据props的变化来返回不同的配置项
+ * @waring 传入的props对象没有setter 只能读取值，不能修改值。
  */
-export type EditorProps = (
-  addDeps: (...args: string[]) => void
-) => EditorSection[]
+export type EditorProps = (props: Object) => EditorSection[]
 /**
  * @description 配置区域分组
  * @param title 分组名称

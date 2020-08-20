@@ -84,12 +84,14 @@ function createComponentList(modules: RC): ComponentList {
             zhName,
             iconClass,
             editorProps = noop,
+            dragConfig,
             props,
             minSpan = 4
           } = options
           addMap(`${path}/${name}`, {
             ctor,
-            editorProps
+            editorProps,
+            dragConfig
           })
           res.push(
             new ColElement({
@@ -137,6 +139,7 @@ interface PathToComp {
   [path: string]: {
     ctor: any
     editorProps: EditorProps
+    dragConfig: object
   }
 }
 /**

@@ -20,18 +20,31 @@
             :closable="false"
           />
           <div class="select-component-wrapper">
-            <div
-              class="component-item"
+            <el-tooltip
               v-for="component in componentList"
               :key="component.id"
-              @click="addComponent(component)"
-              draggable
-              @dragstart="onDragEvent('start', component, $event)"
-              @dragend="onDragEvent('end', component, $event)"
+              class="item"
+              effect="dark"
+              :content="
+                `当前页面只允许放置 ${
+                  pathToComp[component.path].dragConfig.max
+                } 个${component.zhName}`
+              "
+              :disabled="component.draggable"
+              placement="top"
             >
-              <IconFont :type="component.iconClass" size="32" />
-              <div class="component-name">{{ component.zhName }}</div>
-            </div>
+              <div
+                class="component-item"
+                :class="{ draggable: component.draggable }"
+                @click="addComponent(component)"
+                :draggable="component.draggable"
+                @dragstart="onDragEvent('start', component, $event)"
+                @dragend="onDragEvent('end', component, $event)"
+              >
+                <IconFont :type="component.iconClass" size="32" />
+                <div class="component-name">{{ component.zhName }}</div>
+              </div>
+            </el-tooltip>
           </div>
         </el-tab-pane>
         <el-tab-pane name="setting" v-show="false">
@@ -83,6 +96,12 @@ export default {
       type: Array,
       default() {
         return []
+      }
+    },
+    pathToComp: {
+      type: Object,
+      default() {
+        return null
       }
     },
     dragingComponent: {

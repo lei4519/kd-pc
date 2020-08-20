@@ -40,3 +40,6 @@ $direction: ('t', 'top'), ('b', 'bottom'), ('l', 'left'), ('r', 'right');
     }
   }
 }
+.transition {
+  transition: all $duration;
+}

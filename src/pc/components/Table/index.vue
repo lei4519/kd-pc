@@ -143,6 +143,19 @@ export default {
       default: false
     }
   },
+  dragConfig: {
+    max: 4,
+    onDrop({ layouts, dropRowIndx }) {
+      const dropRow = layouts[dropRowIndx]
+      if (
+        dropRow &&
+        dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
+      ) {
+        this.$message.error('每行内只能放置两个 Table 组件')
+        return false
+      }
+    }
+  },
   editorProps: () => {
     return [
       {

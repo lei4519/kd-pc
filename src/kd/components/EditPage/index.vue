@@ -14,6 +14,7 @@
         v-if="asideLayout === 'left'"
         :asideLayout="asideLayout"
         :componentList="componentList"
+        :pathToComp="pathToComp"
         :page="page"
         :activeTab.sync="activeTab"
         :dragingComponent.sync="dragingComponent"
@@ -115,7 +116,7 @@
                   leave-active-class="animate__animated animate__fadeOut"
                 >
                   <div
-                    class="layout-col"
+                    class="layout-col transition"
                     :style="el.getStyle()"
                     v-for="(el, colIndex) in row.elements"
                     :key="el.id"
@@ -201,6 +202,7 @@
         v-if="asideLayout === 'right'"
         :asideLayout="asideLayout"
         :componentList="componentList"
+        :pathToComp="pathToComp"
         :page="page"
         :activeTab.sync="activeTab"
         :dragingComponent.sync="dragingComponent"
@@ -313,16 +315,39 @@ export default {
       }
       this.componentList = res
     },
-    addComponent(component, rowIndex) {
+    addComponent(component, rowIndex = -1) {
+      if (!component.draggable) return // 阻止点击事件触发
+
+      const dragConfig = this.pathToComp[component.path].dragConfig
+      if (dragConfig) {
+        const { counter, layouts, dropRowIndx } = this.page.getLayout(rowIndex)
+
+        if (rowIndex > -1) {
+          if (
+            dragConfig.onDrop?.call(this, {
+              counter,
+              layouts,
+              dropRowIndx
+            }) === false
+          ) {
+            return
+          }
+        }
+
+        if (dragConfig.max) {
+          const count = counter[component.name] || 0
+          count + 1 >= dragConfig.max && (component.draggable = false)
+        }
+      }
+
       let element = null
-      if (rowIndex) {
+      if (rowIndex > -1) {
         // 拖拽触发
         const row = this.page.rows[rowIndex]
         if (row) {
           this.dropPosAbs = true
           this.$nextTick(() => {
-            ;[element] = row.addElements(component)
-            this.page.setEditingElement(element)
+            this.page.setEditingElement(row.addElements(component)[0])
           })
           // 300 毫秒动画结束
           // TODO animationend on
@@ -353,9 +378,9 @@ export default {
         this.dropHandler = {
           drop: e => {
             e.preventDefault()
+            const dropDom = e.currentTarget
+            dropDom.classList.remove('enter')
             if (this.dragingComponent) {
-              const dropDom = e.currentTarget
-              dropDom.classList.remove('enter')
               const { row_index: rowIndex } = dropDom.dataset
               this.addComponent(this.dragingComponent, rowIndex)
             }
@@ -469,7 +494,7 @@ export default {
     handleComponentOperate(type, row, element) {
       ;({
         del: () => {
-          row.delElement(element)
+          row.delElement(element, this.componentList)
         },
         copy: () => {
           this.addComponent(element)
@@ -519,10 +544,10 @@ export default {
         this.handleOperate('redo')
       } else if (keyCode === 8 && !commandKey && !shiftKey) {
         // del 删除
-        e.preventDefault()
         const el = this.page.editingElement
         const tagName = e.target.tagName
         if (el && !/INPUT|TEXTAREA/i.test(tagName)) {
+          e.preventDefault()
           this.handleComponentOperate('del', el.parent, el)
         }
       } else if (keyCode === 83 && commandKey && !shiftKey) {
@@ -766,14 +791,17 @@ export default {
           font-size: 12px;
           text-align: center;
           color: #fff;
-          cursor: grab;
           transition: all 0.3s;
-          &:hover {
-            color: $theme-color;
-            transform: scale(1.1);
-          }
-          &:active {
-            cursor: grabbing;
+          cursor: not-allowed;
+          &.draggable {
+            cursor: grab;
+            &:hover {
+              color: $theme-color;
+              transform: scale(1.1);
+            }
+            &:active {
+              cursor: grabbing;
+            }
           }
           .component-name {
             margin-top: 4px;

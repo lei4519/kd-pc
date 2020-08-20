@@ -63,13 +63,17 @@ export class Row {
       return colEl
     })
   }
-  delElement(element: ColElement) {
+  delElement(element: ColElement, componentList: ColElement[]) {
     const page = this.parent!
     let elements = this.elements
     elements.splice(elements.findIndex(e => e.id === element.id)!, 1)
+    const component = componentList.find(c => c.name === element.name)!
+    if (!component.draggable) {
+      component.draggable = true
+    }
+    // 以下为聚焦其他节点逻辑
     // 删除后再取值
     let len = this.elements.length
-
     if (len === 0) {
       const delIdx = page.delRow(this)
       const rowSize = page.rows.length
@@ -86,7 +90,7 @@ export class Row {
       this.style[key as any] = val as any
     })
   }
-  getStyle() {
+  getStyle(): Partial<CSSStyleDeclaration> {
     return {
       ...this.style,
       display: 'flex',
@@ -111,12 +115,15 @@ export interface ColElementProp {
 /**
  * @description 组件，不需要手动new实例。getComponents方法会读取组件目录自动创建
  * @class ColElement
+ * @param parent 父级Row组件
  * @param name 组件name
  * @param zhName 组件中文名称，用于展示
  * @param minSpan 组件最小span，el-col span
+ * @param maxSpan 组件最大span，el-col span
+ * @param iconClass 组件展示图表类名 iconfont 类名
  * @param path 组件路径
  * @param props 组件的props，组件配置区写入属性的地方
- * @param editorProps 生成组件配置区的配置描述
+ * @param draggable 是否可拖拽
  */
 let componentID = 0
 export class ColElement {
@@ -130,6 +137,7 @@ export class ColElement {
   iconClass: string
   path: string
   props: any
+  draggable = true
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
     this.zhName = element.zhName || '未命名'
@@ -140,10 +148,14 @@ export class ColElement {
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
-    const addDeps = () => {
-      // TODO
-    }
-    return cloneDeep([...pathToComp[this.path].editorProps(addDeps)])
+    const props = new Proxy(this.props, {
+      set() {
+        throw new Error(
+          '组件 editorProps 方法参数：props，不允许进行赋值操作！'
+        )
+      }
+    })
+    return cloneDeep([...pathToComp[this.path].editorProps(props)])
   }
   setProps(props: object) {
     Object.entries(props).forEach(([key, val]) => {
@@ -152,10 +164,9 @@ export class ColElement {
       Vue.set(this.props, key, val)
     })
   }
-  getStyle() {
+  getStyle(): Partial<CSSStyleDeclaration> {
     return {
-      flex: 1,
-      transition: 'all .3s',
+      flex: '1',
       minWidth: `${(this.minSpan / 24) * 100}%`,
       maxWidth: `${(this.maxSpan / 24) * 100}%`
     }

@@ -9,7 +9,7 @@
           :style="row.getStyle()"
         >
           <div
-            class="layout-col"
+            class="layout-col transition"
             v-for="el in row.elements"
             :key="el.id"
             :style="el.getStyle()"
