@@ -4,10 +4,8 @@
   "private": true,
   "scripts": {
     "serve:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service serve --fix",
-    "serve:pc": "cross-env BUILD_PLATFORM=pc vue-cli-service serve --fix",
     "serve:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service serve --fix",
     "build:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service build",
-    "build:pc": "cross-env BUILD_PLATFORM=pc vue-cli-service build",
     "build:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service build && node build/sc-build-after.js"
   },
   "dependencies": {
