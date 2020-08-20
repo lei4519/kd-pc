@@ -29,7 +29,6 @@ type Type =
  * @param formItemProps 此属性会作为 el-formItem 的props传入其中
  * @param formCompProps 此属性会作为 表单项(如el-input el-radio) 的props传入其中
  * @param defaultValue 默认的props值，可以不写。会自动从vue文件的props - default中取
- * @param formatValue 写入props前触发，可以对值进行操作
  */
 interface FormItem {
   label?: string
@@ -40,7 +39,6 @@ interface FormItem {
   formItemProps?: object
   formCompProps?: object
   defaultValue?: any
-  formatValue?: (val: any) => void
 }
 /**
  * @description 自定义渲染配置
