@@ -1,10 +1,5 @@
 <template>
-  <el-form
-    ref="form"
-    class="edit-props-form-wrapper"
-    label-width="0"
-    size="small"
-  >
+  <el-form ref="form" class="edit-props-form-wrapper" size="small">
     <el-form-item
       v-for="(item, i) in list"
       :key="i"
