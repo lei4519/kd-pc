@@ -16,9 +16,9 @@ export interface PageProps {
 }
 /**
  * @description 页面布局信息
- * @param counter 记录每个组件在当前页面的数量
- * @param layouts 二维数组，记录每行里具体存放的组件名称
- * @param dropRowIndx 放下元素所在的行数
+ * @property {} counter 记录每个组件在当前页面的数量
+ * @property {} layouts 二维数组，记录每行里具体存放的组件名称
+ * @property {} dropRowIndx 放下元素所在的行数
  */
 export interface LayoutInfo {
   counter: { [cName: string]: number }
@@ -28,11 +28,11 @@ export interface LayoutInfo {
 /**
  * @description 页面
  * @class Page
- * @param name 页面名称
- * @param show 是否展示（权限管理）
- * @param edit 编辑模式
- * @param rows 编辑区（一个页面中多行）
- * @param permissions 页面权限
+ * @property {} name 页面名称
+ * @property {} show 是否展示（权限管理）
+ * @property {} edit 编辑模式
+ * @property {} rows 编辑区（一个页面中多行）
+ * @property {} permissions 页面权限
  */
 export class Page implements PageProps {
   readonly type = 'page'

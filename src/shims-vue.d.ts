@@ -6,8 +6,8 @@ declare module '*.vue' {
 }
 declare module 'vue/types/vue' {
   /**
-   * @param $ajax axios 实例
-   * @param $loadManage 全局请求loading 状态管理实例 配合AjaxLoading组件使用
+   * @property {} $ajax axios 实例
+   * @property {} $loadManage 全局请求loading 状态管理实例 配合AjaxLoading组件使用
    */
   interface Vue {
     $ajax: AxiosInstance

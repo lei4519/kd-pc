@@ -14,10 +14,10 @@ export interface MenuProps {
 /**
  * @description 目录
  * @class Menu
- * @param name 目录名称
- * @param show 目录是否展示（权限管理）
- * @param edit 目录是否处于编辑模式
- * @param children 目录下的子目录、子页面数组
+ * @property {} name 目录名称
+ * @property {} show 目录是否展示（权限管理）
+ * @property {} edit 目录是否处于编辑模式
+ * @property {} children 目录下的子目录、子页面数组
  */
 export class Menu implements MenuProps {
   readonly id = genUUID()

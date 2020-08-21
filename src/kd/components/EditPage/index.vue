@@ -233,7 +233,7 @@ import { readonly } from '@/kd/utils'
 
 /**
  *   @desc 编辑区
- *   @params page 当前编辑的页面，Page实例
+ *   @property {} page 当前编辑的页面，Page实例
  */
 export default {
   name: 'EditPage',

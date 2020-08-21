@@ -49,10 +49,10 @@
 <script>
 /**
  * @description 接口文档表格
- * @param title 表格标题
- * @param code 接口代码示例
- * @param data 表格数据
- * @param columns 表头配置（具体配置查询element官网）
+ * @property {} title 表格标题
+ * @property {} code 接口代码示例
+ * @property {} data 表格数据
+ * @property {} columns 表头配置（具体配置查询element官网）
  */
 export default {
   name: 'DocumentTable',

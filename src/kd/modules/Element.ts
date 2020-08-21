@@ -26,9 +26,9 @@ function editDirty(methods: string[]) {
 /**
  * @description 一行 el-row
  * @class Row
- * @param elements 一行内的组件，被el-col包裹
- * @param style 行样式
- * @param freeSpace 每行剩余空间 计算minSpan
+ * @property {} elements 一行内的组件，被el-col包裹
+ * @property {} style 行样式
+ * @property {} freeSpace 每行剩余空间 计算minSpan
  */
 @editDirty(['addElements', 'delElement'])
 export class Row {
@@ -115,15 +115,15 @@ export interface ColElementProp {
 /**
  * @description 组件，不需要手动new实例。getComponents方法会读取组件目录自动创建
  * @class ColElement
- * @param parent 父级Row组件
- * @param name 组件name
- * @param zhName 组件中文名称，用于展示
- * @param minSpan 组件最小span，el-col span
- * @param maxSpan 组件最大span，el-col span
- * @param iconClass 组件展示图表类名 iconfont 类名
- * @param path 组件路径
- * @param props 组件的props，组件配置区写入属性的地方
- * @param draggable 是否可拖拽
+ * @property {} parent 父级Row组件
+ * @property {} name 组件name
+ * @property {} zhName 组件中文名称，用于展示
+ * @property {} minSpan 组件最小span，el-col span
+ * @property {} maxSpan 组件最大span，el-col span
+ * @property {} iconClass 组件展示图表类名 iconfont 类名
+ * @property {} path 组件路径
+ * @property {} props 组件的props，组件配置区写入属性的地方
+ * @property {} draggable 是否可拖拽
  */
 let componentID = 0
 export class ColElement {

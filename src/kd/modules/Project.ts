@@ -10,10 +10,10 @@ export interface ProjectProps {
 /**
  * @description 描述一个项目
  * @class Project
- * @param name 项目名称
- * @param logo 项目logo
- * @param expire 到期时间
- * @param menu 项目目录
+ * @property {} name 项目名称
+ * @property {} logo 项目logo
+ * @property {} expire 到期时间
+ * @property {} menu 项目目录
  */
 export class Project implements ProjectProps {
   readonly id = genUUID()

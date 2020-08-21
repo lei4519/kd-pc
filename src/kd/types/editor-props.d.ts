@@ -1,13 +1,13 @@
 /**
  * @description 返回组件的配置项描述
- * @param props 传入组件的props对象，可以根据props的变化来返回不同的配置项
+ * @property {} props 传入组件的props对象，可以根据props的变化来返回不同的配置项
  * @waring 传入的props对象没有setter 只能读取值，不能修改值。
  */
 export type EditorProps = (props: Object) => EditorSection[]
 /**
  * @description 配置区域分组
- * @param title 分组名称
- * @param props 修改prop属性的配置
+ * @property {} title 分组名称
+ * @property {} props 修改prop属性的配置
  */
 interface EditorSection {
   title: string
@@ -25,12 +25,12 @@ type EditorSectionProps =
 
 /**
  * @description 通用配置
- * @param label el-formItem label
- * @param prop 要修改的props值
- * @param tips 属性相关提示 支持传入文字 或者 render函数; 文字使用el-tooltip渲染，render函数使用 el-dialog 渲染
- * @param formItemProps 此属性会作为 el-formItem 的props传入其中
- * @param formCompProps 此属性会作为 表单项(如el-input el-radio) 的props传入其中
- * @param defaultValue 默认的props值，可以不写。会自动从vue文件的props - default中取。值为函数时会传入当前的prop值作为参数
+ * @property {} label el-formItem label
+ * @property {} prop 要修改的props值
+ * @property {} tips 属性相关提示 支持传入文字 或者 render函数; 文字使用el-tooltip渲染，render函数使用 el-dialog 渲染
+ * @property {} formItemProps 此属性会作为 el-formItem 的props传入其中
+ * @property {} formCompProps 此属性会作为 表单项(如el-input el-radio) 的props传入其中
+ * @property {} defaultValue 默认的props值，可以不写。会自动从vue文件的props - default中取。值为函数时会传入当前的prop值作为参数
  */
 interface FormItem {
   label?: string
@@ -44,9 +44,9 @@ interface FormItem {
 }
 /**
  * @description 自定义渲染配置
- * @param custom 是否为自定义渲染，固定传true值
- * @param componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
- * @param component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取。
+ * @property {} custom 是否为自定义渲染，固定传true值
+ * @property {} componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
+ * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取。
  */
 export interface CustomEditor extends FormItem {
   custom: boolean

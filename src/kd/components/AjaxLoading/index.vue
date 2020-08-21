@@ -9,10 +9,10 @@ import Loading from './Loading.vue'
  * @wraning getData、fetchData 函数必须返回Promise。loading状态根据promise状态改变
  * @wraning getData、fetchData 会被Loading组件装饰，装饰后直接调用 即可触发loading效果
  *
- * @param tag 渲染标签名称 也可传入组件对象进行渲染
- * @param getData 请求方法
- * @param once getData 只控制loading状态一次，请求成功后解除其与loading态的关联性
- * @param lazy 默认在 mounted 时机进行初始化请求，如果需要改为手动控制请求时机，可以通过此属性控制
+ * @property {} tag 渲染标签名称 也可传入组件对象进行渲染
+ * @property {} getData 请求方法
+ * @property {} once getData 只控制loading状态一次，请求成功后解除其与loading态的关联性
+ * @property {} lazy 默认在 mounted 时机进行初始化请求，如果需要改为手动控制请求时机，可以通过此属性控制
  */
 export default {
   components: {

@@ -5,8 +5,8 @@
 <script>
 /**
  * @desc 全局组件 - 字体图标
- * @param type iconfont 类名
- * @param size 字体大小
+ * @property {} type iconfont 类名
+ * @property {} size 字体大小
  */
 export default {
   props: {

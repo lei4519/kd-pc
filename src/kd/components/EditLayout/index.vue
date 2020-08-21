@@ -129,8 +129,8 @@ import EditPage from '../EditPage/index'
 const MAX_NAV = 5
 /**
  *   @desc 可编辑的布局组件
- *   @params project Project实例
- *   @params editor 开启编辑模式
+ *   @property {} project Project实例
+ *   @property {} editor 开启编辑模式
  */
 export default {
   name: 'EditLayout',
