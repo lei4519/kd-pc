@@ -229,6 +229,7 @@ import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
+import { readonly } from '@/kd/utils'
 
 /**
  *   @desc 编辑区
@@ -324,7 +325,7 @@ export default {
 
         if (rowIndex > -1) {
           if (
-            dragConfig.onDrop?.call(this, {
+            dragConfig.onDrop?.call(readonly(this), {
               counter,
               layouts,
               dropRowIndx

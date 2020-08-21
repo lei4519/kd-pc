@@ -8,3 +8,14 @@ export function genUUID(): string {
 
 /* eslint-disable */
 export function noop() {}
+
+/**
+ * @description 通过proxy 代理只读对象
+ */
+export function readonly(obj: object, tips?: string) {
+  return new Proxy(obj, {
+    set() {
+      throw new Error(tips || '只读对象不可进行赋值操作！')
+    }
+  })
+}

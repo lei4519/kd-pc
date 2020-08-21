@@ -1,5 +1,5 @@
 import { EditorSection } from '../types/editor-props'
-import { genUUID } from '../utils'
+import { genUUID, readonly } from '../utils'
 import { cloneDeep } from 'lodash'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
@@ -148,13 +148,10 @@ export class ColElement {
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
-    const props = new Proxy(this.props, {
-      set() {
-        throw new Error(
-          '组件 editorProps 方法参数：props，不允许进行赋值操作！'
-        )
-      }
-    })
+    const props = readonly(
+      this.props,
+      '组件 editorProps 方法参数：props，不允许进行赋值操作！'
+    )
     return cloneDeep([...pathToComp[this.path].editorProps(props)])
   }
   setProps(props: object) {
