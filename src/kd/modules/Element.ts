@@ -1,4 +1,4 @@
-import { EditorSection, EditorSectionProps } from '../types/editor-props'
+import { EditorSection } from '../types/editor-props'
 import { genUUID, readonly } from '../utils'
 import { cloneDeep } from 'lodash'
 import { compose } from 'ramda'
@@ -31,7 +31,12 @@ function editDirty(methods: string[]) {
  * @property {} style 行样式
  * @property {} freeSpace 每行剩余空间 计算minSpan
  */
-@editDirty(['addElements', 'delElement'])
+@editDirty([
+  'addElements',
+  'delElement',
+  'replaceElement',
+  'delDropPlaceholder'
+])
 export class Row {
   readonly id = genUUID()
   private MAX_SPAN = 24
@@ -54,6 +59,26 @@ export class Row {
         this.elements.reduce((span, { minSpan }) => span + minSpan, 0)
     }
     return this.freeSpace
+  }
+  replaceElement(source: ColElement, target: ColElement) {
+    Object.entries(source).forEach(([key, val]) => {
+      if (key === 'id') return
+      if (key === 'parent') return (target.parent = this)
+      ;(target as any)[key] = cloneDeep(val)
+    })
+    return target
+  }
+  replaceDropPlaceholder(element: ColElementProp) {
+    const colEl = new ColElement(element)
+    const placeholoader = this.elements[this.elements.length - 1]
+    return this.replaceElement(colEl, placeholoader)
+  }
+  delDropPlaceholder() {
+    const { elements } = this
+    const { name } = elements[elements.length - 1]
+    if (name === 'dropPlaceholder') {
+      elements.pop()
+    }
   }
   addElements(elements: ColElementProp | ColElementProp[]) {
     if (!Array.isArray(elements)) elements = [elements]

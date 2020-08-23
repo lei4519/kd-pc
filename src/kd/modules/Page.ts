@@ -1,6 +1,6 @@
 import { Menu } from './Menu'
 import { Row, RowProps, ColElement } from './Element'
-import store from '@/kd/store'
+import { cloneDeep } from 'lodash'
 let id = 0
 interface Permission {
   name: string
@@ -24,7 +24,7 @@ export interface PageProps {
 export interface LayoutInfo {
   counter: { [cName: string]: number }
   layouts: string[][]
-  dropRowIndx: number
+  dropRowIndex: number
 }
 /**
  * @description 页面
@@ -79,30 +79,27 @@ export class Page implements PageProps {
     toColIndex: number
   }) {
     const { formRowIndex, formColIndex, toRowIndex, toColIndex } = indexs
-    const formElements = this.rows[formRowIndex].elements
-    const toElements = this.rows[toRowIndex].elements
-    // 同行不需要等待动画过渡
+    const formRow = this.rows[formRowIndex]
+    const toRow = this.rows[toRowIndex]
+    const toEl: ColElement = toRow.elements[toColIndex]
+    // 同行使用splice进行动画过渡
     if (formRowIndex === toRowIndex) {
-      const toEl: ColElement = toElements[toColIndex]
-      const formEl: ColElement = formElements.splice(formColIndex, 1, toEl)[0]
-      toElements.splice(toColIndex, 1, formEl)
+      const toEl: ColElement = toRow.elements[toColIndex]
+      const formEl: ColElement = formRow.elements.splice(
+        formColIndex,
+        1,
+        toEl
+      )[0]
+      toRow.elements.splice(toColIndex, 1, formEl)
     } else {
-      const formEl: ColElement = formElements.splice(formColIndex, 1)[0]
-      const toEl: ColElement = toElements.splice(toColIndex, 1)[0]
-      // 等待删除元素动画结束后再添加新元素，强化过渡效果
-      let transitionEnd
-      new Promise(resolve => {
-        transitionEnd = resolve
-      }).then(() => {
-        setTimeout(() => {
-          formElements.splice(formColIndex, 0, toEl)
-          toElements.splice(toColIndex, 0, formEl)
-        }, store.state.theme.duration)
-      })
-      return transitionEnd
+      // 跨行动画过渡页面会晃动，直接替换状态，不进行动画
+      // 留存状态
+      const formEl: ColElement = cloneDeep(formRow.elements[formColIndex])
+      formRow.replaceElement(toEl, formRow.elements[formColIndex])
+      toRow.replaceElement(formEl, toEl)
     }
   }
-  getLayout(dropRowIndx: number) {
+  getLayout(dropRowIndex: number) {
     return this.rows.reduce(
       (res, row, i) => {
         res.layouts[i] = []
@@ -116,9 +113,49 @@ export class Page implements PageProps {
       {
         counter: {},
         layouts: [],
-        dropRowIndx
+        dropRowIndex
       } as LayoutInfo
     )
+  }
+  addDropPlaceholder(element: ColElement) {
+    this.rows.forEach(row => {
+      const freeSpace = row.getFreeSpace()
+      if (freeSpace && freeSpace >= element.minSpan) {
+        row.addElements({
+          name: 'dropPlaceholder',
+          zhName: 'drop放置区',
+          minSpan: 1,
+          maxSpan: 24,
+          iconClass: '',
+          path: '',
+          props: null
+        })
+      }
+    })
+    // 最后一行
+    this.addRows({
+      elements: [
+        {
+          name: 'dropPlaceholder',
+          zhName: 'drop放置区',
+          minSpan: 1,
+          maxSpan: 24,
+          iconClass: '',
+          path: '',
+          props: null
+        }
+      ]
+    })
+  }
+  removeDropPlaceholder() {
+    const { rows } = this
+    rows.forEach(row => {
+      row.delDropPlaceholder()
+    })
+    // 检查最后一行
+    if (rows[rows.length - 1].elements.length === 0) {
+      rows.pop()
+    }
   }
   remove() {
     this.parent?.delChild(this)

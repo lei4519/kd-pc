@@ -125,9 +125,11 @@ export default {
       if (!this.dragHandler) {
         this.dragHandler = {
           start: c => {
+            this.page.addDropPlaceholder(c)
             this.$emit('update:dragingComponent', c)
           },
           end: () => {
+            this.page.removeDropPlaceholder()
             this.$emit('update:dragingComponent', null)
           }
         }

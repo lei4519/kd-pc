@@ -110,6 +110,7 @@
                     tag="div"
                     name="fade"
                     class="clearfix layout-row"
+                    :ref="page.rows.length - 1 === rowIndex ? 'lastRow' : ''"
                     :style="row.getStyle()"
                   >
                     <div
@@ -119,77 +120,62 @@
                       :key="el.id"
                       @click="handleComponentOperate('setting', row, el)"
                     >
-                      <CatchEvents
-                        draggable
-                        @dragstart="onSwapEvent('dragstart', $event)"
-                        @dragend="onSwapEvent('dragend', $event)"
-                        @drop="onSwapEvent('drop', $event)"
-                        @dragover="onSwapEvent('dragover', $event)"
-                        @dragenter="onSwapEvent('dragenter', $event)"
-                        @dragleave="onSwapEvent('dragleave', $event)"
-                        class="component-drag-box"
-                        data-type="swap"
-                        :data-row_index="rowIndex"
-                        :data-col_index="colIndex"
-                        :data-min_span="el.minSpan"
-                        :data-el_id="el.id"
-                        :data-row_free_space="row.getFreeSpace()"
-                        :class="{
-                          active:
-                            page.editingElement &&
-                            page.editingElement.id === el.id,
-                          swap:
-                            swapingComponentInfo &&
-                            swapingComponentInfo.id !== el.id
-                        }"
-                      >
-                        <AjaxLoading>
-                          <component
-                            :is="pathToComp[el.path].ctor"
-                            v-bind="el.props"
+                      <transition name="fade" mode="out-in">
+                        <div
+                          v-if="el.name === 'dropPlaceholder'"
+                          key="dropPlaceholder"
+                          class="drop-section"
+                          :data-row_index="rowIndex"
+                          @drop="onDropEvent('drop', $event)"
+                          @dragover="onDropEvent('dragover', $event)"
+                          @dragenter="onDropEvent('dragenter', $event)"
+                          @dragleave="onDropEvent('dragleave', $event)"
+                        >
+                          <i class="el-icon-plus"></i>
+                        </div>
+                        <CatchEvents
+                          v-else
+                          draggable
+                          @dragstart="onSwapEvent('dragstart', $event)"
+                          @dragend="onSwapEvent('dragend', $event)"
+                          @drop="onSwapEvent('drop', $event)"
+                          @dragover="onSwapEvent('dragover', $event)"
+                          @dragenter="onSwapEvent('dragenter', $event)"
+                          @dragleave="onSwapEvent('dragleave', $event)"
+                          class="component-drag-box"
+                          data-type="swap"
+                          :data-row_index="rowIndex"
+                          :data-col_index="colIndex"
+                          :data-min_span="el.minSpan"
+                          :data-el_id="el.id"
+                          :data-row_free_space="row.getFreeSpace()"
+                          :class="{
+                            active:
+                              page.editingElement &&
+                              page.editingElement.id === el.id,
+                            swap:
+                              swapingComponentInfo &&
+                              swapingComponentInfo.id !== el.id
+                          }"
+                        >
+                          <AjaxLoading>
+                            <component
+                              :is="pathToComp[el.path].ctor"
+                              v-bind="el.props"
+                            />
+                          </AjaxLoading>
+                          <OperateList
+                            :layout="asideLayout"
+                            @click="
+                              handleComponentOperate(...arguments, row, el)
+                            "
                           />
-                        </AjaxLoading>
-                        <OperateList
-                          :layout="asideLayout"
-                          @click="handleComponentOperate(...arguments, row, el)"
-                        />
-                        <IconFont type="jiaohuan" />
-                      </CatchEvents>
-                    </div>
-                    <div
-                      v-if="row.getFreeSpace()"
-                      :key="`drop-${row.id}`"
-                      class="col drop-section"
-                      :class="{
-                        show:
-                          dragingComponent &&
-                          row.getFreeSpace() >= dragingComponent.minSpan
-                      }"
-                      :data-row_index="rowIndex"
-                      @drop="onDropEvent('drop', $event)"
-                      @dragover="onDropEvent('dragover', $event)"
-                      @dragenter="onDropEvent('dragenter', $event)"
-                      @dragleave="onDropEvent('dragleave', $event)"
-                    >
-                      <i class="el-icon-plus"></i>
+                          <IconFont type="jiaohuan" />
+                        </CatchEvents>
+                      </transition>
                     </div>
                   </transition-group>
                 </Interact>
-              </div>
-              <div
-                ref="rowDropDom"
-                key="row-drop-section"
-                class="row drop-section"
-                :class="{
-                  show: dragingComponent
-                }"
-                :data-row_index="page.rows.length"
-                @drop="onDropEvent('drop', $event)"
-                @dragover="onDropEvent('dragover', $event)"
-                @dragenter="onDropEvent('dragenter', $event)"
-                @dragleave="onDropEvent('dragleave', $event)"
-              >
-                <i class="el-icon-plus"></i>
               </div>
             </transition-group>
           </div>
@@ -226,7 +212,7 @@ import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
-import { readonly, onceEventListener, noop } from '@/kd/utils'
+import { readonly } from '@/kd/utils'
 
 /**
  *   @desc 编辑区
@@ -310,14 +296,15 @@ export default {
       }
       this.componentList = res
     },
-    addComponent(component, rowIndex = -1, dropDom) {
+    addComponent(component, rowIndex = -1) {
+      // > -1 代表是拖拽触发
+      const isDragEvent = rowIndex > -1
       if (!component.draggable) return // 阻止点击事件触发
-
+      // 拖拽配置
       const dragConfig = this.pathToComp[component.path].dragConfig
       if (dragConfig) {
         const { counter, layouts, dropRowIndx } = this.page.getLayout(rowIndex)
-
-        if (rowIndex > -1) {
+        if (isDragEvent) {
           if (
             dragConfig.onDrop?.call(readonly(this), {
               counter,
@@ -328,39 +315,33 @@ export default {
             return
           }
         }
-
+        // max 监测
         if (dragConfig.max) {
           const count = counter[component.name] || 0
           count + 1 >= dragConfig.max && (component.draggable = false)
         }
       }
 
-      let element = null
-      if (rowIndex > -1) {
+      if (isDragEvent) {
         // 拖拽触发
         const row = this.page.rows[rowIndex]
-        if (row) {
-          onceEventListener(dropDom, 'transitionend', () => {
-            this.page.setEditingElement(row.addElements(component)[0])
-          })
-        } else {
-          element = this.page.addRows({
-            elements: [component]
-          })[0].elements[0]
-        }
+        this.page.setEditingElement(row.replaceDropPlaceholder(component))
       } else {
         // 点击触发
-        element = this.page.addRows({
-          elements: [component]
-        })[0].elements[0]
-        onceEventListener(this.$refs.rowDropDom, 'transitionend', function() {
-          this.scrollIntoView({
+        this.page.setEditingElement(
+          this.page.addRows({
+            elements: [component]
+          })[0].elements[0]
+        )
+        setTimeout(() => {
+          // 滚动到底部
+          const [{ $el }] = this.$refs.lastRow
+          $el.scrollIntoView({
             behavior: 'smooth',
             block: 'end'
           })
         })
       }
-      element && this.page.setEditingElement(element)
     },
     onDropEvent(type, e) {
       if (!this.dropHandler) {
@@ -371,10 +352,7 @@ export default {
             dropDom.classList.remove('enter')
             if (this.dragingComponent) {
               const { row_index: rowIndex } = dropDom.dataset
-              // dropDom.addEventListener('transitionend', () => {
-              //   debugger
-              // })
-              this.addComponent(this.dragingComponent, rowIndex, dropDom)
+              this.addComponent(this.dragingComponent, rowIndex)
             }
           },
           dragover: e => {
@@ -420,17 +398,12 @@ export default {
             if (this.swapHandler.canDrop(e.currentTarget.dataset)) {
               const { rowIndex, colIndex } = this.swapingComponentInfo
               const { row_index: ri, col_index: ci } = e.currentTarget.dataset
-              const transitionEnd = this.page.swapElement({
+              this.page.swapElement({
                 formRowIndex: +rowIndex,
                 formColIndex: +colIndex,
                 toRowIndex: +ri,
                 toColIndex: +ci
               })
-              onceEventListener(
-                e.currentTarget,
-                'transitionend',
-                transitionEnd || noop
-              )
             }
           },
           dragover: e => {
@@ -570,32 +543,15 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 0 dashed rgb(39, 209, 152);
+  border: 2px dashed rgb(39, 209, 152);
   color: rgb(39, 209, 152);
   border-radius: 12px;
   font-size: 40px;
   transition: all $duration;
-  &.row {
-    height: 0;
-    opacity: 0;
-  }
-  &.col {
-    flex: 1;
-    max-width: 0;
-    opacity: 0;
-    height: auto;
-  }
-  &.show {
-    border-width: 2px;
-    &.row {
-      height: 80px;
-      opacity: 1;
-    }
-    &.col {
-      opacity: 1;
-      max-width: inherit;
-    }
-  }
+  flex: 1;
+  opacity: 1;
+  min-height: 80px;
+  height: 100%;
   &.enter {
     color: #fff;
     background-color: rgba(39, 209, 152, 0.5);
@@ -669,7 +625,6 @@ export default {
 
 <style lang="scss">
 .editpage-fc-dialog {
-  --animate-duration: $duration;
   .el-dialog__header,
   .el-dialog__body {
     padding: 0;
