@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export type RootStore = Store<RootState>
 interface RootState {
   project: typeof project.state
+  theme: typeof theme.state
 }
 const store = new Vuex.Store<RootState>({
   state: {} as RootState,

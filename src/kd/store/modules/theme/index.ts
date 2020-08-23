@@ -15,7 +15,7 @@ interface Mutation {
 }
 const state: State = {
   themeColor,
-  duration
+  duration: parseFloat(duration) * 1000 // 毫秒
 }
 const mutations: Mutation = {
   SET_STATE(state, payload) {

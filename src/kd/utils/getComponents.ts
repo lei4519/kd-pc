@@ -61,7 +61,7 @@ function createComponentList(modules: RC): ComponentList {
   return modules.keys().reduce((compInfo, item) => {
     // 以 . 开头的文件不予处理
     if (/\/\.(.*?)\.vue$/.test(item)) return compInfo
-    // -editor.vue文件 由getEditorProps 函数处理
+    // -editor.vue文件 添加map 供后续使用
     if (/-editor\.vue$/.test(item)) {
       addEditMap(item, modules(item).default)
       return compInfo

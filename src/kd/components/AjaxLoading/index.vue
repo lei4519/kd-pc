@@ -38,7 +38,7 @@ export default {
   },
   data() {
     return {
-      loadingStatus: 'close'
+      loadingStatus: 'open'
     }
   },
   inject: {
@@ -47,6 +47,7 @@ export default {
     }
   },
   mounted() {
+    window.load = this
     if (!this.getData && !this.ajaxLoadingGroup.getData) {
       if (!this.$slots.default) {
         return console.error(
@@ -123,30 +124,31 @@ export default {
         }
       },
       [
-        ...(this.$slots.default || []),
-        c(
-          'transition',
-          {
-            props: {
-              'enter-active-class': 'animate__animated animate__fadeIn',
-              'leave-active-class': 'animate__animated animate__fadeOut'
-            }
-          },
-          [
-            this.loadingStatus === 'open'
-              ? c('Loading')
-              : this.loadingStatus === 'error'
-              ? c('div', { class: 'ajax-loading__error' }, [
-                  c('span', {
-                    class: 'el-icon-refresh',
-                    on: {
-                      click: this.refresh
-                    }
-                  })
-                ])
-              : c(null)
-          ]
-        )
+        ...(this.$slots.default || [])
+        // c(
+        //   'transition',
+        //   {
+        //     props: {
+        //       duration: 10000,
+        //       'enter-active-class': 'animate__animated animate__fadeIn',
+        //       'leave-active-class': 'animate__animated animate__fadeOut'
+        //     }
+        //   },
+        //   [
+        //     this.loadingStatus === 'open'
+        //       ? c('Loading')
+        //       : this.loadingStatus === 'error'
+        //       ? c('div', { class: 'ajax-loading__error' }, [
+        //           c('span', {
+        //             class: 'el-icon-refresh',
+        //             on: {
+        //               click: this.refresh
+        //             }
+        //           })
+        //         ])
+        //       : c(null)
+        //   ]
+        // )
       ]
     )
   }
@@ -172,9 +174,9 @@ export default {
   background-color: hsla(0, 0%, 100%, 0.9);
   .el-icon-refresh {
     font-size: 50px;
-    color: #409eff;
+    color: $theme-color;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all $duration;
     &:hover {
       transform: scale(1.1) rotate(180deg);
     }

@@ -1,10 +1,11 @@
 <template>
   <div class="loading-wrapper">
     <div
+      v-if="classMap[mode]"
       :class="`loading-item sk-${mode}`"
       :style="{
         '--sk-size': size,
-        '--sk-color': color
+        '--sk-color': color || defaultColor
       }"
     >
       <div
@@ -35,12 +36,12 @@ export default {
     },
     color: {
       type: String,
-      // FIXME CSS
-      default: '#409eff'
+      default: ''
     }
   },
   data() {
     return {
+      defaultColor: this.$store.state.theme.themeColor,
       classMap: {
         chase: {
           childClass: 'dot',

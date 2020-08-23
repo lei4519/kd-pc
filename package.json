@@ -15,15 +15,18 @@
     "element-ui": "^2.13.2",
     "interactjs": "^1.9.20",
     "lodash": "^4.17.19",
+    "ramda": "^0.27.1",
     "spinkit": "^2.0.1",
     "uuid": "^8.2.0",
     "vue": "^2.6.11",
+    "vue-cropper": "^0.5.5",
     "vue-router": "^3.4.3",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@interactjs/types": "^1.9.20",
     "@types/lodash": "^4.14.158",
+    "@types/ramda": "^0.27.14",
     "@types/uuid": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",

@@ -10,7 +10,16 @@
     }
     .el-form-item__content {
       flex: 1;
+      display: flex;
       align-items: center;
+      > * {
+        flex: 1;
+      }
     }
   }
+}
+.el-dialog__header,
+.el-dialog__body,
+.el-dialog__footer {
+  padding: 16px;
 }

@@ -326,7 +326,7 @@ $aside_width: 200px;
         font-size: 26px;
         color: #fff;
         cursor: pointer;
-        transition: scale 0.3s;
+        transition: scale $duration;
         &:hover {
           transform: scale(1.2);
         }

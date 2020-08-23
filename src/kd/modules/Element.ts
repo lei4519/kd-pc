@@ -1,6 +1,7 @@
-import { EditorSection } from '../types/editor-props'
+import { EditorSection, EditorSectionProps } from '../types/editor-props'
 import { genUUID, readonly } from '../utils'
 import { cloneDeep } from 'lodash'
+import { compose } from 'ramda'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
 import Vue from 'vue'
@@ -152,7 +153,7 @@ export class ColElement {
       this.props,
       '组件 editorProps 方法参数：props，不允许进行赋值操作！'
     )
-    return cloneDeep([...pathToComp[this.path].editorProps(props)])
+    return compose(cloneDeep, pathToComp[this.path].editorProps)(props)
   }
   setProps(props: object) {
     Object.entries(props).forEach(([key, val]) => {

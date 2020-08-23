@@ -4,6 +4,7 @@
       v-for="(item, i) in list"
       :key="i"
       :prop="item.prop"
+      :class="{ hasLabel: item.label }"
       v-bind="item.formItemProps"
     >
       <span slot="label" v-if="item.label || item.tips">
@@ -38,7 +39,8 @@
       <el-input
         v-if="item.type === 'input'"
         v-model="form[item.prop]"
-        @input="setElementProps(i, item.prop, ...arguments)"
+        v-bind="item.formCompProps"
+        @input="debounceSet(i, item.prop, ...arguments)"
       >
       </el-input>
       <div class="dataSource" v-else-if="item.type === 'dataSource'">
@@ -55,24 +57,53 @@
         v-else-if="item.type === 'inputNumber'"
         controls-position="right"
         v-model="form[item.prop]"
+        v-bind="item.formCompProps"
         @input="setElementProps(i, item.prop, ...arguments)"
       >
       </el-input-number>
+      <el-input
+        v-else-if="item.type === 'selectInput'"
+        v-model="form[item.inputProp]"
+        v-bind="item.formCompProps ? item.formCompProps.inputProps || {} : {}"
+        @input="debounceSet(i, item.inputProp, ...arguments)"
+      >
+        <el-select
+          slot="prepend"
+          style="width: 80px"
+          v-model="form[item.selectProp]"
+          v-bind="
+            item.formCompProps ? item.formCompProps.selectProps || {} : {}
+          "
+          @change="setElementProps(i, item.selectProp, ...arguments)"
+        >
+          <el-option
+            v-for="opt in item.options"
+            :key="opt.value"
+            :label="opt.label"
+            v-bind="opt.props"
+            v-model="opt.value"
+          >
+          </el-option>
+        </el-select>
+      </el-input>
       <el-radio-group
         v-else-if="item.type === 'radio'"
         v-model="form[item.prop]"
+        v-bind="item.formCompProps"
         @change="setElementProps(i, item.prop, ...arguments)"
       >
         <el-radio
           v-for="opt in item.options"
           :key="opt.value"
           :label="opt.value"
+          v-bind="opt.props"
           >{{ opt.label }}</el-radio
         >
       </el-radio-group>
       <el-select
         v-else-if="item.type === 'select'"
         v-model="form[item.prop]"
+        v-bind="item.formCompProps"
         @change="setElementProps(i, item.prop, ...arguments)"
       >
         <el-option
@@ -80,12 +111,14 @@
           :key="opt.value"
           :label="opt.label"
           :value="opt.value"
+          v-bind="opt.props"
         >
         </el-option>
       </el-select>
       <el-switch
         v-else-if="item.type === 'switch'"
         v-model="form[item.prop]"
+        v-bind="item.formCompProps"
         @change="setElementProps(i, item.prop, ...arguments)"
       >
       </el-switch>
@@ -96,8 +129,20 @@
         @change="setElementProps(i, item.prop, ...arguments)"
       >
       </el-slider>
+      <UploadImg
+        v-else-if="item.type === 'uploadImg'"
+        v-model="form[item.prop]"
+        v-bind="item.formCompProps"
+        @change="setElementProps(i, item.prop, ...arguments)"
+      />
+      <el-color-picker
+        v-else-if="item.type === 'colorPicker'"
+        v-model="form[item.prop]"
+        v-bind="item.formCompProps"
+        @change="setElementProps(i, item.prop, ...arguments)"
+      ></el-color-picker>
       <component
-        v-else-if="item.custom"
+        v-else-if="item.type === 'customEditor'"
         :is="getEditorComponent(item, element)"
         v-model="form[item.prop]"
         @change="setElementProps(i, item.prop, ...arguments)"
@@ -108,12 +153,16 @@
 
 <script>
 import Expand from './Expand'
+import UploadImg from '@/kd/components/UploadImg'
 import { getEditorComponent } from '@/kd/utils/getComponents'
+import { debounce } from 'lodash'
+import { readonly } from '@/kd/utils'
 
 export default {
   name: 'EditPropForm',
   components: {
-    Expand
+    Expand,
+    UploadImg
   },
   props: {
     list: {
@@ -143,22 +192,62 @@ export default {
     initForm() {
       // 受控表单 需要以下处理
       this.form = this.list.reduce(
-        (form, { prop, defaultValue }) => {
-          form[prop] = this.element.props[prop] || defaultValue
-          // 控制dialog显示
-          this.$set(this.dialogVisibles, prop, false)
+        (
+          form,
+          {
+            type,
+            prop,
+            inputProp,
+            selectProp,
+            defaultValue,
+            inputDefaultValue,
+            selectDefaultValue
+          }
+        ) => {
+          if (type === 'selectInput') {
+            form[inputProp] = this.element.props[inputProp] || inputDefaultValue
+            this.$set(this.dialogVisibles, inputProp, false)
+            form[selectProp] =
+              this.element.props[selectProp] || selectDefaultValue
+            this.$set(this.dialogVisibles, selectProp, false)
+          } else {
+            form[prop] = this.element.props[prop] || defaultValue
+            // 控制dialog显示
+            this.$set(this.dialogVisibles, prop, false)
+          }
           return form
         },
-        { dataSourceType: 1 }
+        {}
       )
     },
     showDialog(prop) {
       this.dialogVisibles[prop] = true
     },
-    setElementProps(index, prop, value) {
+    debounceSet: debounce(function(...args) {
+      this.setElementProps(...args)
+    }, 300),
+    setProps(prop, value) {
       this.element.setProps({
         [prop]: value
       })
+    },
+    setElementProps(index, prop, value) {
+      const item = this.list[index]
+      if (item.onChange) {
+        let changeSelf = false
+        const setProps = (p, v) => {
+          if (p === prop) {
+            changeSelf = true
+          }
+          // 配置区同步修改的值
+          this.form[p] = v
+          this.setProps(p, v)
+        }
+        item.onChange(setProps, value, readonly(this.element.props), prop)
+        // 如果组件调用setProps改了自身的值，那下方就不需要再重复调用
+        if (changeSelf) return
+      }
+      this.setProps(prop, value)
     }
   }
 }
@@ -170,6 +259,14 @@ export default {
     margin: 0;
     + .el-form-item {
       margin-top: 8px;
+    }
+    .el-form-item__label {
+      flex: 0 0 0;
+    }
+    &.hasLabel {
+      .el-form-item__label {
+        flex: 0 0 90px;
+      }
     }
     .el-form-item__content {
       .el-select {

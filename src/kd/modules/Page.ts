@@ -1,5 +1,6 @@
 import { Menu } from './Menu'
 import { Row, RowProps, ColElement } from './Element'
+import store from '@/kd/store'
 let id = 0
 interface Permission {
   name: string
@@ -88,11 +89,11 @@ export class Page implements PageProps {
     } else {
       const formEl: ColElement = formElements.splice(formColIndex, 1)[0]
       const toEl: ColElement = toElements.splice(toColIndex, 1)[0]
+      // 等待删除元素动画结束后再添加新元素，不然元素之间会冲突导致换行
       setTimeout(() => {
         formElements.splice(formColIndex, 0, toEl)
         toElements.splice(toColIndex, 0, formEl)
-        // FIXME css 动画变量
-      }, 300)
+      }, store.state.theme.duration)
     }
   }
   getLayout(dropRowIndx: number) {

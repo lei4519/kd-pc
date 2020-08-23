@@ -2,7 +2,7 @@
   <Interact
     :edges="[asideLayout === 'left' ? 'right' : 'left']"
     :w="editPageAsideWidth"
-    :maxWidth="500"
+    :maxWidth="600"
     :minWidth="200"
     @resizeEnd="onResizeEnd"
     v-if="page"
@@ -26,9 +26,10 @@
               class="item"
               effect="dark"
               :content="
-                `当前页面只允许放置 ${
-                  pathToComp[component.path].dragConfig.max
-                } 个${component.zhName}`
+                `当前页面只允许放置 ${pathToComp[component.path].dragConfig &&
+                  pathToComp[component.path].dragConfig.max} 个${
+                  component.zhName
+                }`
               "
               :disabled="component.draggable"
               placement="top"

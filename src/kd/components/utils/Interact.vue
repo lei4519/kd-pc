@@ -150,13 +150,13 @@ export default {
 <style lang="scss" scoped>
 .vdr {
   position: relative;
-  transition: outline, padding 0.3s;
+  transition: outline $duration;
   outline: 2px solid transparent;
   overflow: hidden;
   cursor: auto !important;
   touch-action: none;
   &:hover {
-    outline-color: #409eff;
+    outline-color: $theme-color;
     .handle {
       opacity: 1;
     }

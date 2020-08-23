@@ -147,13 +147,13 @@ export default {
     max: 4,
     onDrop({ layouts, dropRowIndx }) {
       const dropRow = layouts[dropRowIndx]
-      if (
-        dropRow &&
-        dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
-      ) {
-        this.$message.error('每行内只能放置两个 Table 组件')
-        return false
-      }
+      // if (
+      //   dropRow &&
+      //   dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
+      // ) {
+      //   this.$message.error('每行内只能放置两个 Table 组件')
+      //   return false
+      // }
     }
   },
   editorProps: () => {
@@ -305,6 +305,16 @@ export default {
             label: '下载',
             prop: 'download',
             type: 'switch'
+          },
+          {
+            label: '颜色',
+            prop: 'color',
+            type: 'colorPicker'
+          },
+          {
+            label: '图片上传',
+            prop: 'src',
+            type: 'uploadImg'
           }
         ]
       },
@@ -312,7 +322,7 @@ export default {
         title: '列设置 (自定义渲染示例)',
         props: [
           {
-            custom: true,
+            type: 'customEditor',
             prop: 'columns',
             componentPath: './columns-editor.vue'
           }
@@ -379,10 +389,8 @@ export default {
     fetchData(params = {}) {
       if (this.buildMode && !this.url) {
         return new Promise(resolve => {
-          setTimeout(() => {
-            this.fillMockData()
-            resolve()
-          }, 1500)
+          this.fillMockData()
+          resolve()
         })
       } else if (this.url) {
         params = {

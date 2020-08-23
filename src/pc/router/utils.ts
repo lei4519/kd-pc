@@ -93,6 +93,7 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
         // 浏览器刷新时project为空，重新设置
         const project = JSON.parse(localStorage.getItem('project') || 'null')
         // TEST 测试使用
+        // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
           next(to.path)

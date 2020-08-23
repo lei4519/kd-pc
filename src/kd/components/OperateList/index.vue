@@ -59,7 +59,7 @@ export default {
   position: absolute;
   top: 8px;
   z-index: 9999;
-  transition: all 0.3s;
+  transition: all $duration;
   cursor: pointer;
   .operation {
     $size: 28px;

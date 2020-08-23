@@ -9,6 +9,9 @@
 .csp {
   cursor: pointer;
 }
+.hover-color:hover {
+  color: $theme-color;
+}
 .clearfix::after {
   content: '';
   display: block;

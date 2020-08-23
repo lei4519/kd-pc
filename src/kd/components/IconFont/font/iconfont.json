@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5766905",
+      "name": "右旋转",
+      "font_class": "youxuanzhuan",
+      "unicode": "e6b0",
+      "unicode_decimal": 59056
+    },
+    {
+      "icon_id": "5766911",
+      "name": "左旋转",
+      "font_class": "zuoxuanzhuan",
+      "unicode": "e6b3",
+      "unicode_decimal": 59059
+    },
+    {
+      "icon_id": "9230698",
+      "name": "View",
+      "font_class": "gailan",
+      "unicode": "e917",
+      "unicode_decimal": 59671
+    },
+    {
       "icon_id": "4765837",
       "name": "undo",
       "font_class": "undo",
