@@ -144,7 +144,7 @@ export default {
     }
   },
   dragConfig: {
-    max: 4,
+    max: 100,
     onDrop({ layouts, dropRowIndx }) {
       const dropRow = layouts[dropRowIndx]
       // if (

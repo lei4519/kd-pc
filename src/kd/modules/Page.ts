@@ -89,11 +89,17 @@ export class Page implements PageProps {
     } else {
       const formEl: ColElement = formElements.splice(formColIndex, 1)[0]
       const toEl: ColElement = toElements.splice(toColIndex, 1)[0]
-      // 等待删除元素动画结束后再添加新元素，不然元素之间会冲突导致换行
-      setTimeout(() => {
-        formElements.splice(formColIndex, 0, toEl)
-        toElements.splice(toColIndex, 0, formEl)
-      }, store.state.theme.duration)
+      // 等待删除元素动画结束后再添加新元素，强化过渡效果
+      let transitionEnd
+      new Promise(resolve => {
+        transitionEnd = resolve
+      }).then(() => {
+        setTimeout(() => {
+          formElements.splice(formColIndex, 0, toEl)
+          toElements.splice(toColIndex, 0, formEl)
+        }, store.state.theme.duration)
+      })
+      return transitionEnd
     }
   }
   getLayout(dropRowIndx: number) {

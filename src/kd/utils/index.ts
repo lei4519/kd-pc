@@ -23,3 +23,20 @@ export function readonly(obj: object, tips?: string) {
     return Object.freeze(Object.create(obj))
   }
 }
+/**
+ * @description 执行一次dom监听后，自动解除监听
+ */
+export function onceEventListener<K extends keyof HTMLElementEventMap>(
+  dom: HTMLElement,
+  eventName: K,
+  callback: (ev: HTMLElementEventMap[K]) => any
+) {
+  const handler: (
+    this: HTMLElement,
+    ev: HTMLElementEventMap[K]
+  ) => any = function(ev) {
+    callback.call(this, ev)
+    dom.removeEventListener(eventName, handler)
+  }
+  dom.addEventListener(eventName, handler)
+}

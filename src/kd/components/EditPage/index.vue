@@ -161,7 +161,6 @@
                       :key="`drop-${row.id}`"
                       class="col drop-section"
                       :class="{
-                        'pos-a': dropPosAbs,
                         show:
                           dragingComponent &&
                           row.getFreeSpace() >= dragingComponent.minSpan
@@ -227,7 +226,7 @@ import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
-import { readonly } from '@/kd/utils'
+import { readonly, onceEventListener, noop } from '@/kd/utils'
 
 /**
  *   @desc 编辑区
@@ -267,8 +266,7 @@ export default {
       asideLayout: localStorage.getItem('edit-aside-layout') || 'left',
       activeTab: 'select', // 当前选中的tab
       dragingComponent: null, // 正在从组件列表中拖拽的组件
-      swapingComponentInfo: null, // 正在交换位置的组件
-      dropPosAbs: false // 元素添加和拖放区域提示冲突 以此flag控制动画效果
+      swapingComponentInfo: null // 正在交换位置的组件
     }
   },
   watch: {
@@ -312,7 +310,7 @@ export default {
       }
       this.componentList = res
     },
-    addComponent(component, rowIndex = -1) {
+    addComponent(component, rowIndex = -1, dropDom) {
       if (!component.draggable) return // 阻止点击事件触发
 
       const dragConfig = this.pathToComp[component.path].dragConfig
@@ -342,15 +340,9 @@ export default {
         // 拖拽触发
         const row = this.page.rows[rowIndex]
         if (row) {
-          // 添加元素前先将drop区域变成绝对定位 不然两者会冲突导致换行
-          this.dropPosAbs = true
-          this.$nextTick(() => {
+          onceEventListener(dropDom, 'transitionend', () => {
             this.page.setEditingElement(row.addElements(component)[0])
           })
-          // 动画结束恢复相对定位
-          setTimeout(() => {
-            this.dropPosAbs = false
-          }, this.$store.state.theme.duration)
         } else {
           element = this.page.addRows({
             elements: [component]
@@ -361,12 +353,12 @@ export default {
         element = this.page.addRows({
           elements: [component]
         })[0].elements[0]
-        setTimeout(() => {
-          this.$refs.rowDropDom.scrollIntoView({
+        onceEventListener(this.$refs.rowDropDom, 'transitionend', function() {
+          this.scrollIntoView({
             behavior: 'smooth',
             block: 'end'
           })
-        }, this.$store.state.theme.duration)
+        })
       }
       element && this.page.setEditingElement(element)
     },
@@ -424,16 +416,21 @@ export default {
           },
           drop: e => {
             e.preventDefault()
+            e.currentTarget.classList.remove('enter')
             if (this.swapHandler.canDrop(e.currentTarget.dataset)) {
               const { rowIndex, colIndex } = this.swapingComponentInfo
               const { row_index: ri, col_index: ci } = e.currentTarget.dataset
-              this.page.swapElement({
+              const transitionEnd = this.page.swapElement({
                 formRowIndex: +rowIndex,
                 formColIndex: +colIndex,
                 toRowIndex: +ri,
                 toColIndex: +ci
               })
-              e.currentTarget.classList.remove('enter')
+              onceEventListener(
+                e.currentTarget,
+                'transitionend',
+                transitionEnd || noop
+              )
             }
           },
           dragover: e => {
@@ -819,11 +816,10 @@ export default {
 .fade-enter-active,
 .fade-leave-active,
 .transition-item {
-  transition: all 1s;
+  transition: all $duration;
 }
 .fade-enter,
 .fade-leave-to {
   opacity: 0;
-  transform: scale(0);
 }
 </style>
