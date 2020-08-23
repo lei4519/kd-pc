@@ -1,48 +1,81 @@
 <template>
-  <div>
-    <div class="title">{{ tableTitle }}</div>
+  <div class="clearfix">
+    <div class="title-wrap">
+      <div class="title">
+        <div v-skeleton="{ width: '100px', height: '20px' }">
+          {{ tableTitle }}
+        </div>
+        <div class="desc" v-skeleton="{ width: '300px', height: '20px' }">
+          2020-01-01 ~ 2020-08-22 | 过去 30 天
+        </div>
+      </div>
+      <div class="operate-wrap">
+        <div class="operate-btn-wrap" v-if="operateList.length">
+          <template v-for="(operate, i) in operateList">
+            <Expand
+              :key="i"
+              v-if="operate.render"
+              :render="operate.render"
+              :props="operate"
+            />
+            <el-button
+              v-else
+              v-skeleton
+              type="primary"
+              size="mini"
+              v-bind="operate"
+              @click="operate.handler(operate, i)"
+              :key="i"
+              >{{ operate.label }}</el-button
+            >
+          </template>
+        </div>
+      </div>
+    </div>
     <el-table
+      v-skeleton
       ref="elTable"
       class="table-wrap"
-      size="small"
+      size="mini"
       :class="{ 'cursor-pointer': $attrs['highlight-current-row'] }"
       :data="tableData"
-      fit
-      border
       :stripe="false"
       v-bind="$attrs"
       v-on="{ ...$listeners }"
-      @sort-change="sortChange"
+      @sort-change="onSortChange"
     >
       <el-table-column
-        v-if="showIndex"
+        v-if="showIndex && tableData.length"
         key="index"
         label="序号"
         type="index"
         :width="50"
         :index="index => (currentPage - 1) * pageSize + index + 1"
       />
-      <el-table-column
-        v-for="item in selfColumns"
-        :key="item.prop"
-        v-bind="{ ...item, 'show-overflow-tooltip': true }"
-      />
-      <template v-if="false">
+      <template v-for="item in selfColumns">
         <el-table-column
-          v-if="item.type === 'operate' || item.render"
+          v-if="item.type === 'operate'"
           :key="item.prop"
           v-bind="item"
         >
           <template slot-scope="scope">
-            <ul v-if="item.type === 'operate'" class="operate-column-list">
-              <!-- <el-button
-                  class="operate-column-item"
-                  v-for="(operate, i) in (typeof item.operateList === 'function' ? item.operateList(scope) : item.operateList)"
-                  :key="i"
-                  :disabled="operate.disabled"
-                  @click="(operate.handler && !operate.disabled) ? operate.handler(scope, item, operate) : noop"
-                  type="text"
-                >{{ operate.label }}</el-button> -->
+            <ul class="operate-column-list">
+              <el-button
+                class="operate-column-item"
+                v-for="(operate, i) in typeof item.operateList === 'function'
+                  ? item.operateList(scope)
+                  : item.operateList"
+                :key="i"
+                :disabled="operate.disabled"
+                size="mini"
+                @click="
+                  operate.handler && !operate.disabled
+                    ? operate.handler(scope, item, operate)
+                    : noop
+                "
+                type="text"
+                >{{ operate.label }}</el-button
+              >
               <li
                 :class="
                   `operate-column-item ${
@@ -64,11 +97,19 @@
                 {{ operate.label }}
               </li>
             </ul>
-            <Expand v-else :render="item.render" :props="scope" />
           </template>
         </el-table-column>
         <el-table-column
-          v-else-if="item.renderHeader"
+          v-else-if="item.type === 'render'"
+          :key="item.prop"
+          v-bind="item"
+        >
+          <template slot-scope="scope">
+            <Expand :render="item.render" :props="scope" />
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-else-if="item.type === 'renderHeader'"
           :key="item.prop"
           v-bind="item"
         >
@@ -78,8 +119,10 @@
         </el-table-column>
         <el-table-column v-else :key="item.prop" v-bind="item" />
       </template>
+      <span slot="empty">{{ noDataText }}</span>
     </el-table>
     <el-pagination
+      v-skeleton="{ width: '100px' }"
       v-if="showPage"
       class="table-pagination"
       layout="prev, pager, next"
@@ -97,66 +140,68 @@
 </template>
 
 <script>
+import { setTimeoutResolve } from '@/kd/utils'
 export default {
   name: 'Table',
   zhName: '表格组件',
   iconClass: 'biaodanzujian-biaoge',
   minSpan: 8,
   props: {
-    columns: {
-      type: Array,
-      default() {
-        return [
-          {
-            label: '字段1',
-            prop: 'asdf'
-          },
-          {
-            label: '字段2',
-            prop: 'dfh'
-          },
-          {
-            label: '字段3',
-            prop: 'ghk'
-          }
-        ]
-      }
+    url: {
+      type: String,
+      default: ''
     },
     tableTitle: {
       type: String,
       default: '列表'
     },
+    emptyText: {
+      type: String,
+      default: '暂无数据'
+    },
+    showIndex: {
+      type: Boolean,
+      default: true
+    },
     showPage: {
       type: Boolean,
       default: true
     },
-    showIndex: {
-      type: Boolean,
-      default: false
-    },
-    url: {
-      type: String,
-      default: ''
+    pageSize: {
+      type: Number,
+      default: 20
     },
     download: {
       type: Boolean,
-      default: false
+      default: true
+    },
+    operateList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    mergeCol: {
+      type: Object,
+      default() {
+        return {}
+      }
     }
   },
   dragConfig: {
     max: 100,
     onDrop({ layouts, dropRowIndx }) {
       const dropRow = layouts[dropRowIndx]
-      // if (
-      //   dropRow &&
-      //   dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
-      // ) {
-      //   this.$message.error('每行内只能放置两个 Table 组件')
-      //   return false
-      // }
+      if (
+        dropRow &&
+        dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
+      ) {
+        this.$message.error('每行内只能放置两个 Table 组件')
+        return false
+      }
     }
   },
-  editorProps: () => {
+  editorProps() {
     return [
       {
         title: '表格配置',
@@ -219,7 +264,8 @@ export default {
                           {
                             prop: 'columns',
                             type: 'array - 数组',
-                            desc: '表头配置',
+                            desc:
+                              '表头配置, label，prop必须返回。其他属性也可在页面中进行可视化编辑',
                             children: [
                               {
                                 prop: 'label',
@@ -230,6 +276,23 @@ export default {
                                 prop: 'prop',
                                 type: 'string - 字符串',
                                 desc: '列内容的字段名'
+                              },
+                              {
+                                prop: 'sortable',
+                                type: 'boolean - 布尔值',
+                                desc:
+                                  '指定当前字段为排序字段，发送请求时参数为 sort: "prop:ascending"'
+                              },
+                              {
+                                prop: 'defaultSort',
+                                type: '"ascending" | "descending"',
+                                desc:
+                                  '如果指定了此属性则会将当前字段作为列表默认排序字段，如果指定多个则只会生效遍历中遇到的第一个。'
+                              },
+                              {
+                                prop: 'align',
+                                type: '"left" | "right" ｜ "center"',
+                                desc: '列文字对齐方式'
                               },
                               {
                                 prop: 'fixed',
@@ -246,38 +309,7 @@ export default {
                         ]
                       }
                     ]}
-                    code={{
-                      code: 0,
-                      pageSize: 20,
-                      page: 1,
-                      total: 100,
-                      data: {
-                        columns: [
-                          {
-                            label: '姓名',
-                            prop: 'name'
-                          },
-                          {
-                            label: '年龄',
-                            prop: 'age'
-                          }
-                        ],
-                        data: [
-                          {
-                            name: '张三',
-                            age: 20
-                          },
-                          {
-                            name: '李四',
-                            age: 22
-                          },
-                          {
-                            name: '王五',
-                            age: 24
-                          }
-                        ]
-                      }
-                    }}
+                    code={this.methods.genMockData(true)}
                   />
                 </div>
               )
@@ -287,10 +319,16 @@ export default {
           },
           {
             label: '标题',
-            tips: 'tips 值：String类型 使用el-tooltip渲染',
             prop: 'tableTitle',
             type: 'input'
           },
+          {
+            label: '表格提示',
+            tips: '表格数据为空时展示',
+            prop: 'emptyText',
+            type: 'input'
+          },
+
           {
             label: '分页',
             prop: 'showPage',
@@ -305,21 +343,11 @@ export default {
             label: '下载',
             prop: 'download',
             type: 'switch'
-          },
-          {
-            label: '颜色',
-            prop: 'color',
-            type: 'colorPicker'
-          },
-          {
-            label: '图片上传',
-            prop: 'src',
-            type: 'uploadImg'
           }
         ]
       },
       {
-        title: '列设置 (自定义渲染示例)',
+        title: '列数据设置',
         props: [
           {
             type: 'customEditor',
@@ -336,160 +364,184 @@ export default {
       selfColumns: this.columns,
       tableData: [],
       total: 0,
-      pageSize: 20,
-      currentPage: 1
+      currentPage: 1,
+      defaultSort: null,
+      noDataText: ''
     }
   },
   watch: {
-    columns(list) {
-      this.selfColumns = list
-      this.fillMockData()
+    download(v) {
+      if (v) {
+        this.operateList.push({
+          type: 'download',
+          label: '下载',
+          icon: 'el-icon-download',
+          handler: () => {
+            this.fetchData({ down: 1 })
+          }
+        })
+      } else {
+        this.operateList.splice(
+          this.operateList.findIndex(({ type }) => type === 'download'),
+          1
+        )
+      }
     }
   },
   created() {
     this._params = {}
-    // this.processOptions()
+    this.processOptions()
+    this.genMockData()
   },
   methods: {
-    fillMockData() {
-      const data = this.selfColumns.reduce((obj, item) => {
-        obj[item.prop] = 'Mock数据'
-        return obj
-      }, {})
-      this.tableData = Array(5).fill(data)
-    },
     processOptions() {
-      // this.selfColumns.forEach(item => {
-      //   if (item.sortable && !item['sort-orders']) {
-      //     item['sort-orders'] = ['ascending', 'descending']
-      //   }
-      // })
-      // if (this.download) {
-      //   this.operateList.push({
-      //     label: '下载',
-      //     icon: 'el-icon-download',
-      //     handler: () => {
-      //       this.fetchData({ down: 1 })
-      //     }
-      //   })
-      // }
+      if (this.download && this.operateList.every(o => o.type !== 'download')) {
+        this.operateList.push({
+          type: 'download',
+          label: '下载',
+          icon: 'el-icon-download',
+          handler: () => {
+            this.fetchData({ down: 1 })
+          }
+        })
+      }
     },
-    sortChange({ prop, order }) {
-      if (order) {
-        const map = {
-          descending: 'desc',
-          ascending: 'asc'
+    genMockData(syncRetrueData = false) {
+      const res = {
+        code: 0,
+        pageSize: 5,
+        page: 1,
+        total: 5,
+        data: {
+          columns: [
+            {
+              label: '城市',
+              prop: 'city',
+              align: 'left'
+            },
+            {
+              label: 'PV',
+              prop: 'pv',
+              sortable: 1,
+              defaultSort: 'ascending',
+              align: 'right'
+            },
+            {
+              label: 'UV',
+              prop: 'uv',
+              sortable: 1,
+              align: 'right'
+            },
+            {
+              label: '线索量',
+              prop: 'xs',
+              sortable: 1,
+              align: 'right'
+            },
+            {
+              label: '发文量',
+              prop: 'fw',
+              sortable: 1,
+              align: 'right'
+            },
+            {
+              label: '曝光量',
+              prop: 'bg',
+              sortable: 1,
+              align: 'right'
+            }
+          ],
+          data:
+            [] ||
+            Array(5).fill({
+              city: '北京',
+              pv: (Math.random() * 1000) | 0,
+              uv: (Math.random() * 1000) | 0,
+              xs: (Math.random() * 1000) | 0,
+              fw: (Math.random() * 1000) | 0,
+              bg: (Math.random() * 1000) | 0
+            })
         }
-        this._params.sort = `${prop}:${map[order]}`
+      }
+      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+    },
+    onSortChange({ prop, order }) {
+      // 可能是设置 defaultSort 时触发的
+      const { prop: dProp, order: dOrder } = this.defaultSort
+      if (dProp === prop && dOrder === order) return
+      if (order) {
+        this._params.sort = `${prop}:${order}`
       } else {
-        delete this._params.sort
+        Reflect.deleteProperty(this._params, 'sort')
       }
       this.fetchData()
     },
     fetchData(params = {}) {
-      if (this.buildMode && !this.url) {
-        return new Promise(resolve => {
-          this.fillMockData()
-          resolve()
-        })
-      } else if (this.url) {
-        params = {
-          ...this._params,
-          ...this.params,
-          ...params,
-          ...(this.showPage
-            ? {
-                pageSize: this.pageSize,
-                page: this.currentPage
-              }
-            : {})
-        }
-        this.$emit('before-fetch', params)
-        if (params.down) {
-          params.page = 1
-          return this.$http({
-            url: this.url,
-            method: 'post',
-            params,
-            responseType: 'blob'
-          }).then(({ data: blob, headers }) => {
-            const url = window.URL.createObjectURL(
-              new Blob([blob], { type: blob.type })
-            )
-            const a = this.$refs.downLoadRef
-            a.href = url
-            const filename =
-              /filename="(.*?)"/g.exec(headers['content-disposition'])?.[1] ||
-              this.tableTitle + '.xlsx'
-            a.download = decodeURIComponent(filename)
-            a.click()
-          })
-        }
-        return this.$ajax({
+      params = {
+        ...params,
+        ...this._params,
+        ...(this.showPage
+          ? {
+              pageSize: this.pageSize,
+              page: this.currentPage
+            }
+          : {})
+      }
+      if (params.down) {
+        params.page = 1
+        return this.$http({
           url: this.url,
           method: 'post',
-          params
+          params,
+          responseType: 'blob'
+        }).then(({ data: blob, headers }) => {
+          const url = window.URL.createObjectURL(
+            new Blob([blob], { type: blob.type })
+          )
+          const a = this.$refs.downLoadRef
+          a.href = url
+          const filename =
+            /filename="(.*?)"/g.exec(headers['content-disposition'])?.[1] ||
+            this.tableTitle + '.xlsx'
+          a.download = decodeURIComponent(filename)
+          a.click()
         })
-          .then(({ data }) => {
-            if (this.interceptor) {
-              if (typeof this.interceptor.then === 'function') {
-                return this.interceptor(data)
-              } else if (typeof this.interceptor === 'function') {
-                return Promise.resolve(this.interceptor(data))
-              }
-            }
-            return Promise.resolve(data)
-          })
-          .then(data => {
-            if (this.remoteColumns) {
-              this.tableData = data.data
-              this.total = data.count
-              this.selfColumns = Object.entries(data.fields).map(
-                ([prop, label]) => {
-                  const col = {
-                    prop,
-                    label,
-                    ...(this.mergeCol.common || {}),
-                    ...(this.mergeCol[prop] || {})
-                  }
-                  this.processContentType(col)
-                  return col
-                }
-              )
-              if (this.showIndex) {
-                this.selfColumns.unshift({
-                  label: '序号',
-                  type: 'index',
-                  width: 50,
-                  index: index => {
-                    return (this.currentPage - 1) * this.pageSize + index + 1
-                  }
-                })
-              }
-              if (this.mergeCol.operate) {
-                this.selfColumns.push(this.mergeCol.operate)
-              }
-            } else {
-              this.tableData = Array.isArray(data.list)
-                ? data.list
-                : [data.list]
-              this.total = data.total
-            }
-            this.$emit('on-data', data.list, data, params)
-          })
-      } else if (this.data) {
-        if (this.showPage) {
-          this.total = this.data.length
-          const start = (this.currentPage - 1) * this.pageSize
-          const end = this.currentPage * this.pageSize
-          this.tableData = this.data.slice(start, end)
-        } else {
-          this.tableData = this.data
-        }
-        return Promise.resolve()
-      } else {
-        return Promise.resolve()
       }
+      // 搭建模式 + 没有url就模拟数据返回
+      return (this.buildMode && !this.url
+        ? this.genMockData()
+        : this.$ajax({
+            url: this.url,
+            method: 'post',
+            params
+          })
+      ).then(({ data, total }) => {
+        this.selfColumns = data.columns.map(item => {
+          const col = {
+            ...item,
+            ...(this.mergeCol.common || {}),
+            ...(this.mergeCol[item.prop] || {}),
+            showOverflowTooltip: true,
+            maxWidth: 200
+          }
+          if (col.defaultSort && !this.defaultSort) {
+            this.defaultSort = { prop: item.prop, order: col.defaultSort }
+            setTimeout(() => {
+              this.$refs.elTable.store.commit('sort', this.defaultSort)
+            })
+          }
+          if (col.sortable) {
+            col.sortable = 'custom'
+          }
+          return col
+        })
+        if (this.mergeCol.operate) {
+          this.selfColumns.push(this.mergeCol.operate)
+        }
+        this.tableData = data.data
+        this.noDataText = data.data.length ? '' : this.emptyText
+        this.total = total
+      })
     },
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage
@@ -500,19 +552,49 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.title {
-  font-size: 16px;
-  margin-bottom: 8px;
-  font-weight: bold;
+.title-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  .title {
+    font-size: 14px;
+    color: #5f6e82;
+  }
+  .desc {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #8492a6;
+  }
 }
 .table-wrap {
+  color: #475669;
   &.cursor-pointer /deep/ .el-table__body-wrapper {
     cursor: pointer;
   }
+  /deep/ .el-table__header-wrapper {
+    th {
+      background-color: #f5f8fc;
+      color: #1f2d3d;
+      &.is-leaf {
+        border-bottom: none;
+      }
+    }
+    .caret-wrapper {
+      .sort-caret {
+        border-width: 4px;
+        &.ascending {
+          top: 7px;
+        }
+        &.descending {
+          bottom: 9px;
+        }
+      }
+    }
+  }
 }
 .table-pagination {
-  display: flex;
-  justify-content: flex-end;
+  float: right;
   margin-top: 16px;
   color: rgba(0, 0, 0, 0.6);
 }
@@ -521,7 +603,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   * + * {
-    margin-left: 20px;
+    margin-left: 16px;
   }
 }
 .operate-column-list {

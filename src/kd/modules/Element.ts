@@ -1,7 +1,6 @@
 import { EditorSection } from '../types/editor-props'
 import { genUUID, readonly } from '../utils'
 import { cloneDeep } from 'lodash'
-import { compose } from 'ramda'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
 import Vue from 'vue'
@@ -178,7 +177,34 @@ export class ColElement {
       this.props,
       '组件 editorProps 方法参数：props，不允许进行赋值操作！'
     )
-    return compose(cloneDeep, pathToComp[this.path].editorProps)(props)
+    const commonSetting: EditorSection[] = [] || [
+      {
+        title: '通用设置',
+        props: [
+          {
+            label: '加载模式',
+            prop: 'ajaxLoadingMode',
+            type: 'select',
+            defaultValue: 'skeleton',
+            options: [
+              {
+                label: 'loading',
+                value: 'loading'
+              },
+              {
+                label: '骨架屏',
+                value: 'skeleton'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    const com = pathToComp[this.path]
+    return cloneDeep([
+      ...commonSetting,
+      ...com.editorProps.call(com.ctor, props)
+    ])
   }
   setProps(props: object) {
     Object.entries(props).forEach(([key, val]) => {

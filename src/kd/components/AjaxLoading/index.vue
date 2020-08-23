@@ -13,6 +13,7 @@ import Loading from './Loading.vue'
  * @property {} getData 请求方法
  * @property {} once getData 只控制loading状态一次，请求成功后解除其与loading态的关联性
  * @property {} lazy 默认在 mounted 时机进行初始化请求，如果需要改为手动控制请求时机，可以通过此属性控制
+ * @property {} mode loading状态： 骨架屏 或者 loading图。['skeleton', 'loading']
  */
 export default {
   components: {
@@ -34,11 +35,17 @@ export default {
     lazy: {
       type: Boolean,
       default: false
+    },
+    mode: {
+      validator(value) {
+        return ['skeleton', 'loading'].includes(value)
+      },
+      default: 'skeleton'
     }
   },
   data() {
     return {
-      loadingStatus: 'open'
+      loadingStatus: 'close'
     }
   },
   inject: {
@@ -47,7 +54,6 @@ export default {
     }
   },
   mounted() {
-    window.load = this
     if (!this.getData && !this.ajaxLoadingGroup.getData) {
       if (!this.$slots.default) {
         return console.error(
@@ -59,9 +65,6 @@ export default {
       )?.componentInstance
       if (!vm) {
         return
-        // return console.error(
-        //   'ajax-loading组件必须传入getData函数，或者为其子组件设置 fetchData 方法'
-        // )
       }
       // 原始fetchData
       const rawFetchData = (this.$_getData = vm.fetchData)
@@ -109,6 +112,17 @@ export default {
     },
     $_execEffect(status) {
       this.loadingStatus = status
+      if (this.mode === 'skeleton') {
+        if (status === 'open') {
+          document.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
+            el.classList.add('animated')
+          })
+        } else if (status === 'close') {
+          document.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
+            el.classList.remove('animated')
+          })
+        }
+      }
     }
   },
   render(c) {
@@ -124,31 +138,32 @@ export default {
         }
       },
       [
-        ...(this.$slots.default || [])
-        // c(
-        //   'transition',
-        //   {
-        //     props: {
-        //       duration: 10000,
-        //       'enter-active-class': 'animate__animated animate__fadeIn',
-        //       'leave-active-class': 'animate__animated animate__fadeOut'
-        //     }
-        //   },
-        //   [
-        //     this.loadingStatus === 'open'
-        //       ? c('Loading')
-        //       : this.loadingStatus === 'error'
-        //       ? c('div', { class: 'ajax-loading__error' }, [
-        //           c('span', {
-        //             class: 'el-icon-refresh',
-        //             on: {
-        //               click: this.refresh
-        //             }
-        //           })
-        //         ])
-        //       : c(null)
-        //   ]
-        // )
+        ...(this.$slots.default || []),
+        c(
+          'transition',
+          {
+            props: {
+              'enter-active-class':
+                'animate__animated animate__fadeIn animate__faster',
+              'leave-active-class':
+                'animate__animated animate__fadeOut animate__faster'
+            }
+          },
+          [
+            this.loadingStatus === 'open' && this.mode === 'loading'
+              ? c('Loading')
+              : this.loadingStatus === 'error'
+              ? c('div', { class: 'ajax-loading__error' }, [
+                  c('span', {
+                    class: 'el-icon-refresh',
+                    on: {
+                      click: this.refresh
+                    }
+                  })
+                ])
+              : c(null)
+          ]
+        )
       ]
     )
   }
@@ -183,6 +198,36 @@ export default {
     &:active {
       transform: scale(0.9) rotate(180deg);
     }
+  }
+}
+</style>
+
+<style lang="scss">
+.ajax-loading-skeleton {
+  position: relative;
+  &.animated {
+    width: var(--skeleton-width);
+    height: var(--skeleton-height);
+    animation: skeleton-blink 1.5s ease-in-out infinite;
+    &::after {
+      display: block;
+    }
+  }
+  &::after {
+    content: '';
+    display: none;
+    position: absolute;
+    top: -1px;
+    bottom: -1px;
+    left: -1px;
+    right: -1px;
+    z-index: 1;
+    background-color: #f2f3f5;
+  }
+}
+@keyframes skeleton-blink {
+  50% {
+    opacity: 0.6;
   }
 }
 </style>

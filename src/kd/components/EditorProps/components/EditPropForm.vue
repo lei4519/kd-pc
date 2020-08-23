@@ -52,6 +52,14 @@
           v-model="form[item.prop]"
           @change="setElementProps(i, item.prop, ...arguments)"
         ></el-input>
+        <el-tooltip
+          class="csp ml-4 hover-color click-effect"
+          effect="dark"
+          content="发送请求"
+          placement="top"
+        >
+          <IconFont type="zhihang" size="24" @click.native="fetchData" />
+        </el-tooltip>
       </div>
       <el-input-number
         v-else-if="item.type === 'inputNumber'"
@@ -144,6 +152,7 @@
       <component
         v-else-if="item.type === 'customEditor'"
         :is="getEditorComponent(item, element)"
+        :props="readonlyElementProps"
         v-model="form[item.prop]"
         @change="setElementProps(i, item.prop, ...arguments)"
       ></component>
@@ -184,6 +193,11 @@ export default {
       dialogVisibles: {}
     }
   },
+  computed: {
+    readonlyElementProps() {
+      return readonly(this.element.props)
+    }
+  },
   created() {
     this.getEditorComponent = getEditorComponent
     this.initForm()
@@ -214,10 +228,14 @@ export default {
             form[prop] = this.element.props[prop] || defaultValue
             // 控制dialog显示
             this.$set(this.dialogVisibles, prop, false)
+            if (type === 'dataSource') {
+              // 记录一下，发送请求事件中方便校验
+              this.dataSourceProp = prop
+            }
           }
           return form
         },
-        {}
+        { dataSourceType: 1 }
       )
     },
     showDialog(prop) {
@@ -248,6 +266,11 @@ export default {
         if (changeSelf) return
       }
       this.setProps(prop, value)
+    },
+    fetchData() {
+      if (!this.form[this.dataSourceProp])
+        return this.$message.error('请求 URL 不能为空')
+      this.setProps('quickBuildSystemInjectFetchDataFlag', Math.random())
     }
   }
 }

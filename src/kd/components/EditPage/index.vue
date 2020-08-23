@@ -212,7 +212,7 @@ import OperateList from '../OperateList/index'
 import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
-import { readonly } from '@/kd/utils'
+import { readonly, onceEventListener } from '@/kd/utils'
 
 /**
  *   @desc 编辑区
@@ -386,7 +386,8 @@ export default {
               colIndex,
               minSpan,
               freeSpace,
-              id
+              id,
+              el: e.currentTarget
             }
           },
           dragend: () => {
@@ -396,13 +397,39 @@ export default {
             e.preventDefault()
             e.currentTarget.classList.remove('enter')
             if (this.swapHandler.canDrop(e.currentTarget.dataset)) {
-              const { rowIndex, colIndex } = this.swapingComponentInfo
+              const { rowIndex, colIndex, el } = this.swapingComponentInfo
               const { row_index: ri, col_index: ci } = e.currentTarget.dataset
               this.page.swapElement({
                 formRowIndex: +rowIndex,
                 formColIndex: +colIndex,
                 toRowIndex: +ri,
                 toColIndex: +ci
+              })
+              if (ri === rowIndex) return
+              // 跨行添加交换动画效果 children[0] 是因为animate.css 不能同transtion样式共用，子元素没有transition样式
+              // 要交换的元素在上面
+              const isDropElAbove = ri < rowIndex
+              const dropAnimate = [
+                'animate__animated',
+                isDropElAbove ? 'animate__fadeInUp' : 'animate__fadeInDown',
+                'animate__fast'
+              ]
+              e.currentTarget.children[0].classList.add(...dropAnimate)
+              onceEventListener(
+                e.currentTarget.children[0],
+                'animationend',
+                function() {
+                  this.classList.remove(...dropAnimate)
+                }
+              )
+              const dragAnimate = [
+                'animate__animated',
+                isDropElAbove ? 'animate__fadeInDown' : 'animate__fadeInUp',
+                'animate__fast'
+              ]
+              el.children[0].classList.add(...dragAnimate)
+              onceEventListener(el.children[0], 'animationend', function() {
+                this.classList.remove(...dragAnimate)
               })
             }
           },
@@ -608,6 +635,7 @@ export default {
   }
   &.enter::after {
     opacity: 1;
+    z-index: 9999;
   }
   &::after {
     content: '';
@@ -619,6 +647,7 @@ export default {
     background-color: #40a0ff9c;
     opacity: 0;
     transition: all $duration;
+    z-index: -1;
   }
 }
 </style>

@@ -79,6 +79,9 @@ function createComponentList(modules: RC): ComponentList {
           const ctor = modules(item).default
           // {} || Vue.extend({})
           const options = typeof ctor === 'function' ? ctor.options : ctor
+
+          decorationComponent(options)
+
           const {
             name: compName,
             zhName,
@@ -88,6 +91,7 @@ function createComponentList(modules: RC): ComponentList {
             props,
             minSpan = 4
           } = options
+
           addMap(`${path}/${name}`, {
             ctor,
             editorProps,
@@ -174,4 +178,20 @@ export function getEditorComponent(
   }
   const editCompPath = `./${path}/${componentPath}`
   return pathToEditorComponent[editCompPath]
+}
+
+/**
+ * @description 装饰组件对象，方便快搭系统运行
+ */
+function decorationComponent(options: any) {
+  // 添加watch，点击数据源发送请求时执行fetchData方法
+  if (!options.watch) options.watch = {}
+  if (!options.props) options.props = {}
+  options.props.quickBuildSystemInjectFetchDataFlag = {
+    type: Number,
+    default: 0
+  }
+  options.watch.quickBuildSystemInjectFetchDataFlag = function() {
+    this.fetchData?.()
+  }
 }

@@ -74,7 +74,7 @@ interface Options {
 /**
  * @description 自定义渲染配置
  * @property {} componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
- * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取。
+ * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取。组件以props.value接受 指定的prop值，以props.props 接受传入当前组件的所有props值（只读）
  */
 export interface CustomEditor extends FormItem {
   type: 'customEditor'

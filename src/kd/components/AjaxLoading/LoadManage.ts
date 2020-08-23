@@ -48,6 +48,8 @@ export class LoadManage {
         this.execOnceList.delete(getDataFn)
         this.clearEffect(getDataFn)
       }
+    } else if (status === 'error') {
+      this.execingList.delete(getDataFn)
     }
   }
   private _exec(getDataFn: GetDataFn) {

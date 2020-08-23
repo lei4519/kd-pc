@@ -40,3 +40,15 @@ export function onceEventListener<K extends keyof HTMLElementEventMap>(
   }
   dom.addEventListener(eventName, handler)
 }
+/**
+ * @description 返回promise，超时后resolve promise
+ * @param resolveData promise.resolve 的数据
+ * @param timeout 超时时间
+ */
+export function setTimeoutResolve(resolveData: any, timeout: number = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(resolveData)
+    }, timeout)
+  })
+}

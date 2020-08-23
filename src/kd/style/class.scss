@@ -12,6 +12,12 @@
 .hover-color:hover {
   color: $theme-color;
 }
+.click-effect {
+  transition: all $duration;
+  &:active {
+    transform: scale(0.8);
+  }
+}
 .clearfix::after {
   content: '';
   display: block;
