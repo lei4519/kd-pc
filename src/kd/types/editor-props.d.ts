@@ -1,9 +1,8 @@
 /**
  * @description 返回组件的配置项描述
- * @property {} props 传入组件的props对象，可以根据props的变化来返回不同的配置项
- * @waring 传入的props对象没有setter 只能读取值，不能修改值。
+ * @info 函数的this，是页面中渲染组件的实例（只读），可以根据组件值的变化来返回不同的配置项
  */
-export type EditorProps = (props: any) => EditorSection[]
+export type EditorProps = () => EditorSection[]
 /**
  * @description 配置区域分组
  * @property {} title 分组名称
@@ -34,7 +33,7 @@ type RenderExpand = (createElement: CreateElement, props: any) => VNode
  * @property {} label el-formItem label
  * @property {} prop 要修改的props值，可以传入props路径来对数组、对象属性进行修改
  * @example prop: 'array.1' | 'object.src' | 'src'
- * @property {} onChange 上方 prop 值变化时调用，传入（setProps函数，改变的值, 传入组件的props值（只读）, 当前修改的prop），setProps调用需要传入prop路径和值 ，可以通过setProps改变自身值(number 改成 string )或别的prop值。
+ * @property {} onChange 上方 prop 值变化时调用，函数的this，是页面中渲染组件的实例（只读）。传入（setProps函数，改变的值, 当前修改的prop），setProps调用需要传入prop路径和值 ，可以通过setProps改变自身值(number 改成 string )或别的prop值。
  * @example onChange(setProps, value) { setProps('object.1', {}) | setProps('src', 'img.jpg') }
  * @property {} tips 属性相关提示 支持传入文字 或者 render函数; 文字使用el-tooltip渲染，render函数使用 el-dialog 渲染
  * @property {} formItemProps 此属性会作为 el-formItem 的props传入其中
@@ -47,7 +46,6 @@ interface FormItem {
   onChange?: (
     setProps: (prop: string, value: any) => void,
     value: any,
-    props: any,
     prop: any
   ) => void
   tips?:
@@ -74,7 +72,11 @@ interface Options {
 /**
  * @description 自定义渲染配置
  * @property {} componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
- * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取。组件以props.value接受 指定的prop值，以props.props 接受传入当前组件的所有props值（只读）
+ * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取
+ * @property {} component.props.value 接受配置项中指定的prop值
+ * @property {} component.props.vm 当前渲染的组件实例对象（只读）
+ * @property {} component.props.setProps 可以用来改变自身或别的props的函数，调用需要传入prop路径和值
+ * @example this.setProps('city', 'bj')
  */
 export interface CustomEditor extends FormItem {
   type: 'customEditor'

@@ -152,7 +152,8 @@
       <component
         v-else-if="item.type === 'customEditor'"
         :is="getEditorComponent(item, element)"
-        :props="readonlyElementProps"
+        :vm="element.renderComponent"
+        :setProps="setProps"
         v-model="form[item.prop]"
         @change="setElementProps(i, item.prop, ...arguments)"
       ></component>
@@ -164,8 +165,7 @@
 import Expand from './Expand'
 import UploadImg from '@/kd/components/UploadImg'
 import { getEditorComponent } from '@/kd/utils/getComponents'
-import { debounce } from 'lodash'
-import { readonly } from '@/kd/utils'
+import { debounce, cloneDeep } from 'lodash'
 
 export default {
   name: 'EditPropForm',
@@ -191,11 +191,6 @@ export default {
     return {
       form: {},
       dialogVisibles: {}
-    }
-  },
-  computed: {
-    readonlyElementProps() {
-      return readonly(this.element.props)
     }
   },
   created() {
@@ -246,7 +241,7 @@ export default {
     }, 300),
     setProps(prop, value) {
       this.element.setProps({
-        [prop]: value
+        [prop]: cloneDeep(value)
       })
     },
     setElementProps(index, prop, value) {
@@ -261,7 +256,7 @@ export default {
           this.form[p] = v
           this.setProps(p, v)
         }
-        item.onChange(setProps, value, readonly(this.element.props), prop)
+        item.onChange.call(this.element.renderComponent, setProps, value, prop)
         // 如果组件调用setProps改了自身的值，那下方就不需要再重复调用
         if (changeSelf) return
       }

@@ -1,14 +1,20 @@
 <template>
   <div class="columns-editor-wrapper">
-    <el-table :data="value" size="mini">
-      <el-table-column prop="label" label="标题">
+    <el-table :data="vm.selfColumns" size="mini">
+      <el-table-column prop="label" label="标题" width="100px">
         <template slot-scope="scope">
-          <el-input size="mini" v-model="scope.row.label"></el-input>
+          {{ scope.row.label }}
         </template>
       </el-table-column>
-      <el-table-column prop="prop" label="字段">
+      <el-table-column prop="sortable" label="排序">
         <template slot-scope="scope">
-          <el-input size="mini" v-model="scope.row.prop"></el-input>
+          <el-switch
+            v-model="scope.row.sortable"
+            :active-value="'custom'"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >
+          </el-switch>
         </template>
       </el-table-column>
       <el-table-column prop="fixed" label="定位">
@@ -17,7 +23,8 @@
             size="mini"
             v-model="scope.row.fixed"
             clearable
-            @clear="clearFixed(scope)"
+            @change="setProps(scope, ...arguments)"
+            @clear="clearFixed(scope.row.prop)"
           >
             <el-option label="左" value="left"> </el-option>
             <el-option label="右" value="right"> </el-option>
@@ -29,7 +36,7 @@
           <el-select
             size="mini"
             v-model="scope.row.align"
-            @clear="clearFixed(scope)"
+            @clear="clearFixed(scope.row.prop)"
           >
             <el-option label="左" value="left"> </el-option>
             <el-option label="中" value="center"> </el-option>
@@ -37,41 +44,35 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="align" label="宽度">
-        <template slot-scope="scope">
-          <el-input size="mini" v-model="scope.row.width"></el-input>
-        </template>
-      </el-table-column>
     </el-table>
-    <el-button @click="push" class="mt-8">PUSH</el-button>
-    <el-button @click="pop" class="mt-8">POP</el-button>
   </div>
 </template>
 
 <script>
-let id = 0
 export default {
   name: 'ColumnsEditor',
   props: {
     value: {
-      type: Array,
+      type: Object,
       default() {
         return []
+      }
+    },
+    vm: {
+      type: Object,
+      default() {
+        return {}
       }
     }
   },
   methods: {
-    push() {
-      id++
-      this.value.push({ label: '标题' + id, prop: 'prop' + id })
+    setProps({ row: { prop }, column: { property } }, val) {
+      if (!this.value[prop]) this.value[prop] = {}
+      this.value[prop][property] = val
       this.$emit('change', this.value)
     },
-    pop() {
-      this.value.pop()
-      this.$emit('change', this.value)
-    },
-    clearFixed({ $index: i }) {
-      delete this.value[i].fixed
+    clearFixed(prop) {
+      this.value[prop].fixed = void 0
       this.$emit('change', this.value)
     }
   }

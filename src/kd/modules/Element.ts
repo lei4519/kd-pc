@@ -3,7 +3,7 @@ import { genUUID, readonly } from '../utils'
 import { cloneDeep } from 'lodash'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
-import Vue from 'vue'
+import Vue, { Component } from 'vue'
 
 export interface RowProps {
   style?: Partial<CSSStyleDeclaration>
@@ -63,6 +63,7 @@ export class Row {
     Object.entries(source).forEach(([key, val]) => {
       if (key === 'id') return
       if (key === 'parent') return (target.parent = this)
+      if (key === 'renderComponent') return
       ;(target as any)[key] = cloneDeep(val)
     })
     return target
@@ -149,6 +150,7 @@ export interface ColElementProp {
  * @property {} path 组件路径
  * @property {} props 组件的props，组件配置区写入属性的地方
  * @property {} draggable 是否可拖拽
+ * @property {} renderComponent 搭建页面中真实渲染的只读Vue组件实例，传给配置区取值使用
  */
 let componentID = 0
 export class ColElement {
@@ -163,6 +165,7 @@ export class ColElement {
   path: string
   props: any
   draggable = true
+  renderComponent?: Component | null = null
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
     this.zhName = element.zhName || '未命名'
@@ -203,7 +206,7 @@ export class ColElement {
     const com = pathToComp[this.path]
     return cloneDeep([
       ...commonSetting,
-      ...com.editorProps.call(com.ctor, props)
+      ...com.editorProps.call(this.renderComponent)
     ])
   }
   setProps(props: object) {
@@ -212,6 +215,9 @@ export class ColElement {
       // this.props[key] = val
       Vue.set(this.props, key, val)
     })
+  }
+  setRenderComponent(renderComponent: Component) {
+    this.renderComponent = Object.create(renderComponent)
   }
   getStyle(): Partial<CSSStyleDeclaration> {
     return {

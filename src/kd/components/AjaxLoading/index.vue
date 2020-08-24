@@ -114,11 +114,11 @@ export default {
       this.loadingStatus = status
       if (this.mode === 'skeleton') {
         if (status === 'open') {
-          document.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
+          this.$el.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
             el.classList.add('animated')
           })
         } else if (status === 'close') {
-          document.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
+          this.$el.querySelectorAll('.ajax-loading-skeleton').forEach(el => {
             el.classList.remove('animated')
           })
         }

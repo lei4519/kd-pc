@@ -160,6 +160,9 @@
                         >
                           <AjaxLoading>
                             <component
+                              ref="realComponent"
+                              :data-row_index="rowIndex"
+                              :data-col_index="colIndex"
                               :is="pathToComp[el.path].ctor"
                               v-bind="el.props"
                             />
@@ -213,7 +216,6 @@ import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
 import { readonly, onceEventListener } from '@/kd/utils'
-
 /**
  *   @desc 编辑区
  *   @property {} page 当前编辑的页面，Page实例
@@ -257,21 +259,34 @@ export default {
   },
   watch: {
     'page.editingElement'(v) {
-      if (v) {
-        if (this.activeTab === 'select') {
-          this.activeTab = 'setting'
+      // 本次事件循环执行时间太长，切分至下次循环
+      setTimeout(() => {
+        if (v) {
+          if (this.activeTab === 'select') {
+            this.activeTab = 'setting'
+          }
+        } else {
+          if (this.activeTab === 'setting') {
+            this.activeTab = 'select'
+          }
         }
-      } else {
-        if (this.activeTab === 'setting') {
-          this.activeTab = 'select'
-        }
-      }
+      })
     }
   },
   created() {
     this.normalList()
     this.pathToComp = pathToComp
     window.addEventListener('keydown', this.onShortcutKey)
+  },
+  mounted() {
+    // 挂载真实渲染组件实例
+    setTimeout(() => {
+      const { realComponent } = this.$refs
+      realComponent.forEach(com => {
+        const { row_index: ri, col_index: ci } = com.$el.dataset
+        this.page.rows[ri].elements[ci].setRenderComponent(com)
+      })
+    })
   },
   beforeDestroy() {
     window.removeEventListener('keydown', this.onShortcutKey)
@@ -321,27 +336,33 @@ export default {
           count + 1 >= dragConfig.max && (component.draggable = false)
         }
       }
-
+      let newElement
       if (isDragEvent) {
         // 拖拽触发
         const row = this.page.rows[rowIndex]
-        this.page.setEditingElement(row.replaceDropPlaceholder(component))
+        newElement = row.replaceDropPlaceholder(component)
       } else {
         // 点击触发
-        this.page.setEditingElement(
-          this.page.addRows({
-            elements: [component]
-          })[0].elements[0]
-        )
-        setTimeout(() => {
-          // 滚动到底部
-          const [{ $el }] = this.$refs.lastRow
-          $el.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-          })
-        })
+        newElement = this.page.addRows({
+          elements: [component]
+        })[0].elements[0]
       }
+      // 挂载真实渲染组件实例
+      setTimeout(() => {
+        const { realComponent } = this.$refs
+        realComponent[realComponent.length - 1]
+        newElement.setRenderComponent(realComponent[realComponent.length - 1])
+        this.page.setEditingElement(newElement)
+      })
+      // 本次事件循环执行时间太长，切分至下次循环
+      setTimeout(() => {
+        // 滚动到底部
+        const [{ $el }] = this.$refs.lastRow
+        $el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end'
+        })
+      })
     },
     onDropEvent(type, e) {
       if (!this.dropHandler) {

@@ -309,7 +309,7 @@ export default {
                         ]
                       }
                     ]}
-                    code={this.methods.genMockData(true)}
+                    code={this.genMockData(true)}
                   />
                 </div>
               )
@@ -346,22 +346,26 @@ export default {
           }
         ]
       },
-      {
-        title: '列数据设置',
-        props: [
-          {
-            type: 'customEditor',
-            prop: 'columns',
-            componentPath: './columns-editor.vue'
-          }
-        ]
-      }
+      ...(this.selfColumns.length
+        ? [
+            {
+              title: '列数据设置',
+              props: [
+                {
+                  type: 'customEditor',
+                  prop: 'mergeCol',
+                  componentPath: './columns-editor.vue'
+                }
+              ]
+            }
+          ]
+        : [])
     ]
   },
   inject: ['buildMode'],
   data() {
     return {
-      selfColumns: this.columns,
+      selfColumns: [],
       tableData: [],
       total: 0,
       currentPage: 1,
@@ -370,22 +374,38 @@ export default {
     }
   },
   watch: {
+    mergeCol() {
+      this.processMergeCol()
+    },
     download(v) {
-      if (v) {
-        this.operateList.push({
-          type: 'download',
-          label: '下载',
-          icon: 'el-icon-download',
-          handler: () => {
-            this.fetchData({ down: 1 })
+      setTimeout(() => {
+        if (v) {
+          const download = {
+            type: 'download',
+            label: '下载',
+            icon: 'el-icon-download',
+            handler: () => {
+              this.fetchData({ down: 1 })
+            }
           }
-        })
-      } else {
-        this.operateList.splice(
-          this.operateList.findIndex(({ type }) => type === 'download'),
-          1
-        )
-      }
+          const i = this.operateList.findIndex(
+            ({ type }) => type === 'download'
+          )
+          // 交换位置时需要重新渲染
+          if (i !== -1) {
+            this.operateList.splice(i, 1, download)
+          } else {
+            this.operateList.push(download)
+          }
+        } else {
+          const i = this.operateList.findIndex(
+            ({ type }) => type === 'download'
+          )
+          if (i !== -1) {
+            this.operateList.splice(i, 1)
+          }
+        }
+      })
     }
   },
   created() {
@@ -465,6 +485,33 @@ export default {
       }
       return syncRetrueData ? res : setTimeoutResolve(res, 1000)
     },
+    processMergeCol(columns) {
+      columns = columns || this.selfColumns
+      this.selfColumns = columns.map(item => {
+        const col = {
+          ...item,
+          ...(this.mergeCol.common || {}),
+          ...(this.mergeCol[item.prop] || {}),
+          showOverflowTooltip: true,
+          maxWidth: 200
+        }
+        if (col.defaultSort && !this.defaultSort) {
+          this.defaultSort = { prop: item.prop, order: col.defaultSort }
+          // TODO 下一堆栈没有渲染出来？
+          setTimeout(() => {
+            this.$refs.elTable &&
+              this.$refs.elTable.store.commit('sort', this.defaultSort)
+          })
+        }
+        if (col.sortable) {
+          col.sortable = 'custom'
+        }
+        return col
+      })
+      if (this.mergeCol.operate) {
+        this.selfColumns.push(this.mergeCol.operate)
+      }
+    },
     onSortChange({ prop, order }) {
       // 可能是设置 defaultSort 时触发的
       const { prop: dProp, order: dOrder } = this.defaultSort
@@ -516,28 +563,7 @@ export default {
             params
           })
       ).then(({ data, total }) => {
-        this.selfColumns = data.columns.map(item => {
-          const col = {
-            ...item,
-            ...(this.mergeCol.common || {}),
-            ...(this.mergeCol[item.prop] || {}),
-            showOverflowTooltip: true,
-            maxWidth: 200
-          }
-          if (col.defaultSort && !this.defaultSort) {
-            this.defaultSort = { prop: item.prop, order: col.defaultSort }
-            setTimeout(() => {
-              this.$refs.elTable.store.commit('sort', this.defaultSort)
-            })
-          }
-          if (col.sortable) {
-            col.sortable = 'custom'
-          }
-          return col
-        })
-        if (this.mergeCol.operate) {
-          this.selfColumns.push(this.mergeCol.operate)
-        }
+        this.processMergeCol(data.columns)
         this.tableData = data.data
         this.noDataText = data.data.length ? '' : this.emptyText
         this.total = total
