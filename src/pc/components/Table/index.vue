@@ -1,3 +1,8 @@
+<style lang="scss">
+.radios {
+  border-radius: 50%;
+}
+</style>
 <template>
   <div class="clearfix">
     <div class="title-wrap">
@@ -32,95 +37,95 @@
         </div>
       </div>
     </div>
-    <el-table
-      v-skeleton
-      ref="elTable"
-      class="table-wrap"
-      size="mini"
-      :class="{ 'cursor-pointer': $attrs['highlight-current-row'] }"
-      :data="tableData"
-      :stripe="false"
-      v-bind="$attrs"
-      v-on="{ ...$listeners }"
-      @sort-change="onSortChange"
-    >
-      <el-table-column
-        v-if="showIndex && tableData.length"
-        key="index"
-        label="序号"
-        type="index"
-        :width="50"
-        :index="index => (currentPage - 1) * pageSize + index + 1"
-      />
-      <template v-for="item in selfColumns">
+    <div v-skeleton class="table-wrap">
+      <el-table
+        ref="elTable"
+        size="mini"
+        :class="{ 'cursor-pointer': $attrs['highlight-current-row'] }"
+        :data="tableData"
+        :stripe="false"
+        v-bind="$attrs"
+        v-on="{ ...$listeners }"
+        @sort-change="onSortChange"
+      >
         <el-table-column
-          v-if="item.type === 'operate'"
-          :key="item.prop"
-          v-bind="item"
-        >
-          <template slot-scope="scope">
-            <ul class="operate-column-list">
-              <el-button
-                class="operate-column-item"
-                v-for="(operate, i) in typeof item.operateList === 'function'
-                  ? item.operateList(scope)
-                  : item.operateList"
-                :key="i"
-                :disabled="operate.disabled"
-                size="mini"
-                @click="
-                  operate.handler && !operate.disabled
-                    ? operate.handler(scope, item, operate)
-                    : noop
-                "
-                type="text"
-                >{{ operate.label }}</el-button
-              >
-              <li
-                :class="
-                  `operate-column-item ${
-                    operate.disabled
-                      ? 'gary-color'
-                      : 'main-color hover-color pointer'
-                  }`
-                "
-                v-for="(operate, i) in typeof item.operateList === 'function'
-                  ? item.operateList(scope)
-                  : item.operateList"
-                :key="i"
-                @click="
-                  operate.handler && !operate.disabled
-                    ? operate.handler(scope, item, operate)
-                    : noop
-                "
-              >
-                {{ operate.label }}
-              </li>
-            </ul>
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-else-if="item.type === 'render'"
-          :key="item.prop"
-          v-bind="item"
-        >
-          <template slot-scope="scope">
-            <Expand :render="item.render" :props="scope" />
-          </template>
-        </el-table-column>
-        <el-table-column
-          v-else-if="item.type === 'renderHeader'"
-          :key="item.prop"
-          v-bind="item"
-        >
-          <template #header="scope">
-            <Expand :render="item.renderHeader" :props="scope" />
-          </template>
-        </el-table-column>
-        <el-table-column v-else :key="item.prop" v-bind="item" />
-      </template>
-      <span slot="empty">{{ noDataText }}</span>
-    </el-table>
+          v-if="showIndex && tableData.length"
+          key="index"
+          label="序号"
+          type="index"
+          :width="50"
+          :index="index => (currentPage - 1) * pageSize + index + 1"
+        />
+        <template v-for="item in selfColumns">
+          <el-table-column
+            v-if="item.type === 'operate'"
+            :key="item.prop"
+            v-bind="item"
+          >
+            <template slot-scope="scope">
+              <ul class="operate-column-list">
+                <el-button
+                  class="operate-column-item"
+                  v-for="(operate, i) in typeof item.operateList === 'function'
+                    ? item.operateList(scope)
+                    : item.operateList"
+                  :key="i"
+                  :disabled="operate.disabled"
+                  size="mini"
+                  @click="
+                    operate.handler && !operate.disabled
+                      ? operate.handler(scope, item, operate)
+                      : noop
+                  "
+                  type="text"
+                  >{{ operate.label }}</el-button
+                >
+                <li
+                  :class="
+                    `operate-column-item ${
+                      operate.disabled
+                        ? 'gary-color'
+                        : 'main-color hover-color pointer'
+                    }`
+                  "
+                  v-for="(operate, i) in typeof item.operateList === 'function'
+                    ? item.operateList(scope)
+                    : item.operateList"
+                  :key="i"
+                  @click="
+                    operate.handler && !operate.disabled
+                      ? operate.handler(scope, item, operate)
+                      : noop
+                  "
+                >
+                  {{ operate.label }}
+                </li>
+              </ul>
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-else-if="item.type === 'render'"
+            :key="item.prop"
+            v-bind="item"
+          >
+            <template slot-scope="scope">
+              <Expand :render="item.render" :props="scope" />
+            </template>
+          </el-table-column>
+          <el-table-column
+            v-else-if="item.type === 'renderHeader'"
+            :key="item.prop"
+            v-bind="item"
+          >
+            <template #header="scope">
+              <Expand :render="item.renderHeader" :props="scope" />
+            </template>
+          </el-table-column>
+          <el-table-column v-else :key="item.prop" v-bind="item" />
+        </template>
+        <span slot="empty">{{ noDataText }}</span>
+      </el-table>
+    </div>
     <el-pagination
       v-skeleton="{ width: '100px' }"
       v-if="showPage"
@@ -174,12 +179,6 @@ export default {
     download: {
       type: Boolean,
       default: true
-    },
-    operateList: {
-      type: Array,
-      default() {
-        return []
-      }
     },
     mergeCol: {
       type: Object,
@@ -365,6 +364,7 @@ export default {
   inject: ['buildMode'],
   data() {
     return {
+      operateList: [],
       selfColumns: [],
       tableData: [],
       total: 0,
@@ -377,8 +377,8 @@ export default {
     mergeCol() {
       this.processMergeCol()
     },
-    download(v) {
-      setTimeout(() => {
+    download: {
+      handler(v) {
         if (v) {
           const download = {
             type: 'download',
@@ -405,7 +405,8 @@ export default {
             this.operateList.splice(i, 1)
           }
         }
-      })
+      },
+      immediate: true
     }
   },
   created() {
@@ -471,16 +472,14 @@ export default {
               align: 'right'
             }
           ],
-          data:
-            [] ||
-            Array(5).fill({
-              city: '北京',
-              pv: (Math.random() * 1000) | 0,
-              uv: (Math.random() * 1000) | 0,
-              xs: (Math.random() * 1000) | 0,
-              fw: (Math.random() * 1000) | 0,
-              bg: (Math.random() * 1000) | 0
-            })
+          data: Array(5).fill({
+            city: '北京',
+            pv: (Math.random() * 1000) | 0,
+            uv: (Math.random() * 1000) | 0,
+            xs: (Math.random() * 1000) | 0,
+            fw: (Math.random() * 1000) | 0,
+            bg: (Math.random() * 1000) | 0
+          })
         }
       }
       return syncRetrueData ? res : setTimeoutResolve(res, 1000)
@@ -595,25 +594,27 @@ export default {
 }
 .table-wrap {
   color: #475669;
-  &.cursor-pointer /deep/ .el-table__body-wrapper {
-    cursor: pointer;
-  }
-  /deep/ .el-table__header-wrapper {
-    th {
-      background-color: #f5f8fc;
-      color: #1f2d3d;
-      &.is-leaf {
-        border-bottom: none;
-      }
+  /deep/ .el-table {
+    &.cursor-pointer .el-table__body-wrapper {
+      cursor: pointer;
     }
-    .caret-wrapper {
-      .sort-caret {
-        border-width: 4px;
-        &.ascending {
-          top: 7px;
+    .el-table__header-wrapper {
+      th {
+        background-color: #f5f8fc;
+        color: #1f2d3d;
+        &.is-leaf {
+          border-bottom: none;
         }
-        &.descending {
-          bottom: 9px;
+      }
+      .caret-wrapper {
+        .sort-caret {
+          border-width: 4px;
+          &.ascending {
+            top: 7px;
+          }
+          &.descending {
+            bottom: 9px;
+          }
         }
       }
     }

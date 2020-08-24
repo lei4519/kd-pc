@@ -1,12 +1,12 @@
 <template>
   <div class="columns-editor-wrapper">
     <el-table :data="vm.selfColumns" size="mini">
-      <el-table-column prop="label" label="标题" width="100px">
+      <el-table-column prop="label" label="标题">
         <template slot-scope="scope">
           {{ scope.row.label }}
         </template>
       </el-table-column>
-      <el-table-column prop="sortable" label="排序">
+      <el-table-column prop="sortable" label="排序" width="100px">
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.sortable"
@@ -17,7 +17,17 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column prop="fixed" label="定位">
+      <el-table-column prop="width" label="宽度" width="100px">
+        <template slot-scope="scope">
+          <el-input
+            size="mini"
+            v-model="scope.row.width"
+            @change="setProps(scope, ...arguments)"
+          >
+          </el-input>
+        </template>
+      </el-table-column>
+      <el-table-column prop="fixed" label="定位" width="100px">
         <template slot-scope="scope">
           <el-select
             size="mini"
@@ -31,7 +41,7 @@
           </el-select>
         </template>
       </el-table-column>
-      <el-table-column prop="align" label="对齐">
+      <el-table-column prop="align" label="对齐" width="100px">
         <template slot-scope="scope">
           <el-select
             size="mini"

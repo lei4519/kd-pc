@@ -216,6 +216,7 @@ export default {
   &::after {
     content: '';
     display: none;
+    border-radius: inherit;
     position: absolute;
     top: -1px;
     bottom: -1px;
