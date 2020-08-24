@@ -282,7 +282,7 @@ export default {
     // 挂载真实渲染组件实例
     setTimeout(() => {
       const { realComponent } = this.$refs
-      realComponent.forEach(com => {
+      realComponent?.forEach(com => {
         const { row_index: ri, col_index: ci } = com.$el.dataset
         this.page.rows[ri].elements[ci].setRenderComponent(com)
       })

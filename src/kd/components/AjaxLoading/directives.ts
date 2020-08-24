@@ -7,10 +7,10 @@ import { DirectiveOptions } from 'vue'
  * @param height 骨架元素高度
  * @info 如果元素本身在没有数据的情况下就可以撑起宽高，则不需要再指定宽高。如果元素（文本元素等）在没有数据下无法在页面进行占位，则需要指定宽高。
  * @example
- * v-skeleton
- * v-skeleton="{width: '100px'}"
- * v-skeleton="{height: '100px'}"
- * v-skeleton="{width: '100px', height: '100px'}"
+ * v-skeleton 元素可以撑起宽高
+ * v-skeleton="{width: '100px'}" 指定宽度
+ * v-skeleton="{height: '100px'}" 指定高度
+ * v-skeleton="{width: '100px', height: '100px'}" 同时指定
  */
 export const skeleton: DirectiveOptions = {
   bind(el, { value: { width, height } = {} }) {
