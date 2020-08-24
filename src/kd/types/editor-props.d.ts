@@ -56,20 +56,6 @@ interface FormItem {
   defaultValue?: any
 }
 /**
- * @description 渲染el-option，配合el-select el-radio等需要选项的组件使用
- * @property {} options 渲染选项的列表配置
- * @property {} options.label 每一项的label
- * @property {} options.value 每一项的value
- * @property {} options.props 传给el-option的props
- */
-interface Options {
-  options: {
-    label: string
-    value: any
-    props?: any
-  }[]
-}
-/**
  * @description 自定义渲染配置
  * @property {} componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
  * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取
@@ -82,6 +68,21 @@ export interface CustomEditor extends FormItem {
   type: 'customEditor'
   componentPath: string
   component?: Vue.ComponentOptions
+}
+
+/**
+ * @description 渲染el-option，配合el-select el-radio等需要选项的组件使用
+ * @property {} options 渲染选项的列表配置
+ * @property {} options.label 每一项的label
+ * @property {} options.value 每一项的value
+ * @property {} options.props 传给el-option的props
+ */
+interface Options {
+  options: {
+    label: string
+    value: any
+    props?: any
+  }[]
 }
 /**
  * @description 输入框
