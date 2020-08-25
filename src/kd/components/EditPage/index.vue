@@ -350,8 +350,9 @@ export default {
       // 挂载真实渲染组件实例
       setTimeout(() => {
         const { realComponent } = this.$refs
-        realComponent[realComponent.length - 1]
-        newElement.setRenderComponent(realComponent[realComponent.length - 1])
+        if (realComponent?.length) {
+          newElement.setRenderComponent(realComponent[realComponent.length - 1])
+        }
         this.page.setEditingElement(newElement)
       })
       // 本次事件循环执行时间太长，切分至下次循环

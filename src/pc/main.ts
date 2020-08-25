@@ -8,8 +8,9 @@ import '@/kd/style/index.scss'
 import Plugins from '@/kd/plugins'
 
 Vue.config.productionTip = false
-
-Vue.use(ElementUI)
+Vue.use(ElementUI, {
+  size: 'small'
+})
 Vue.use(Plugins)
 
 new Vue({

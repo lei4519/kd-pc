@@ -155,6 +155,7 @@ export default {
   overflow: hidden;
   cursor: auto !important;
   touch-action: none;
+  user-select: none;
   &:hover {
     outline-color: $theme-color;
     .handle {
