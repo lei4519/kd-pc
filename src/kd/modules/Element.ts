@@ -176,10 +176,6 @@ export class ColElement {
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
-    const props = readonly(
-      this.props,
-      '组件 editorProps 方法参数：props，不允许进行赋值操作！'
-    )
     const commonSetting: EditorSection[] = [] || [
       {
         title: '通用设置',
@@ -206,7 +202,7 @@ export class ColElement {
     const com = pathToComp[this.path]
     return cloneDeep([
       ...commonSetting,
-      ...com.editorProps.call(this.renderComponent)
+      ...com.editorProps.call(Object.create(this.renderComponent!))
     ])
   }
   setProps(props: object) {
