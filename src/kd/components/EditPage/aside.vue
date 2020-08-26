@@ -10,7 +10,7 @@
     <el-aside>
       <div class="handle handle-mr"></div>
       <el-tabs :value="activeTab" stretch @tab-click="tabClick">
-        <el-tab-pane name="select">
+        <el-tab-pane name="select" key="select">
           <span slot="label"><i class="el-icon-menu"></i> 组件选择</span>
           <el-alert
             class="mt-16 ml-8 mr-8 w-auto"
@@ -48,7 +48,7 @@
             </el-tooltip>
           </div>
         </el-tab-pane>
-        <el-tab-pane name="setting" v-show="false">
+        <el-tab-pane name="setting" key="setting">
           <span slot="label"><i class="el-icon-s-tools"></i> 组件设置</span>
           <EditorProps
             v-if="page.editingElement"
