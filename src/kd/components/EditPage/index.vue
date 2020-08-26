@@ -161,6 +161,7 @@
                           <AjaxLoading>
                             <component
                               ref="realComponent"
+                              @hook:mounted="onAddComponentMounted"
                               :data-row_index="rowIndex"
                               :data-col_index="colIndex"
                               :is="pathToComp[el.path].ctor"
@@ -297,6 +298,9 @@ export default {
     }
   },
   methods: {
+    onAddComponentMounted() {
+      this.$emit('addComponent:mounted')
+    },
     normalList() {
       const comps = getComponents()
       const res = []
@@ -348,20 +352,21 @@ export default {
         })[0].elements[0]
       }
       // 挂载真实渲染组件实例
-      setTimeout(() => {
+      this.$once('addComponent:mounted', () => {
         const { realComponent } = this.$refs
+        console.log('realComponent', realComponent)
         if (realComponent?.length) {
           newElement.setRenderComponent(realComponent[realComponent.length - 1])
         }
         this.page.setEditingElement(newElement)
-      })
-      // 本次事件循环执行时间太长，切分至下次循环
-      setTimeout(() => {
-        // 滚动到底部
-        const [{ $el }] = this.$refs.lastRow
-        $el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'end'
+        // 本次事件循环执行时间太长，切分至下次循环
+        setTimeout(() => {
+          // 滚动到底部
+          const [{ $el }] = this.$refs.lastRow
+          $el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
+          })
         })
       })
     },
