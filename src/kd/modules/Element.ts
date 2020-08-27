@@ -1,6 +1,6 @@
 import { EditorSection } from '../types/editor-props'
-import { genUUID, readonly } from '../utils'
-import { cloneDeep } from 'lodash'
+import { genUUID } from '../utils'
+import { cloneDeep, get } from 'lodash'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
 import Vue, { Component } from 'vue'
@@ -218,10 +218,14 @@ export class ColElement {
     ])
   }
   setProps(props: object) {
-    Object.entries(props).forEach(([key, val]) => {
+    Object.entries(props).forEach(([props, value]) => {
+      if (!props.startsWith('style.')) props = 'props.' + props
+      const path = props.split('.')
+      const key = path.pop()!
+      const obj = get(this, path.join('.'), this)
       // FIXME Vue3 响应式
-      // this.props[key] = val
-      Vue.set(this.props, key, val)
+      // obj[key] = val
+      Vue.set(obj, key, value)
     })
   }
   setRenderComponent(renderComponent: Component) {

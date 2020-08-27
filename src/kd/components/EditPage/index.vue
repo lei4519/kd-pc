@@ -165,6 +165,7 @@
                               :data-row_index="rowIndex"
                               :data-col_index="colIndex"
                               :is="pathToComp[el.path].ctor"
+                              :style="el.style"
                               v-bind="el.props"
                             />
                           </AjaxLoading>
