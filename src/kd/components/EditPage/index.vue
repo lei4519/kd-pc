@@ -590,7 +590,7 @@ export default {
 
 <style lang="scss" scoped>
 .EditPage-wrapper {
-  height: 100%;
+  min-height: 100%;
   position: relative;
 }
 .drop-section {
@@ -674,7 +674,6 @@ export default {
     background-color: #40a0ff9c;
     opacity: 0;
     transition: all $duration;
-    z-index: -1;
   }
 }
 </style>

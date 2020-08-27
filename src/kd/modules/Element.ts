@@ -136,6 +136,7 @@ export interface ColElementProp {
   iconClass?: string
   path: string
   props: any
+  style?: Partial<CSSStyleDeclaration>
 }
 
 /**
@@ -165,6 +166,7 @@ export class ColElement {
   path: string
   props: any
   draggable = true
+  style: Partial<CSSStyleDeclaration>
   renderComponent?: Component | null = null
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
@@ -173,36 +175,46 @@ export class ColElement {
     this.minSpan = element.minSpan || 1
     this.maxSpan = element.maxSpan || 24
     this.path = element.path
+    this.style = cloneDeep(element.style || {})
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
-    const commonSetting: EditorSection[] = [] || [
-      {
-        title: '通用设置',
-        props: [
-          {
-            label: '加载模式',
-            prop: 'ajaxLoadingMode',
-            type: 'select',
-            defaultValue: 'skeleton',
-            options: [
-              {
-                label: 'loading',
-                value: 'loading'
-              },
-              {
-                label: '骨架屏',
-                value: 'skeleton'
-              }
-            ]
-          }
-        ]
-      }
+    const { editorProps, commonSetting } = pathToComp[this.path]
+    const isFalse = (v: boolean) => v === false
+    const common: EditorSection[] = [
+      ...(isFalse(commonSetting.font)
+        ? []
+        : [
+            {
+              title: '字体设置',
+              props: []
+            }
+          ])
+      // {
+      //   title: '通用设置',
+      //   props: [
+      //     {
+      //       label: '加载模式',
+      //       prop: 'ajaxLoadingMode',
+      //       type: 'select',
+      //       defaultValue: 'skeleton',
+      //       options: [
+      //         {
+      //           label: 'loading',
+      //           value: 'loading'
+      //         },
+      //         {
+      //           label: '骨架屏',
+      //           value: 'skeleton'
+      //         }
+      //       ]
+      //     }
+      //   ]
+      // }
     ]
-    const com = pathToComp[this.path]
     return cloneDeep([
-      ...commonSetting,
-      ...com.editorProps.call(Object.create(this.renderComponent!))
+      ...common,
+      ...editorProps.call(Object.create(this.renderComponent!))
     ])
   }
   setProps(props: object) {

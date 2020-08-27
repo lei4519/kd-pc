@@ -200,6 +200,9 @@ export default {
       }
     }
   },
+  commonSetting: {
+    font: false
+  },
   editorProps() {
     return [
       {

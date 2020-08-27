@@ -1,6 +1,7 @@
 import { noop } from '.'
 import { ColElement } from '../modules/Element'
 import { CustomEditor, EditorProps } from '../types/editor-props'
+import { CommonSetting } from '../types/common-setting'
 /**
  * @description 目录
  */
@@ -89,13 +90,15 @@ function createComponentList(modules: RC): ComponentList {
             editorProps = noop,
             dragConfig,
             props,
-            minSpan = 4
+            minSpan = 4,
+            commonSetting = {}
           } = options
 
           addMap(`${path}/${name}`, {
             ctor,
             editorProps,
-            dragConfig
+            dragConfig,
+            commonSetting
           })
           res.push(
             new ColElement({
@@ -144,6 +147,7 @@ interface PathToComp {
     ctor: any
     editorProps: EditorProps
     dragConfig: object
+    commonSetting: CommonSetting
   }
 }
 /**
