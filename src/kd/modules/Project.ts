@@ -1,11 +1,13 @@
 import { Menu, MenuProps } from './Menu'
 import { genUUID } from '../utils'
+import { Theme } from './Theme'
 
 export interface ProjectProps {
-  name: string
+  name?: string
   logo?: string
   expire?: string
-  menu: MenuProps[]
+  menu?: MenuProps[]
+  themeColor?: string
 }
 /**
  * @description 描述一个项目
@@ -15,16 +17,17 @@ export interface ProjectProps {
  * @property {} expire 到期时间
  * @property {} menu 项目目录
  */
-export class Project implements ProjectProps {
+export class Project extends Theme implements ProjectProps {
   readonly id = genUUID()
-  name = ''
-  logo?: string
-  expire?: string
+  name: string
+  logo: string
+  expire: string
   menu: Menu[] = []
   constructor(project: ProjectProps) {
-    this.name = project.name
-    this.logo = project.logo
-    this.expire = project.expire
+    super(project.themeColor || '#409EFF')
+    this.name = project.name || ''
+    this.logo = project.logo || ''
+    this.expire = project.expire || ''
     project.menu && this.addMenu(project.menu)
   }
   addMenu(menu: MenuProps | MenuProps[]) {

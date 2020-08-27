@@ -17,30 +17,18 @@
 </template>
 
 <script>
-const version = require('element-ui/package.json').version // element-ui version from node_modules
-const ORIGINAL_THEME = '#409EFF' // default color
-
+// 通过postcss 替换成 css变量，组件运行期间进行主题色修改。
+const PRIMARY = '#409EFF'
 export default {
   data() {
     return {
-      chalk: '', // content of theme-chalk css
-      theme: ''
-    }
-  },
-  computed: {
-    defaultTheme() {
-      return this.$store.state.theme.themeColor
+      // 主题色
+      theme: PRIMARY
     }
   },
   watch: {
-    defaultTheme: {
-      handler: function(val) {
-        this.theme = val
-      },
-      immediate: true
-    },
-    async theme(val) {
-      const oldVal = this.chalk ? this.theme : ORIGINAL_THEME
+    theme(val) {
+      const oldVal = this.theme ? this.theme : PRIMARY
       if (typeof val !== 'string') return
       const themeCluster = this.getThemeCluster(val.replace('#', ''))
       const originalCluster = this.getThemeCluster(oldVal.replace('#', ''))
@@ -57,7 +45,28 @@ export default {
       })
       return newStyle
     },
+    mix(color1, color2, tint) {
+      // js 实现sass mix 函数
+      const compose = (...fns) => args =>
+        fns.reduceRight((args, fn) => fn(args), args)
 
+      const toRGB = colors =>
+        colors.map(color => [
+          parseInt(color.slice(1, 3), 16),
+          parseInt(color.slice(3, 5), 16),
+          parseInt(color.slice(5, 7), 16)
+        ])
+
+      const _mix = ([[r1, g1, b1], [r2, g2, b2]]) => [
+        r2 + Math.round(tint * (r1 - r2)),
+        g2 + Math.round(tint * (g1 - g2)),
+        b2 + Math.round(tint * (b1 - b2))
+      ]
+
+      const toHEX = rgb => `#${rgb.map(s => s.toString(16)).join('')}`
+
+      return compose(toHEX, _mix, toRGB)([color1, color2])
+    },
     getThemeCluster(theme) {
       // 十种主色调计算 根据主色调 进行 10% - 90% 混合生成
       const tintColor = (color, tint) => {
@@ -107,20 +116,3 @@ export default {
   }
 }
 </script>
-
-<style>
-.theme-message,
-.theme-picker-dropdown {
-  z-index: 99999 !important;
-}
-
-.theme-picker .el-color-picker__trigger {
-  height: 26px !important;
-  width: 26px !important;
-  padding: 2px;
-}
-
-.theme-picker-dropdown .el-color-dropdown__link-btn {
-  display: none;
-}
-</style>

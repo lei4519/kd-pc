@@ -135,12 +135,12 @@ export default {
         }
       },
       [
+        this.$slots.default,
         ...this.edges.map(e =>
           c('div', {
             class: `handle handle-${e}`
           })
-        ),
-        this.$slots.default
+        )
       ]
     )
   }
@@ -168,7 +168,6 @@ export default {
   .handle {
     position: absolute;
     z-index: 9999;
-    border: 1px solid #70a0d1;
     opacity: 0;
   }
   .handle-top,
@@ -176,7 +175,7 @@ export default {
     width: 40px !important;
     height: 8px !important;
     left: calc(50% - #{20px}) !important;
-    background-color: #457eff;
+    background-color: $theme-color;
     cursor: ns-resize;
     &::after {
       content: '';
@@ -209,7 +208,7 @@ export default {
     height: 40px !important;
     width: 8px !important;
     top: calc(50% - #{20px}) !important;
-    background-color: #457eff;
+    background-color: $theme-color;
     cursor: ew-resize;
     &::after {
       content: '';
@@ -248,8 +247,8 @@ export default {
     width: 18px !important;
     height: 18px !important;
     border: none;
-    border-bottom: $border-width solid #457eff;
-    border-right: $border-width solid #457eff;
+    border-bottom: $border-width solid $theme-color;
+    border-right: $border-width solid $theme-color;
     background-color: transparent;
     &::after {
       content: '';

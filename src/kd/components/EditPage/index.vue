@@ -242,7 +242,7 @@ export default {
         return {}
       }
     },
-    page: {
+    project: {
       type: Object,
       required: true,
       default() {
@@ -252,6 +252,7 @@ export default {
   },
   data() {
     return {
+      page: this.project.menu[0].children[0],
       visiblePreviewPage: false,
       asideLayout: localStorage.getItem('edit-aside-layout') || 'left',
       activeTab: 'select', // 当前选中的tab
@@ -542,7 +543,7 @@ export default {
           this.visiblePreviewPage = true
         },
         save: () => {
-          localStorage.setItem('page', JSON.stringify(this.page))
+          sessionStorage.setItem('project', JSON.stringify(this.project))
           this.$message.success('保存成功')
         },
         exit: () => {

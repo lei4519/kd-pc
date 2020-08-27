@@ -2,19 +2,6 @@ import { Menu } from './Menu'
 import { Row, RowProps, ColElement } from './Element'
 import { cloneDeep } from 'lodash'
 let id = 0
-interface Permission {
-  name: string
-  show: boolean
-}
-export interface PageProps {
-  type: string
-  name: string
-  show: boolean
-  edit?: boolean
-  rows?: RowProps[]
-  permissions?: Permission[]
-  routeName?: string
-}
 /**
  * @description 页面布局信息
  * @property {} counter 记录每个组件在当前页面的数量
@@ -25,6 +12,19 @@ export interface LayoutInfo {
   counter: { [cName: string]: number }
   layouts: string[][]
   dropRowIndex: number
+}
+interface Permission {
+  name: string
+  show: boolean
+}
+export interface PageProps {
+  type: 'page'
+  name?: string
+  show?: boolean
+  edit?: boolean
+  rows?: RowProps[]
+  permissions?: Permission[]
+  routeName?: string
 }
 /**
  * @description 页面
@@ -41,14 +41,14 @@ export class Page implements PageProps {
   parent?: Menu
   routeName?: string
   editingElement: ColElement | null = null
-  name = ''
-  show = true
-  edit = false
+  name: string
+  show: boolean
+  edit: boolean
   rows: Row[] = []
   permissions?: Permission[] = []
   constructor(page: PageProps) {
-    this.name = page.name
-    this.show = page.show
+    this.name = page.name || ''
+    this.show = page.show || true
     this.edit = page.edit || false
     this.routeName = page.routeName || 'pageView' + id++
     page.rows && this.addRows(page.rows)

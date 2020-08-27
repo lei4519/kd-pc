@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { Page } from '@/kd/modules/Page'
+import { Project } from '@/kd/modules/Project'
 export default {
   data() {
     return {
@@ -36,8 +36,18 @@ export default {
     getPage() {
       return new Promise(r => {
         setTimeout(() => {
-          const pageConfig = JSON.parse(localStorage.getItem('page'))
-          this.page = pageConfig ? new Page(pageConfig) : null
+          const projectConfig = JSON.parse(sessionStorage.getItem('project'))
+          if (projectConfig) {
+            const {
+              menu: [
+                {
+                  children: [page]
+                }
+              ]
+            } = new Project(projectConfig)
+            this.page = page
+          }
+
           r()
         }, 500)
       })

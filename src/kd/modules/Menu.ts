@@ -5,11 +5,11 @@ export type ChildrenProps = MenuProps | PageProps
 
 let id = 0
 export interface MenuProps {
-  type: string
-  name: string
-  show: boolean
+  type: 'menu'
+  name?: string
+  show?: boolean
   edit?: boolean
-  children: ChildrenProps[]
+  children?: ChildrenProps[]
 }
 /**
  * @description 目录
@@ -24,13 +24,13 @@ export class Menu implements MenuProps {
   readonly type = 'menu'
   readonly routeID = 'menu_' + id++
   parent?: Menu
-  name = ''
-  show = true
-  edit = false
+  name: string
+  show: boolean
+  edit: boolean
   children: Children[] = []
   constructor(menu: MenuProps) {
-    this.name = menu.name
-    this.show = menu.show
+    this.name = menu.name || ''
+    this.show = menu.show || true
     this.edit = menu.edit || false
     menu.children && this.addChild(menu.children)
   }
@@ -40,7 +40,7 @@ export class Menu implements MenuProps {
       child = [child]
     }
     child.forEach(c => {
-      const isMenu = (t: ChildrenProps): t is Menu => t.type === 'menu'
+      const isMenu = (t: ChildrenProps): t is MenuProps  => t.type === 'menu'
       const child = isMenu(c) ? new Menu(c) : new Page(c)
       child.parent = this
       this.children.push(child)

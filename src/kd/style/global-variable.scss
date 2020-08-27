@@ -1,8 +1,8 @@
 /**
   全局scss，声明的scss变量或函数在 .vue 文件的 style 模块中可以直接使用，无需手动引入
 */
-// 主题色
-$theme-color: var(--color-primary);
+// 主题色由 Project类 进行修改 勿动此变量
+$theme-color: #409EFF;
 // 过度、动画持续时长
 $duration: .3s;
 

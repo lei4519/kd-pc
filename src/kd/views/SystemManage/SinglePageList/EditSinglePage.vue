@@ -1,19 +1,19 @@
 <template>
   <div style="height: 100%">
     <EditPage
-      v-if="page"
+      v-if="project"
       :visible.sync="visiblePage"
       :undoRedoHistory="undoRedoHistory"
-      :page="page"
+      :project="project"
     />
   </div>
 </template>
 
 <script>
 import EditPage from '@/kd/components/EditPage/index.vue'
-import { Page } from '@/kd/modules/Page'
 import UndoRedoHistory from '@/kd/modules/History'
 import { debounce } from 'lodash'
+import { Project } from '@/kd/modules/Project'
 export default {
   name: 'EditSinglePage',
   components: {
@@ -21,38 +21,47 @@ export default {
   },
   data() {
     return {
-      page: new Page(
-        JSON.parse(localStorage.getItem('page')) || {
-          name: '测试',
-          show: true
-        }
-      ),
+      project: null,
       visiblePage: true,
       undoRedoHistory: new UndoRedoHistory()
     }
   },
   watch: {
-    page: {
-      handler: debounce(function(page) {
+    project: {
+      handler: debounce(function(project) {
         if (this.replaceFlag) {
           this.$nextTick(() => {
             this.replaceFlag = false
           })
           return
         }
-        this.undoRedoHistory.addState(page)
+        this.undoRedoHistory.addState(project)
       }),
       immediate: true,
       deep: true
     }
   },
   created() {
+    this.project = new Project(
+      JSON.parse(sessionStorage.getItem('project')) || {
+        menu: [
+          {
+            type: 'menu',
+            children: [
+              {
+                type: 'page'
+              }
+            ]
+          }
+        ]
+      }
+    )
     this.undoRedoHistory.on(this.replaceState)
   },
   methods: {
-    replaceState(page) {
+    replaceState(project) {
       this.replaceFlag = true
-      this.page = page
+      this.project = project
     }
   }
 }
