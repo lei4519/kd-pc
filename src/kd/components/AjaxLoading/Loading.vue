@@ -5,7 +5,7 @@
       :class="`loading-item sk-${mode}`"
       :style="{
         '--sk-size': size,
-        '--sk-color': color || defaultColor
+        '--sk-color': color || theme.color
       }"
     >
       <div
@@ -39,9 +39,9 @@ export default {
       default: ''
     }
   },
+  inject: ['theme'],
   data() {
     return {
-      defaultColor: this.$store.state.theme.themeColor,
       classMap: {
         chase: {
           childClass: 'dot',

@@ -7,20 +7,28 @@ const { var2color } = require('./ColorVarMap') as {
     }
   }
 }
-
+/**
+ * @description 主题换肤
+ * @property {} themeColor 项目主题色
+ * @property {} themeEl 设置主题色的 dom 元素
+ */
 export class Theme {
   themeColor: string
-  constructor(color: string) {
+  themeEl?: HTMLElement
+  constructor(color: string, el?: HTMLElement) {
     this.themeColor = color
+    this.themeEl = el
     this.updateTheme()
   }
   updateTheme() {
-    document.documentElement.style.cssText = Object.entries(var2color).reduce(
-      (cssText, [_var, { mix }]) => {
-        return cssText + `${_var}: ${this.mix(mix(this.themeColor))};`
-      },
-      ''
-    )
+    if (this.themeEl) {
+      this.themeEl.style.cssText = Object.entries(var2color).reduce(
+        (cssText, [_var, { mix }]) => {
+          return cssText + `${_var}: ${this.mix(mix(this.themeColor!))};`
+        },
+        ''
+      )
+    }
   }
   // 使用JS 实现SASS mix 函数
   mix([color1, color2, tint]: [string, string, number]) {
@@ -43,5 +51,8 @@ export class Theme {
     const toHEX = (rgb: number[]) => `#${rgb.map(s => s.toString(16)).join('')}`
 
     return compose(toHEX, _mix, toRGB)([color1, color2])
+  }
+  toJSON() {
+    return { ...this, themeEl: void 0 }
   }
 }

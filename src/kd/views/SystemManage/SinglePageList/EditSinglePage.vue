@@ -42,21 +42,27 @@ export default {
     }
   },
   created() {
-    this.project = new Project(
-      JSON.parse(sessionStorage.getItem('project')) || {
-        menu: [
-          {
-            type: 'menu',
-            children: [
-              {
-                type: 'page'
-              }
-            ]
-          }
-        ]
-      }
-    )
+    const projectConfig = JSON.parse(sessionStorage.getItem('project')) || {
+      menu: [
+        {
+          type: 'menu',
+          children: [
+            {
+              type: 'page'
+            }
+          ]
+        }
+      ]
+    }
+    this.project = new Project(projectConfig)
     this.undoRedoHistory.on(this.replaceState)
+  },
+  mounted() {
+    setTimeout(() => {
+      this.project.themeEl = document.getElementById('_EditPageWrapper')
+      // eslint-disable-next-line no-self-assign
+      this.project.updateTheme()
+    })
   },
   methods: {
     replaceState(project) {

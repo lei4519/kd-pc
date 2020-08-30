@@ -19,8 +19,5 @@ module.exports = {
         prependData: `@import "~@/kd/style/global-variable.scss";`
       }
     }
-  },
-  devServer: {
-    proxy: 'http://localhost:4000'
   }
 }

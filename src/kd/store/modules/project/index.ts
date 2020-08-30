@@ -16,6 +16,8 @@ const mutations: Mutation = {
     const project = new Project(
       {
         name: '',
+        themeColor: '#409EFF',
+        themeEl: document.documentElement,
         menu: [
           {
             type: 'menu',

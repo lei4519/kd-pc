@@ -47,7 +47,6 @@
         </div>
       </div>
       <div class="right">
-        <ThemePicker />
         <IconFont
           type="expend"
           class="full-screen"
@@ -127,7 +126,6 @@
 <script>
 import MenuItem from './MenuItem.vue'
 import EditPage from '../EditPage/index'
-import ThemePicker from '@/kd/components/ThemePicker'
 const MAX_NAV = 5
 /**
  *   @desc 可编辑的布局组件
@@ -138,8 +136,7 @@ export default {
   name: 'EditLayout',
   components: {
     MenuItem,
-    EditPage,
-    ThemePicker
+    EditPage
   },
   props: {
     project: {

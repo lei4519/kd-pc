@@ -49,19 +49,8 @@
           </div>
         </el-tab-pane>
         <el-tab-pane name="setting" key="setting">
-          <span slot="label"><i class="el-icon-s-tools"></i> 组件设置</span>
-          <EditorProps
-            v-if="page.editingElement"
-            :element="page.editingElement"
-          />
-          <el-alert
-            v-else
-            class="mt-16 ml-8 mr-8 w-auto"
-            title="请先选择组件"
-            type="info"
-            show-icon
-            :closable="false"
-          />
+          <span slot="label"><i class="el-icon-s-tools"></i> 设置</span>
+          <EditorProps :project="project" :element="page.editingElement" />
         </el-tab-pane>
       </el-tabs>
     </el-aside>
@@ -86,6 +75,12 @@ export default {
     activeTab: {
       type: String,
       default: ''
+    },
+    project: {
+      type: Object,
+      default() {
+        return {}
+      }
     },
     page: {
       type: Object,

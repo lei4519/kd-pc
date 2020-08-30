@@ -13,6 +13,7 @@
       <EditPageAside
         v-if="asideLayout === 'left'"
         :asideLayout="asideLayout"
+        :project="project"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -93,7 +94,7 @@
           </div>
         </el-header>
         <el-main>
-          <div class="EditPage-wrapper">
+          <div class="EditPage-wrapper" id="_EditPageWrapper">
             <transition-group tag="div" name="fade" class="components-wrapper">
               <div
                 class="transition"
@@ -104,6 +105,9 @@
                   class="row-vdr"
                   :edges="['bottom']"
                   :h="row.getStyle().height || 'auto'"
+                  :style="{
+                    marginBottom: row.getStyle().marginBottom
+                  }"
                   @resizeEnd="onResizeEnd(row, ...arguments)"
                 >
                   <transition-group
@@ -111,7 +115,7 @@
                     name="fade"
                     class="clearfix layout-row"
                     :ref="page.rows.length - 1 === rowIndex ? 'lastRow' : ''"
-                    :style="row.getStyle()"
+                    :style="{ ...row.getStyle(), marginBottom: 0 }"
                   >
                     <div
                       class="layout-col transition"
@@ -160,12 +164,12 @@
                         >
                           <AjaxLoading>
                             <component
-                              ref="realComponent"
-                              @hook:mounted="onAddComponentMounted"
+                              @componentMounted="
+                                onAddComponentMounted(el, ...arguments)
+                              "
                               :data-row_index="rowIndex"
                               :data-col_index="colIndex"
                               :is="pathToComp[el.path].ctor"
-                              :style="el.style"
                               v-bind="el.props"
                             />
                           </AjaxLoading>
@@ -189,6 +193,7 @@
       <EditPageAside
         v-if="asideLayout === 'right'"
         :asideLayout="asideLayout"
+        :project="project"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -218,6 +223,10 @@ import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
 import { readonly, onceEventListener } from '@/kd/utils'
+import Vue from 'vue'
+const theme = Vue.observable({
+  color: ''
+})
 /**
  *   @desc 编辑区
  *   @property {} page 当前编辑的页面，Page实例
@@ -274,6 +283,12 @@ export default {
           }
         }
       })
+    },
+    'project.themeColor': {
+      handler(color) {
+        theme.color = color
+      },
+      immediate: true
     }
   },
   created() {
@@ -281,28 +296,16 @@ export default {
     this.pathToComp = pathToComp
     window.addEventListener('keydown', this.onShortcutKey)
   },
-  mounted() {
-    // 挂载真实渲染组件实例
-    setTimeout(() => {
-      const { realComponent } = this.$refs
-      realComponent?.forEach(com => {
-        const { row_index: ri, col_index: ci } = com.$el.dataset
-        this.page.rows[ri].elements[ci].setRenderComponent(com)
-      })
-    })
-  },
   beforeDestroy() {
     window.removeEventListener('keydown', this.onShortcutKey)
   },
   provide() {
     return {
-      buildMode: true
+      buildMode: true,
+      theme
     }
   },
   methods: {
-    onAddComponentMounted() {
-      this.$emit('addComponent:mounted')
-    },
     normalList() {
       const comps = getComponents()
       const res = []
@@ -353,24 +356,19 @@ export default {
           elements: [component]
         })[0].elements[0]
       }
-      // 挂载真实渲染组件实例
-      this.$once('addComponent:mounted', () => {
-        const { realComponent } = this.$refs
-        console.log('realComponent', realComponent)
-        if (realComponent?.length) {
-          newElement.setRenderComponent(realComponent[realComponent.length - 1])
-        }
-        this.page.setEditingElement(newElement)
-        // 本次事件循环执行时间太长，切分至下次循环
-        setTimeout(() => {
-          // 滚动到底部
-          const [{ $el }] = this.$refs.lastRow
-          $el.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-          })
+      this.page.setEditingElement(newElement)
+      // 本次事件循环执行时间太长，切分至下次循环
+      setTimeout(() => {
+        // 滚动到底部
+        const [{ $el }] = this.$refs.lastRow
+        $el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end'
         })
       })
+    },
+    onAddComponentMounted(el, component) {
+      el.setRenderComponent(component)
     },
     onDropEvent(type, e) {
       if (!this.dropHandler) {
@@ -548,7 +546,7 @@ export default {
         },
         exit: () => {
           this.$emit('update:visible', false)
-          this.$router.replace({ name: 'SinglePageList' })
+          this.$router.push({ name: 'SinglePageList' })
         },
         toggleLayout: () => {
           this.asideLayout = this.asideLayout === 'left' ? 'right' : 'left'
@@ -615,14 +613,10 @@ export default {
 }
 .row-vdr {
   padding: 8px;
-  .component-drag-box {
-    padding: 8px;
-  }
 }
 .component-drag-box {
   position: relative;
-  border: 2px dashed transparent;
-  border-radius: 8px;
+  outline: 2px dashed transparent;
   transition: all $duration;
   cursor: move;
   user-select: none;
@@ -631,14 +625,14 @@ export default {
   }
   &.active {
     transform: scale(0.99);
-    border-style: solid;
-    border-color: $theme-color;
+    outline-style: solid;
+    outline-color: $theme-color;
   }
   &:hover {
     .operation-list {
       opacity: 1;
     }
-    border-color: $theme-color;
+    outline-color: $theme-color;
   }
   &.swap {
     /deep/ .iconfont {
@@ -816,6 +810,9 @@ export default {
           }
         }
       }
+    }
+    .el-main {
+      background-color: $mainBgColor;
     }
   }
 }

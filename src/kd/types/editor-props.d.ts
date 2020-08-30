@@ -24,6 +24,7 @@ type EditorSectionProps =
   | ColorPicker
   | UploadImg
   | SelectInput
+  | CheckBox
 /**
  * @description Render 函数辅助类型
  */
@@ -51,8 +52,8 @@ interface FormItem {
   tips?:
     | ((createElement: CreateElement, hack: RenderContext<Props>) => VNode)
     | string
-  formItemProps?: object
-  formCompProps?: object
+  formItemProps?: { [key: string]: any }
+  formCompProps?: { [key: string]: any }
   defaultValue?: any
 }
 /**
@@ -137,6 +138,12 @@ interface UploadImg extends FormItem {
  */
 interface ColorPicker extends FormItem {
   type: 'colorPicker'
+}
+/**
+ * @description 复选框
+ */
+interface CheckBox extends FormItem, Options {
+  type: 'checkBox'
 }
 /**
  * @description 下拉框 + 输入框 （参考数据源的展现形式）

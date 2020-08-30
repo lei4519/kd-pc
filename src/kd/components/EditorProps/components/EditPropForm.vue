@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" class="edit-props-form-wrapper" size="small">
+  <el-form ref="form" class="edit-props-form-wrapper" size="mini">
     <el-form-item
       v-for="(item, i) in list"
       :key="i"
@@ -108,6 +108,20 @@
           >{{ opt.label }}</el-radio
         >
       </el-radio-group>
+      <el-checkbox-group
+        v-else-if="item.type === 'checkBox'"
+        v-model="form[item.prop]"
+        v-bind="item.formCompProps"
+        @change="setElementProps(i, item.prop, ...arguments)"
+      >
+        <el-checkbox
+          v-for="opt in item.options"
+          :key="opt.value"
+          :label="opt.value"
+          v-bind="opt.props"
+          >{{ opt.label }}</el-checkbox
+        >
+      </el-checkbox-group>
       <el-select
         v-else-if="item.type === 'select'"
         v-model="form[item.prop]"

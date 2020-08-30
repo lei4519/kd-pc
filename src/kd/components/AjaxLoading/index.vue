@@ -40,7 +40,7 @@ export default {
       validator(value) {
         return ['skeleton', 'loading'].includes(value)
       },
-      default: 'skeleton'
+      default: 'loading'
     }
   },
   data() {

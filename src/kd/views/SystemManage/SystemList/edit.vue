@@ -10,7 +10,7 @@
 
 <script>
 import EditLayout from '@/kd/components/EditLayout'
-import { Project } from '@/kd/modules/Project'
+// import { Project } from '@/kd/modules/Project'
 export default {
   name: 'Edit',
   components: {
@@ -18,7 +18,7 @@ export default {
   },
   data() {
     return {
-      project: new Project({ name: '' })
+      project: null
     }
   },
   methods: {

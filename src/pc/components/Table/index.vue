@@ -1,10 +1,5 @@
-<style lang="scss">
-.radios {
-  border-radius: 50%;
-}
-</style>
 <template>
-  <div class="clearfix">
+  <div class="table-component-wrap clearfix">
     <div class="title-wrap">
       <div class="title">
         <div v-skeleton="{ width: '100px', height: '20px' }">
@@ -317,7 +312,10 @@ export default {
               )
             },
             prop: 'url',
-            type: 'dataSource'
+            type: 'dataSource',
+            formItemProps: {
+              rules: [{ required: true, message: '数据源不能为空' }]
+            }
           },
           {
             label: '标题',
@@ -580,6 +578,10 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.table-component-wrap {
+  padding: 16px;
+  background-color: #fff;
+}
 .title-wrap {
   display: flex;
   justify-content: space-between;

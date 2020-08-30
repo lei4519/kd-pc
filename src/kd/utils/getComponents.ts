@@ -1,4 +1,3 @@
-import { noop } from '.'
 import { ColElement } from '../modules/Element'
 import { CustomEditor, EditorProps } from '../types/editor-props'
 import { CommonSetting } from '../types/common-setting'
@@ -87,7 +86,7 @@ function createComponentList(modules: RC): ComponentList {
             name: compName,
             zhName,
             iconClass,
-            editorProps = noop,
+            editorProps = () => [],
             dragConfig,
             props,
             minSpan = 4,
@@ -198,4 +197,11 @@ function decorationComponent(options: any) {
   options.watch.quickBuildSystemInjectFetchDataFlag = function() {
     this.fetchData?.()
   }
+
+  // 添加 mounted 事件抛出组件实例
+  if (!options.mounted) options.mounted = []
+  if (!Array.isArray(options.mounted)) options.mounted = [options.mounted]
+  options.mounted.push(function(this: Vue) {
+    this.$emit('componentMounted', Object.freeze(Object.create(this)))
+  })
 }

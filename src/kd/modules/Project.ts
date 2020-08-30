@@ -8,6 +8,7 @@ export interface ProjectProps {
   expire?: string
   menu?: MenuProps[]
   themeColor?: string
+  themeEl?: HTMLElement
 }
 /**
  * @description 描述一个项目
@@ -24,7 +25,7 @@ export class Project extends Theme implements ProjectProps {
   expire: string
   menu: Menu[] = []
   constructor(project: ProjectProps) {
-    super(project.themeColor || '#409EFF')
+    super(project.themeColor || '#409EFF', project.themeEl)
     this.name = project.name || ''
     this.logo = project.logo || ''
     this.expire = project.expire || ''

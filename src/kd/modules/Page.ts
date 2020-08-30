@@ -1,3 +1,4 @@
+import AsyncValidator from 'async-validator'
 import { Menu } from './Menu'
 import { Row, RowProps, ColElement } from './Element'
 import { cloneDeep } from 'lodash'
@@ -162,6 +163,81 @@ export class Page implements PageProps {
   }
   setEditingElement(el: ColElement | null) {
     this.editingElement = el
+  }
+  async validate() {
+    const elements = this.rows.map(row => row.elements).flat()
+    const asyncIterable = {
+      [Symbol.asyncIterator]() {
+        return {
+          i: 0,
+          next() {
+            if (this.i < elements.length) {
+              const element = elements[this.i++]
+              const editorProps = element.getEditorProps()
+              let descriptor: any = null
+              editorProps.forEach(section => {
+                section.props.forEach(({ prop, formItemProps }) => {
+                  if (formItemProps?.rules) {
+                    if (!descriptor) descriptor = {}
+                    descriptor[prop] = formItemProps?.rules
+                  }
+                })
+              })
+              if (descriptor) {
+                const validator = new AsyncValidator(descriptor)
+                return validator
+                  .validate(element.props, { firstFields: true, first: true })
+                  .then(() => {
+                    return { value: void 0, done: false }
+                  })
+                  .catch(({ errors, fields }) => {
+                    return Promise.reject({ errors, fields, element })
+                  })
+              }
+              return Promise.resolve({ value: void 0, done: false })
+            }
+            return Promise.resolve({ value: void 0, done: true })
+          }
+        }
+      }
+    }
+    try {
+      for await (const num of asyncIterable) {
+        // 校验通过
+        num
+      }
+    } catch ({ errors: [{ message }], element }) {
+      console.log('asyncIterable:err', message)
+    }
+    // this.rows.some(({ elements }) => {
+    //   elements.forEach(element => {
+    //     const editorProps = element.getEditorProps()
+    //     editorProps.forEach(section => {
+    //       section.props.forEach(({ prop, formItemProps }) => {
+    //         if (formItemProps?.rules) {
+    //           descriptor[prop] = formItemProps?.rules
+    //           model[prop] = prop
+    //         }
+    //       })
+    //     })
+    //   })
+    //   return { descriptor, model }
+    // })
+    // const descriptor = {}
+
+    // const validator = new AsyncValidator(descriptor)
+    // const model = {}
+
+    // model[this.prop] = this.fieldValue
+
+    // validator
+    //   .validate(model, { firstFields: true, first: true })
+    //   .then((...args) => {
+    //     debugger
+    //   })
+    //   .catch((...args) => {
+    //     debugger
+    //   })
   }
   toJSON() {
     return { ...this, editingElement: null, parent: void 0 }

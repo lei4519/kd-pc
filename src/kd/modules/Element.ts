@@ -46,7 +46,7 @@ export class Row {
   elements: ColElement[] = []
   constructor(row: RowProps) {
     this.style = row.style || {
-      marginBottom: '16px'
+      marginBottom: '16'
     }
     row.elements && this.addElements(row.elements)
   }
@@ -117,8 +117,18 @@ export class Row {
     })
   }
   getStyle(): Partial<CSSStyleDeclaration> {
+    //如果有其他单位需要处理的增加 「单位：['属性名']、px:['fontSize','width']
+    const addUnit = {
+      px: ['marginBottom']
+    }
+    const style: any = { ...this.style }
+    Object.entries(addUnit).forEach(([unit, props]) => {
+      props.forEach((prop: string) => {
+        style[prop] = style[prop] + unit
+      })
+    })
     return {
-      ...this.style,
+      ...style,
       display: 'flex',
       flexWrap: 'wrap'
     }
@@ -175,21 +185,105 @@ export class ColElement {
     this.minSpan = element.minSpan || 1
     this.maxSpan = element.maxSpan || 24
     this.path = element.path
-    this.style = cloneDeep(element.style || {})
+    this.style = cloneDeep(
+      element.style || {
+        fontSize: '12',
+        color: '',
+        fontWeight: 'inherit',
+        fontStyle: 'inherit'
+      }
+    )
     this.props = cloneDeep(element.props)
   }
   getEditorProps(): EditorSection[] {
     const { editorProps, commonSetting } = pathToComp[this.path]
-    const isFalse = (v: boolean) => v === false
+    const isTrue = (v: boolean) => v === true
     const common: EditorSection[] = [
-      ...(isFalse(commonSetting.font)
-        ? []
-        : [
+      ...(isTrue(commonSetting.font)
+        ? ([
             {
               title: '字体设置',
-              props: []
+              props: [
+                {
+                  label: '字体颜色',
+                  prop: 'style.color',
+                  type: 'colorPicker',
+                  defaultValue: ''
+                },
+                {
+                  label: '字体大小',
+                  prop: 'style.fontSize',
+                  type: 'inputNumber',
+                  defaultValue: this.style.fontSize
+                },
+                {
+                  label: '字体',
+                  prop: 'style.fontFamily',
+                  type: 'select',
+                  defaultValue: '微软雅黑',
+                  options: [
+                    {
+                      label: '微软雅黑',
+                      value: '微软雅黑'
+                    },
+                    {
+                      label: 'Helvetica',
+                      value: 'Helvetica'
+                    },
+                    {
+                      label: 'STHeiti',
+                      value: 'STHeiti'
+                    },
+                    {
+                      label: 'Droidsansfallback',
+                      value: 'Droidsansfallback'
+                    }
+                  ]
+                },
+                {
+                  label: '对齐方式',
+                  prop: 'style.textAlign',
+                  type: 'select',
+                  defaultValue: 'left',
+                  options: [
+                    {
+                      label: '左',
+                      value: 'left'
+                    },
+                    {
+                      label: '居中',
+                      value: 'center'
+                    },
+                    {
+                      label: '右',
+                      value: 'right'
+                    }
+                  ]
+                },
+                {
+                  label: '粗体',
+                  prop: 'style.fontWeight',
+                  type: 'switch',
+                  defaultValue: this.style.fontWeight,
+                  formCompProps: {
+                    'active-value': 'bold',
+                    'inactive-value': 'inherit'
+                  }
+                },
+                {
+                  label: '斜体',
+                  prop: 'style.fontStyle',
+                  type: 'switch',
+                  defaultValue: this.style.fontStyle,
+                  formCompProps: {
+                    'active-value': 'italic',
+                    'inactive-value': 'inherit'
+                  }
+                }
+              ]
             }
-          ])
+          ] as EditorSection[])
+        : [])
       // {
       //   title: '通用设置',
       //   props: [
@@ -212,10 +306,7 @@ export class ColElement {
       //   ]
       // }
     ]
-    return cloneDeep([
-      ...common,
-      ...editorProps.call(Object.create(this.renderComponent!))
-    ])
+    return cloneDeep([...common, ...editorProps.call(this.renderComponent!)])
   }
   setProps(props: object) {
     Object.entries(props).forEach(([props, value]) => {
@@ -229,16 +320,28 @@ export class ColElement {
     })
   }
   setRenderComponent(renderComponent: Component) {
-    this.renderComponent = Object.create(renderComponent)
+    this.renderComponent = renderComponent
   }
   getStyle(): Partial<CSSStyleDeclaration> {
+    //如果有其他单位需要处理的增加 「单位：['属性名']、px:['fontSize','width']
+    const addUnit = {
+      px: ['fontSize']
+    }
+    const style: any = { ...this.style }
+    Object.entries(addUnit).forEach(([unit, props]) => {
+      props.forEach((prop: string) => {
+        style[prop] = style[prop] + unit
+      })
+    })
     return {
       flex: '1',
       minWidth: `${(this.minSpan / 24) * 100}%`,
-      maxWidth: `${(this.maxSpan / 24) * 100}%`
+      maxWidth: `${(this.maxSpan / 24) * 100}%`,
+
+      ...style
     }
   }
   toJSON() {
-    return { ...this, parent: void 0 }
+    return { ...this, parent: void 0, renderComponent: void 0 }
   }
 }
