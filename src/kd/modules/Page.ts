@@ -1,7 +1,8 @@
 import AsyncValidator from 'async-validator'
 import { Menu } from './Menu'
 import { Row, RowProps, ColElement } from './Element'
-import { cloneDeep } from 'lodash'
+import { cloneDeep, get } from 'lodash'
+import { Message } from 'element-ui'
 let id = 0
 /**
  * @description 页面布局信息
@@ -165,7 +166,10 @@ export class Page implements PageProps {
     this.editingElement = el
   }
   async validate() {
+    // 所有元素拍平成一个数组，方便遍历
     const elements = this.rows.map(row => row.elements).flat()
+    if (!elements?.length) return Promise.resolve({ value: void 0, done: true })
+    // 定义异步遍历器
     const asyncIterable = {
       [Symbol.asyncIterator]() {
         return {
@@ -174,25 +178,43 @@ export class Page implements PageProps {
             if (this.i < elements.length) {
               const element = elements[this.i++]
               const editorProps = element.getEditorProps()
+              // 记录 rules
               let descriptor: any = null
-              editorProps.forEach(section => {
+              // 记录 section 索引
+              const sectionMap: any = {}
+              // 从 editorProps 中取出 rules 规则
+              editorProps.forEach((section, i) => {
                 section.props.forEach(({ prop, formItemProps }) => {
                   if (formItemProps?.rules) {
                     if (!descriptor) descriptor = {}
                     descriptor[prop] = formItemProps?.rules
+                    sectionMap[prop] = i
                   }
                 })
               })
               if (descriptor) {
                 const validator = new AsyncValidator(descriptor)
-                return validator
-                  .validate(element.props, { firstFields: true, first: true })
-                  .then(() => {
-                    return { value: void 0, done: false }
-                  })
-                  .catch(({ errors, fields }) => {
-                    return Promise.reject({ errors, fields, element })
-                  })
+                const model: any = {}
+                Object.keys(descriptor).forEach(prop => {
+                  // 处理路径
+                  model[prop] = get(element.props, prop)
+                })
+                return new Promise<{ value: any; done: boolean }>(
+                  (resolve, reject) => {
+                    validator.validate(
+                      model,
+                      { firstFields: true, first: true },
+                      (errors, fields) => {
+                        if (errors) {
+                          const sectionIdx = sectionMap[Object.keys(fields)[0]]
+                          return reject({ errors, fields, element, sectionIdx })
+                        } else {
+                          return resolve({ value: void 0, done: false })
+                        }
+                      }
+                    )
+                  }
+                )
               }
               return Promise.resolve({ value: void 0, done: false })
             }
@@ -206,38 +228,22 @@ export class Page implements PageProps {
         // 校验通过
         num
       }
-    } catch ({ errors: [{ message }], element }) {
-      console.log('asyncIterable:err', message)
+    } catch ({ errors: [{ message }], element, sectionIdx }) {
+      Message.error(message)
+      this.setEditingElement(element)
+      // 表单渲染后打开 immediateValidate 标志
+      setTimeout(() => {
+        element.immediateValidate = {
+          sectionIdx
+        }
+      })
+      // watch 调用后关闭 immediateValidate 标志
+      setTimeout(() => {
+        element.immediateValidate = null
+      })
+      return Promise.reject()
     }
-    // this.rows.some(({ elements }) => {
-    //   elements.forEach(element => {
-    //     const editorProps = element.getEditorProps()
-    //     editorProps.forEach(section => {
-    //       section.props.forEach(({ prop, formItemProps }) => {
-    //         if (formItemProps?.rules) {
-    //           descriptor[prop] = formItemProps?.rules
-    //           model[prop] = prop
-    //         }
-    //       })
-    //     })
-    //   })
-    //   return { descriptor, model }
-    // })
-    // const descriptor = {}
-
-    // const validator = new AsyncValidator(descriptor)
-    // const model = {}
-
-    // model[this.prop] = this.fieldValue
-
-    // validator
-    //   .validate(model, { firstFields: true, first: true })
-    //   .then((...args) => {
-    //     debugger
-    //   })
-    //   .catch((...args) => {
-    //     debugger
-    //   })
+    return Promise.resolve()
   }
   toJSON() {
     return { ...this, editingElement: null, parent: void 0 }

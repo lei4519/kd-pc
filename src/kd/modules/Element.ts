@@ -162,6 +162,7 @@ export interface ColElementProp {
  * @property {} props 组件的props，组件配置区写入属性的地方
  * @property {} draggable 是否可拖拽
  * @property {} renderComponent 搭建页面中真实渲染的只读Vue组件实例，传给配置区取值使用
+ * @property {} immediateValidate 配置区渲染后立即校验表单，配合 Page.validate 使用
  */
 let componentID = 0
 export class ColElement {
@@ -178,6 +179,7 @@ export class ColElement {
   draggable = true
   style: Partial<CSSStyleDeclaration>
   renderComponent?: Component | null = null
+  immediateValidate: { [key: string]: any } | null = null
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
     this.zhName = element.zhName || '未命名'
@@ -342,6 +344,11 @@ export class ColElement {
     }
   }
   toJSON() {
-    return { ...this, parent: void 0, renderComponent: void 0 }
+    return {
+      ...this,
+      parent: void 0,
+      renderComponent: void 0,
+      immediateValidate: void 0
+    }
   }
 }

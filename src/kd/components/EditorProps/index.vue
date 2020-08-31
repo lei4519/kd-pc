@@ -1,6 +1,6 @@
 <template>
   <div class="editor-component-wrapper">
-    <el-collapse value="page-setting">
+    <el-collapse :value="sectionIdx">
       <el-collapse-item title="页面设置" name="page-setting">
         <el-form>
           <el-form-item label="主题色设置">
@@ -55,6 +55,18 @@ export default {
       type: Object,
       default() {
         return null
+      }
+    }
+  },
+  data() {
+    return {
+      sectionIdx: 'page-setting'
+    }
+  },
+  watch: {
+    'element.immediateValidate'(v) {
+      if (v) {
+        this.sectionIdx = `${v.sectionIdx}`
       }
     }
   },

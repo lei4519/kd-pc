@@ -541,8 +541,15 @@ export default {
           this.visiblePreviewPage = true
         },
         save: () => {
-          sessionStorage.setItem('project', JSON.stringify(this.project))
-          this.$message.success('保存成功')
+          this.page
+            .validate()
+            .then(() => {
+              sessionStorage.setItem('project', JSON.stringify(this.project))
+              this.$message.success('保存成功')
+            })
+            .catch(() => {
+              //
+            })
         },
         exit: () => {
           this.$emit('update:visible', false)

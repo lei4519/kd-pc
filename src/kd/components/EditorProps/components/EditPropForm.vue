@@ -1,7 +1,7 @@
 <template>
-  <el-form ref="form" class="edit-props-form-wrapper" size="mini">
+  <el-form ref="form" :model="form" class="edit-props-form-wrapper" size="mini">
     <el-form-item
-      v-for="(item, i) in list"
+      v-for="(item, i) in encodePropList"
       :key="i"
       :prop="item.prop"
       :class="{ hasLabel: item.label }"
@@ -203,8 +203,16 @@ export default {
   },
   data() {
     return {
+      encodePropList: [],
       form: {},
       dialogVisibles: {}
+    }
+  },
+  watch: {
+    'element.immediateValidate'(v) {
+      if (v) {
+        this.$refs.form.validate()
+      }
     }
   },
   created() {
@@ -214,10 +222,9 @@ export default {
   methods: {
     initForm() {
       // 受控表单 需要以下处理
-      this.form = this.list.reduce(
-        (
-          form,
-          {
+      const [form, list] = this.list.reduce(
+        ([form, list], item) => {
+          const {
             type,
             prop,
             inputProp,
@@ -225,27 +232,36 @@ export default {
             defaultValue,
             inputDefaultValue,
             selectDefaultValue
-          }
-        ) => {
+          } = item
           if (type === 'selectInput') {
-            form[inputProp] = this.element.props[inputProp] || inputDefaultValue
-            this.$set(this.dialogVisibles, inputProp, false)
-            form[selectProp] =
+            const encodeInputProp = this.encodeProp(inputProp)
+            const encodeSelectProp = this.encodeProp(selectProp)
+            form[encodeInputProp] =
+              this.element.props[inputProp] || inputDefaultValue
+            this.$set(this.dialogVisibles, encodeInputProp, false)
+            form[encodeSelectProp] =
               this.element.props[selectProp] || selectDefaultValue
-            this.$set(this.dialogVisibles, selectProp, false)
+            this.$set(this.dialogVisibles, encodeSelectProp, false)
+            item.inputProp = encodeInputProp
+            item.selectProp = encodeSelectProp
           } else {
-            form[prop] = this.element.props[prop] || defaultValue
+            const encodeProp = this.encodeProp(prop)
+            form[encodeProp] = this.element.props[prop] || defaultValue
             // 控制dialog显示
-            this.$set(this.dialogVisibles, prop, false)
+            this.$set(this.dialogVisibles, encodeProp, false)
             if (type === 'dataSource') {
               // 记录一下，发送请求事件中方便校验
-              this.dataSourceProp = prop
+              this.dataSourceProp = encodeProp
             }
+            item.prop = encodeProp
           }
-          return form
+          list.push(item)
+          return [form, list]
         },
-        { dataSourceType: 1 }
+        [{ dataSourceType: 1 }, []]
       )
+      this.form = form
+      this.encodePropList = list
     },
     showDialog(prop) {
       this.dialogVisibles[prop] = true
@@ -255,7 +271,7 @@ export default {
     }, 300),
     setProps(prop, value) {
       this.element.setProps({
-        [prop]: cloneDeep(value)
+        [this.decodeProp(prop)]: cloneDeep(value)
       })
     },
     setElementProps(index, prop, value) {
@@ -280,6 +296,14 @@ export default {
       if (!this.form[this.dataSourceProp])
         return this.$message.error('请求 URL 不能为空')
       this.setProps('quickBuildSystemInjectFetchDataFlag', Math.random())
+    },
+    encodeProp(prop) {
+      // element 会处理 prop 路径，所以 form 的 prop 中不能带有 .
+      // 将 . 处理成 |
+      return prop.replace(/\./g, '___')
+    },
+    decodeProp(prop) {
+      return prop.replace(/___/g, '.')
     }
   }
 }
