@@ -192,7 +192,9 @@ export class ColElement {
         fontSize: '12',
         color: '',
         fontWeight: 'inherit',
-        fontStyle: 'inherit'
+        fontStyle: 'inherit',
+        textAlign: 'left',
+        fontFamily: '微软雅黑'
       }
     )
     this.props = cloneDeep(element.props)
@@ -210,7 +212,7 @@ export class ColElement {
                   label: '字体颜色',
                   prop: 'style.color',
                   type: 'colorPicker',
-                  defaultValue: ''
+                  defaultValue: this.style.color
                 },
                 {
                   label: '字体大小',
@@ -222,7 +224,7 @@ export class ColElement {
                   label: '字体',
                   prop: 'style.fontFamily',
                   type: 'select',
-                  defaultValue: '微软雅黑',
+                  defaultValue: this.style.fontFamily,
                   options: [
                     {
                       label: '微软雅黑',
@@ -246,7 +248,7 @@ export class ColElement {
                   label: '对齐方式',
                   prop: 'style.textAlign',
                   type: 'select',
-                  defaultValue: 'left',
+                  defaultValue: this.style.textAlign,
                   options: [
                     {
                       label: '左',
@@ -261,54 +263,17 @@ export class ColElement {
                       value: 'right'
                     }
                   ]
-                },
-                {
-                  label: '粗体',
-                  prop: 'style.fontWeight',
-                  type: 'switch',
-                  defaultValue: this.style.fontWeight,
-                  formCompProps: {
-                    'active-value': 'bold',
-                    'inactive-value': 'inherit'
-                  }
-                },
-                {
-                  label: '斜体',
-                  prop: 'style.fontStyle',
-                  type: 'switch',
-                  defaultValue: this.style.fontStyle,
-                  formCompProps: {
-                    'active-value': 'italic',
-                    'inactive-value': 'inherit'
-                  }
                 }
               ]
             }
           ] as EditorSection[])
         : [])
-      // {
-      //   title: '通用设置',
-      //   props: [
-      //     {
-      //       label: '加载模式',
-      //       prop: 'ajaxLoadingMode',
-      //       type: 'select',
-      //       defaultValue: 'skeleton',
-      //       options: [
-      //         {
-      //           label: 'loading',
-      //           value: 'loading'
-      //         },
-      //         {
-      //           label: '骨架屏',
-      //           value: 'skeleton'
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // }
     ]
-    return cloneDeep([...common, ...editorProps.call(this.renderComponent!)])
+
+    return cloneDeep([
+      ...editorProps.call(Object.create(this.renderComponent!)),
+      ...common
+    ])
   }
   setProps(props: object) {
     Object.entries(props).forEach(([props, value]) => {
