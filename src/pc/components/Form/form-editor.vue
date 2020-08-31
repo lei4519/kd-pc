@@ -8,19 +8,30 @@
 <template>
   <div>
     <div class="component-btn">
-      <el-button v-for="(item, index) in components" v-bind:key="index" plain @click="addComponent(item)">{{item.name}}</el-button>
+      <el-button
+        v-for="(item, index) in components"
+        v-bind:key="index"
+        plain
+        @click="addComponent(item)"
+        >{{ item.name }}</el-button
+      >
     </div>
     <div class="com-setting" v-if="value.length > 0">
       <h2>组件配置</h2>
-      <div v-for='(item, index) in value' v-bind:key="index">
-        <el-button plain @click="changeSetting(index)">{{item.label}}</el-button>
+      <div v-for="(item, index) in value" v-bind:key="index">
+        <el-button plain @click="changeSetting(index)">{{
+          item.label
+        }}</el-button>
         <el-tooltip
           class="ml-4 hover-color click-effect"
           effect="dark"
           content="删除"
           placement="top"
         >
-          <el-button icon="el-icon-delete-solid" @click.native="deleteComponent(index)"></el-button>
+          <el-button
+            icon="el-icon-delete-solid"
+            @click.native="deleteComponent(index)"
+          ></el-button>
         </el-tooltip>
         <el-tooltip
           class="ml-4 hover-color click-effect"
@@ -28,12 +39,21 @@
           content="编辑"
           placement="top"
         >
-          <el-button icon="el-icon-edit" @click.native="editComponent(index)"></el-button>
+          <el-button
+            icon="el-icon-edit"
+            @click.native="editComponent(index)"
+          ></el-button>
         </el-tooltip>
       </div>
     </div>
 
-    <el-drawer title="组件配置" :visible.sync="drawer" :direction="direction" :modal="false" :append-to-body='true'>
+    <el-drawer
+      title="组件配置"
+      :visible.sync="drawer"
+      :direction="direction"
+      :modal="false"
+      :append-to-body="true"
+    >
       <div class="container">
         <el-form ref="form" :model="form" label-width="auto">
           <div v-if="currentType === 'input'">
@@ -52,7 +72,11 @@
               <el-input v-model="form.label"></el-input>
             </el-form-item>
             <el-form-item label="选项">
-              <el-row v-for="(option, index) in form.options" :key="index" class="select-option">
+              <el-row
+                v-for="(option, index) in form.options"
+                :key="index"
+                class="select-option"
+              >
                 <el-input v-model="form.options[index]"></el-input>
                 <el-tooltip
                   class="ml-4 hover-color click-effect"
@@ -60,12 +84,19 @@
                   content="删除"
                   placement="top"
                 >
-                  <el-button icon="el-icon-remove-outline" @click.native="deleteSelectOption(index)"></el-button>
+                  <el-button
+                    icon="el-icon-remove-outline"
+                    @click.native="deleteSelectOption(index)"
+                  ></el-button>
                 </el-tooltip>
               </el-row>
             </el-form-item>
             <el-form-item label="">
-              <el-button icon="el-icon-circle-plus-outline" @click.native="addSelectOption">增加选项</el-button>
+              <el-button
+                icon="el-icon-circle-plus-outline"
+                @click.native="addSelectOption"
+                >增加选项</el-button
+              >
             </el-form-item>
             <el-form-item label="数据字段名">
               <el-input v-model="form.dataField"></el-input>
@@ -99,8 +130,7 @@ export default {
     value: {
       type: Array,
       default() {
-        return [
-        ]
+        return []
       }
     }
   },
@@ -139,14 +169,14 @@ export default {
       this.form = this.value[index]
       this.drawer = true
     },
-    addComponent({type, label}) {
+    addComponent({ type, label }) {
       this.value.push({
         label: label || '标题',
         type: type,
         props: {
           placeholder: '请选择'
         },
-        ...(type === 'select' ? {options: ['选项']} : [])
+        ...(type === 'select' ? { options: ['选项'] } : [])
       })
       this.$emit('change', this.value)
       this.currentIndex = this.value.length - 1
@@ -167,7 +197,7 @@ export default {
     },
     onSubmit() {
       Object.assign(this.value[this.currentIndex], this.form)
-      console.log(this.value);
+      console.log(this.value)
       this.drawer = false
       this.$emit('change', this.value)
     }

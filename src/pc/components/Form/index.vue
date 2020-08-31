@@ -8,12 +8,17 @@
 <template>
   <div class="search-wrapper">
     <el-row>
-      <el-form ref="form" label-width="auto" label-position="left" v-if="searchArray.length > 0">
+      <el-form
+        ref="form"
+        label-width="auto"
+        label-position="left"
+        v-if="searchArray.length > 0"
+      >
         <el-col :span="8" v-for="(item, i) in searchArray" :key="i">
           <el-form-item :label="item.label">
             <el-input
               v-if="item.type === 'input'"
-              v-bind="item.props || {placeholder: `请选择${item.label}`}"
+              v-bind="item.props || { placeholder: `请选择${item.label}` }"
               v-model="searchModel[item.prop]"
             ></el-input>
             <Select
@@ -21,9 +26,10 @@
               :prop="item.prop"
               :value="searchModel[item.prop]"
               class="select-city"
-              v-bind="item.props || {placeholder: `请选择${item.label}`}"
+              v-bind="item.props || { placeholder: `请选择${item.label}` }"
               :data="item.options"
-              v-else-if="item.type === 'select'">
+              v-else-if="item.type === 'select'"
+            >
             </Select>
           </el-form-item>
         </el-col>
@@ -35,10 +41,10 @@
 <script>
 import Select from '@/kd/components/Form/Select'
 export default {
+  name: 'Form',
   components: {
     Select
   },
-  name: 'Form',
   zhName: '表单组件',
   iconClass: 'biaodanzujian-biaoge',
   minSpan: 8,
@@ -46,8 +52,7 @@ export default {
     searchArray: {
       type: Array,
       default() {
-        return [
-        ]
+        return []
       }
     }
   },
@@ -79,9 +84,9 @@ export default {
 }
 </script>
 <style lang="scss">
-  .el-form-item {
-    margin-bottom: 22px !important;
-  }
+.el-form-item {
+  margin-bottom: 22px !important;
+}
 </style>
 <style lang="scss" scoped>
 .el-row {

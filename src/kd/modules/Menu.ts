@@ -40,7 +40,7 @@ export class Menu implements MenuProps {
       child = [child]
     }
     child.forEach(c => {
-      const isMenu = (t: ChildrenProps): t is MenuProps  => t.type === 'menu'
+      const isMenu = (t: ChildrenProps): t is MenuProps => t.type === 'menu'
       const child = isMenu(c) ? new Menu(c) : new Page(c)
       child.parent = this
       this.children.push(child)

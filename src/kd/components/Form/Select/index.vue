@@ -8,7 +8,12 @@
     :multiple="multiple"
     :placeholder="placeholder"
   >
-    <el-option v-for="(label, value) in  (list || data)" :key="value" :label="label" :value="value"></el-option>
+    <el-option
+      v-for="(label, value) in list || data"
+      :key="value"
+      :label="label"
+      :value="value"
+    ></el-option>
   </el-select>
 </template>
 <script>
@@ -90,7 +95,7 @@ export default {
             label: '是否筛选',
             prop: 'filterable',
             type: 'switch'
-          },
+          }
         ]
       }
     ]
@@ -101,10 +106,6 @@ export default {
       city: '',
       isMultiple: ''
     }
-  },
-  mounted() {
-    this.isMultiple = this.multiple
-    this.city = this.isMultiple ? this.choosevalue.split(',') : this.choosevalue
   },
   watch: {
     city(newVal, oldVal) {
@@ -145,6 +146,10 @@ export default {
       this.callback(this.city)
     }
   },
+  mounted() {
+    this.isMultiple = this.multiple
+    this.city = this.isMultiple ? this.choosevalue.split(',') : this.choosevalue
+  },
   methods: {
     cityChange() {
       this.callback(this.city)
@@ -152,4 +157,3 @@ export default {
   }
 }
 </script>
-
