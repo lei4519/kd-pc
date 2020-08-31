@@ -529,7 +529,7 @@ export default {
       }[type]())
     },
     handleOperate(type) {
-      ;({
+      return {
         undo: () => {
           this.undoRedoHistory.undo()
         },
@@ -537,18 +537,19 @@ export default {
           this.undoRedoHistory.redo()
         },
         preview: () => {
-          this.handleOperate('save')
-          this.visiblePreviewPage = true
+          this.handleOperate('save').then(() => {
+            this.visiblePreviewPage = true
+          })
         },
         save: () => {
-          this.page
+          return this.page
             .validate()
             .then(() => {
               sessionStorage.setItem('project', JSON.stringify(this.project))
               this.$message.success('保存成功')
             })
             .catch(() => {
-              //
+              return Promise.reject()
             })
         },
         exit: () => {
@@ -559,7 +560,7 @@ export default {
           this.asideLayout = this.asideLayout === 'left' ? 'right' : 'left'
           localStorage.setItem('edit-aside-layout', this.asideLayout)
         }
-      }[type]())
+      }[type]()
     },
     onShortcutKey(e) {
       const { metaKey, shiftKey, ctrlKey, keyCode } = e

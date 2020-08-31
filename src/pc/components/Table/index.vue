@@ -541,7 +541,10 @@ export default {
           method: 'post',
           params,
           responseType: 'blob'
-        }).then(({ data: blob, headers }) => {
+        }).then(({ data: blob, headers } = {}) => {
+          if (!blob) {
+            return this.$message.error('接口错误，请返回下载数据')
+          }
           const url = window.URL.createObjectURL(
             new Blob([blob], { type: blob.type })
           )
@@ -562,7 +565,10 @@ export default {
             method: 'post',
             params
           })
-      ).then(({ data, total }) => {
+      ).then(({ data, total } = {}) => {
+        if (!data || !data.columns || !data.data) {
+          return this.$message.error('接口错误，请检查接口返回的数据结构')
+        }
         this.processMergeCol(data.columns)
         this.tableData = data.data
         this.noDataText = data.data.length ? '' : this.emptyText

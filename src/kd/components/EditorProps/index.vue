@@ -1,6 +1,6 @@
 <template>
   <div class="editor-component-wrapper">
-    <el-collapse :value="sectionIdx">
+    <el-collapse :value="sectionIdx" ref="collapse">
       <el-collapse-item title="页面设置" name="page-setting">
         <el-form>
           <el-form-item label="主题色设置">
@@ -67,6 +67,9 @@ export default {
     'element.immediateValidate'(v) {
       if (v) {
         this.sectionIdx = `${v.sectionIdx}`
+        if (this.$refs.collapse) {
+          this.$refs.collapse.activeNames = [this.sectionIdx]
+        }
       }
     }
   },
