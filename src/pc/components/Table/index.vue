@@ -62,6 +62,7 @@
     </div>
     <div v-skeleton class="table-wrap">
       <el-table
+        :height="tableHeight"
         ref="elTable"
         size="mini"
         :class="{ 'cursor-pointer': $attrs['highlight-current-row'] }"
@@ -228,9 +229,9 @@ export default {
       const dropRow = layouts[dropRowIndx]
       if (
         dropRow &&
-        dropRow.reduce((i, name) => (name === 'Table' ? i + 1 : i), 0) >= 2
+        dropRow.some(name => !(name === 'Table' || name === 'Chart'))
       ) {
-        this.$message.error('每行内只能放置两个 Table 组件')
+        this.$message.error('当前组件只能与表格、图标组件放置一行内')
         return false
       }
     }
@@ -448,6 +449,24 @@ export default {
         end,
         '{y}-{m}-{d}'
       )}  |  ${(end - start) / 3600 / 1000 / 24}天`
+    },
+    tableHeight() {
+      // 布局信息
+      const { layouts, rowIndex } = this.$attrs.layouts
+      // 所在行只有一个元素
+      if (layouts[rowIndex].length === 1) {
+        return void 0
+      }
+      let height = 238
+      const PAGE_HEIGHT = 26
+      const SEARCH_HEIGHT = 12
+      if (!this.showPage) {
+        height += PAGE_HEIGHT
+      }
+      if (!this.showSearch) {
+        height += SEARCH_HEIGHT
+      }
+      return height
     }
   },
   watch: {
@@ -499,7 +518,8 @@ export default {
     this.genMockData()
   },
   methods: {
-    // TODO 判断是否多列 固定高度
+    // TODO getLayout一个事件循环只执行一次
+    // TODO canDrop 事件行调用
     genMockData(syncRetrueData = false) {
       const res = {
         code: 0,
@@ -545,7 +565,7 @@ export default {
               align: 'right'
             }
           ],
-          data: Array(5).fill({
+          data: Array(15).fill({
             city: '北京',
             pv: (Math.random() * 1000) | 0,
             uv: (Math.random() * 1000) | 0,
@@ -673,21 +693,28 @@ export default {
 .title-wrap {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   .title {
+    line-height: 28px;
     font-size: 14px;
     color: #5f6e82;
   }
   .desc {
-    margin-top: 4px;
     font-size: 12px;
+    line-height: 1;
     color: #8492a6;
   }
 }
 .table-wrap {
   color: #475669;
   /deep/ .el-table {
+    &::before {
+      display: none;
+    }
+    &.el-table--mini td,
+    &.el-table--mini th {
+      padding: 7px 0;
+    }
     &.cursor-pointer .el-table__body-wrapper {
       cursor: pointer;
     }
@@ -695,6 +722,7 @@ export default {
       th {
         background-color: #f5f8fc;
         color: #1f2d3d;
+        font-weight: bold;
         &.is-leaf {
           border-bottom: none;
         }
@@ -715,7 +743,8 @@ export default {
 }
 .table-pagination {
   float: right;
-  margin-top: 16px;
+  margin-top: 4px;
+  padding: 0 4px;
   color: rgba(0, 0, 0, 0.6);
 }
 .operate-btn-wrap {
@@ -747,9 +776,11 @@ export default {
   }
 }
 /deep/ .search-date-input {
-  width: 220px;
+  width: auto;
+  padding: 4px;
   .el-icon-date {
     flex: 0 0 25px;
+    margin: 0;
   }
   .el-range-input {
     flex: 1;
@@ -757,6 +788,11 @@ export default {
   .el-range-separator {
     flex: 0 0 20px;
   }
+  .el-range__close-icon {
+    display: none;
+  }
+  .el-range-input,
+  .el-range-separator,
   .el-range__close-icon {
     display: none;
   }

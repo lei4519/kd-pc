@@ -16,6 +16,7 @@ declare module 'vue/types/options' {
    * @property {} dragConfig 拖拽配置
    * @property {} dragConfig.max 当前页面可以放置当前组件的最大数量，默认无限制, 1 以上为有效值
    * @property {} dragConfig.onDrop 拖拽放下事件，接收当前页面布局信息，返回boolean来控制是否可以被放下。函数内的this为编辑区组件实例
+   * @property { LayoutInfo } this.$attrs.layouts 布局信息，详情查看 LayoutInfo 接口
    */
   export interface ComponentOptions<V extends Vue> {
     zhName?: string
