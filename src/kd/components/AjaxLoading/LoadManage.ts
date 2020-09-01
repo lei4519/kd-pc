@@ -52,10 +52,10 @@ export class LoadManage {
       this.execingList.delete(getDataFn)
     }
   }
-  private _exec(getDataFn: GetDataFn) {
+  private _exec(getDataFn: GetDataFn, args: any[]) {
     if (this.execingList.has(getDataFn)) return
     this.runEffect('open', getDataFn)
-    const getDataPromise = getDataFn()
+    const getDataPromise = getDataFn(...args)
     if (!getDataPromise.then) {
       this.runEffect('close', getDataFn)
       return console.error('ajax-loading组件的getData函数，返回值必须为promise')
@@ -71,16 +71,16 @@ export class LoadManage {
         return Promise.reject(err)
       })
   }
-  exec(getDataFn: GetDataFn | GetDataFn[] | undefined) {
+  exec(getDataFn: GetDataFn | GetDataFn[] | undefined, args: any[] = []) {
     if (getDataFn === void 0) {
       // 不传值 所有请求函数全部执行
-      this.loadMap.forEach((_, fn) => this._exec(fn))
+      this.loadMap.forEach((_, fn) => this._exec(fn, args))
     } else if (Array.isArray(getDataFn)) {
       // 数组 只执行传入的数组函数
-      getDataFn.forEach(fn => this._exec(fn))
+      getDataFn.forEach(fn => this._exec(fn, args))
     } else {
       // 单个函数 只执行当前函数
-      return this._exec(getDataFn)
+      return this._exec(getDataFn, args)
     }
   }
 }

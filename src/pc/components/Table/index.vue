@@ -5,12 +5,19 @@
         <div v-skeleton="{ width: '100px', height: '20px' }">
           {{ tableTitle }}
         </div>
-        <div class="desc" v-skeleton="{ width: '300px', height: '20px' }">
-          2020-01-01 ~ 2020-08-22 | 过去 30 天
+        <div
+          class="desc"
+          v-if="showSearch"
+          v-skeleton="{ width: '300px', height: '20px' }"
+        >
+          {{ dateDesc }}
         </div>
       </div>
       <div class="operate-wrap">
-        <div class="operate-btn-wrap" v-if="operateList.length">
+        <div
+          class="operate-btn-wrap"
+          v-if="operateList.length || download || showSearch"
+        >
           <template v-for="(operate, i) in operateList">
             <Expand
               :key="i"
@@ -29,6 +36,27 @@
               >{{ operate.label }}</el-button
             >
           </template>
+          <el-date-picker
+            class="search-date-input"
+            v-if="showSearch"
+            v-model="searchDateModel"
+            type="daterange"
+            size="mini"
+            :clearable="false"
+            :pickerOptions="pickerOptions"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+          />
+          <el-button
+            v-if="download"
+            v-skeleton
+            type="primary"
+            size="mini"
+            icon="el-icon-download"
+            @click="handlerDownload"
+          >
+            下载
+          </el-button>
         </div>
       </div>
     </div>
@@ -140,12 +168,12 @@
 </template>
 
 <script>
-import { setTimeoutResolve } from '@/kd/utils'
+import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
 export default {
   name: 'Table',
   zhName: '表格组件',
   iconClass: 'biaodanzujian-biaoge',
-  minSpan: 8,
+  minSpan: 12,
   props: {
     url: {
       type: String,
@@ -167,13 +195,25 @@ export default {
       type: Boolean,
       default: true
     },
+    showSearch: {
+      type: Boolean,
+      default: true
+    },
+    defaultSearchDate: {
+      type: Number,
+      default: -7
+    },
+    searchParam: {
+      type: String,
+      default: 'date'
+    },
     pageSize: {
       type: Number,
       default: 20
     },
     download: {
       type: Boolean,
-      default: true
+      default: false
     },
     mergeCol: {
       type: Object,
@@ -314,7 +354,7 @@ export default {
             prop: 'url',
             type: 'dataSource',
             formItemProps: {
-              rules: [{ required: true, message: '数据源不能为空' }]
+              // rules: [{ required: true, message: '数据源不能为空' }]
             }
           },
           {
@@ -328,7 +368,12 @@ export default {
             prop: 'emptyText',
             type: 'input'
           },
-
+          {
+            label: '下载',
+            prop: 'download',
+            tips: '下载请求会给当前的数据源 url 加上 download=1 的参数',
+            type: 'switch'
+          },
           {
             label: '分页',
             prop: 'showPage',
@@ -340,10 +385,30 @@ export default {
             type: 'switch'
           },
           {
-            label: '下载',
-            prop: 'download',
+            label: '搜索',
+            prop: 'showSearch',
             type: 'switch'
-          }
+          },
+          ...(this.showSearch
+            ? [
+                {
+                  label: '搜索请求字段',
+                  prop: 'searchParam',
+                  tips:
+                    '日期参数格式统一为数组，第一位为开始时间，第二位为结束时间',
+                  type: 'input',
+                  formItemProps: {
+                    rules: [{ required: true, message: '请求字段不能为空' }]
+                  }
+                },
+                {
+                  label: '默认搜索时间',
+                  prop: 'defaultSearchDate',
+                  type: 'select',
+                  options: this.shortcutMap
+                }
+              ]
+            : [])
         ]
       },
       ...(this.selfColumns.length
@@ -371,63 +436,70 @@ export default {
       total: 0,
       currentPage: 1,
       defaultSort: null,
-      noDataText: ''
+      noDataText: '',
+      searchDateModel: []
+    }
+  },
+  computed: {
+    dateDesc() {
+      const [start, end] = this.searchDateModel
+
+      return `${parseTime(start, '{y}-{m}-{d}')} ~ ${parseTime(
+        end,
+        '{y}-{m}-{d}'
+      )}  |  ${(end - start) / 3600 / 1000 / 24}天`
     }
   },
   watch: {
     mergeCol() {
       this.processMergeCol()
     },
-    download: {
-      handler(v) {
-        if (v) {
-          const download = {
-            type: 'download',
-            label: '下载',
-            icon: 'el-icon-download',
-            handler: () => {
-              this.fetchData({ down: 1 })
-            }
-          }
-          const i = this.operateList.findIndex(
-            ({ type }) => type === 'download'
-          )
-          // 交换位置时需要重新渲染
-          if (i !== -1) {
-            this.operateList.splice(i, 1, download)
-          } else {
-            this.operateList.push(download)
-          }
-        } else {
-          const i = this.operateList.findIndex(
-            ({ type }) => type === 'download'
-          )
-          if (i !== -1) {
-            this.operateList.splice(i, 1)
-          }
-        }
+    searchDateModel() {
+      this.fetchData()
+    },
+    defaultSearchDate: {
+      handler(relative) {
+        this.searchDateModel = getRelativeTime(relative)
       },
       immediate: true
     }
   },
   created() {
     this._params = {}
-    this.processOptions()
+    this.shortcutMap = [
+      {
+        label: '当天',
+        value: 0
+      },
+      {
+        label: '最近一周',
+        value: -7
+      },
+      {
+        label: '最近一个月',
+        value: -30
+      },
+      {
+        label: '最近三个月',
+        value: -90
+      },
+      {
+        label: '最近一年',
+        value: -365
+      }
+    ]
+    this.pickerOptions = {
+      shortcuts: this.shortcutMap.map(({ label, value }) => ({
+        text: label,
+        onClick(picker) {
+          picker.$emit('pick', getRelativeTime(value))
+        }
+      }))
+    }
     this.genMockData()
   },
   methods: {
-    processOptions() {
-      if (this.download && this.operateList.every(o => o.type !== 'download')) {
-        this.operateList.push({
-          type: 'download',
-          label: '下载',
-          icon: 'el-icon-download',
-          handler: () => {
-            this.fetchData({ down: 1 })
-          }
-        })
-      }
-    },
+    // TODO 判断是否多列 固定高度
     genMockData(syncRetrueData = false) {
       const res = {
         code: 0,
@@ -497,10 +569,11 @@ export default {
         }
         if (col.defaultSort && !this.defaultSort) {
           this.defaultSort = { prop: item.prop, order: col.defaultSort }
-          // TODO 下一堆栈没有渲染出来？
           setTimeout(() => {
-            this.$refs.elTable &&
-              this.$refs.elTable.store.commit('sort', this.defaultSort)
+            setTimeout(() => {
+              this.$refs.elTable &&
+                this.$refs.elTable.store.commit('sort', this.defaultSort)
+            })
           })
         }
         if (col.sortable) {
@@ -523,10 +596,16 @@ export default {
       }
       this.fetchData()
     },
+    handlerDownload() {
+      this.fetchData({ download: 1 })
+    },
     fetchData(params = {}) {
       params = {
         ...params,
         ...this._params,
+        ...(this.showSearch
+          ? { [this.searchParam]: this.searchDateModel }
+          : {}),
         ...(this.showPage
           ? {
               pageSize: this.pageSize,
@@ -534,9 +613,11 @@ export default {
             }
           : {})
       }
-      if (params.down) {
-        params.page = 1
-        return this.$http({
+      if (params.download) {
+        if (this.showPage) {
+          params.page = 1
+        }
+        return this.$ajax({
           url: this.url,
           method: 'post',
           params,
@@ -583,6 +664,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss" scoped>
 .table-component-wrap {
   padding: 16px;
@@ -662,6 +744,21 @@ export default {
       margin: auto;
       background-color: #dcdfe6;
     }
+  }
+}
+/deep/ .search-date-input {
+  width: 220px;
+  .el-icon-date {
+    flex: 0 0 25px;
+  }
+  .el-range-input {
+    flex: 1;
+  }
+  .el-range-separator {
+    flex: 0 0 20px;
+  }
+  .el-range__close-icon {
+    display: none;
   }
 }
 </style>

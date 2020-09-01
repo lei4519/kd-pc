@@ -6,6 +6,9 @@ $theme-color: #409EFF;
 // 过度、动画持续时长
 $duration: .3s;
 $mainBgColor: #f7f8f9;
+// 组件 padding 值
+$component-padding: 16px;
+
 // 导出供vuex使用
 :export {
   themeColor: $theme-color;

@@ -3,14 +3,23 @@
     <el-collapse :value="sectionIdx" ref="collapse">
       <el-collapse-item title="页面设置" name="page-setting">
         <el-form>
-          <el-form-item label="主题色设置">
-            <el-color-picker
-              v-model="project.themeColor"
-              @change="updateColor"
-            ></el-color-picker>
-          </el-form-item>
-          <el-form-item label="行间距设置" v-if="element">
-            <el-input-number v-model="element.parent.style.marginBottom" />
+          <el-form-item v-if="element">
+            <span slot="label">
+              下间距
+              <template>
+                <el-tooltip
+                  effect="dark"
+                  content="当前元素所在行的下间距"
+                  placement="top"
+                >
+                  <i class="el-icon-info"></i>
+                </el-tooltip>
+              </template>
+            </span>
+            <el-input-number
+              v-model="element.parent.style.marginBottom"
+              controls-position="right"
+            />
           </el-form-item>
         </el-form>
       </el-collapse-item>
@@ -45,12 +54,6 @@ export default {
     EditPropForm
   },
   props: {
-    project: {
-      type: Object,
-      default() {
-        return {}
-      }
-    },
     element: {
       type: Object,
       default() {
@@ -60,7 +63,7 @@ export default {
   },
   data() {
     return {
-      sectionIdx: 'page-setting'
+      sectionIdx: '0'
     }
   },
   watch: {
@@ -71,11 +74,6 @@ export default {
           this.$refs.collapse.activeNames = [this.sectionIdx]
         }
       }
-    }
-  },
-  methods: {
-    updateColor() {
-      this.project.updateTheme()
     }
   }
 }

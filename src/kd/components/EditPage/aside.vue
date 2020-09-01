@@ -50,7 +50,7 @@
         </el-tab-pane>
         <el-tab-pane name="setting" key="setting">
           <span slot="label"><i class="el-icon-s-tools"></i> 设置</span>
-          <EditorProps :project="project" :element="page.editingElement" />
+          <EditorProps :element="page.editingElement" />
         </el-tab-pane>
       </el-tabs>
     </el-aside>

@@ -209,6 +209,9 @@ export default {
     }
   },
   watch: {
+    list() {
+      this.initForm()
+    },
     'element.immediateValidate'(v) {
       if (v) {
         this.$refs.form.validate()
@@ -316,12 +319,9 @@ export default {
     + .el-form-item {
       margin-top: 8px;
     }
-    .el-form-item__label {
-      flex: 0 0 0;
-    }
     &.hasLabel {
       .el-form-item__label {
-        flex: 0 0 90px;
+        min-width: 90px;
       }
     }
     .el-form-item__content {

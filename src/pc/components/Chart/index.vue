@@ -369,7 +369,7 @@ export default {
       this.$forceUpdate()
     },
     fetchData(params = {}) {
-      this.$ajax({
+      return this.$ajax({
         url: this.url,
         method: 'POST',
         params

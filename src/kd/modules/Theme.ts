@@ -20,9 +20,10 @@ export class Theme {
     this.themeEl = el
     this.updateTheme()
   }
-  updateTheme() {
-    if (this.themeEl) {
-      this.themeEl.style.cssText = Object.entries(var2color).reduce(
+  updateTheme(el?: HTMLElement) {
+    if (this.themeEl || el) {
+      if (el) this.themeEl = el
+      this.themeEl!.style.cssText = Object.entries(var2color).reduce(
         (cssText, [_var, { mix }]) => {
           return cssText + `${_var}: ${this.mix(mix(this.themeColor!))};`
         },
@@ -48,7 +49,8 @@ export class Theme {
       b2 + Math.round((b1 - b2) * tint)
     ]
 
-    const toHEX = (rgb: number[]) => `#${rgb.map(s => s.toString(16)).join('')}`
+    const toHEX = (rgb: number[]) =>
+      `#${rgb.map(s => s.toString(16).padStart(2, '0')).join('')}`
 
     return compose(toHEX, _mix, toRGB)([color1, color2])
   }

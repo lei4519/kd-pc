@@ -54,58 +54,81 @@ export default {
     }
   },
   mounted() {
-    if (!this.getData && !this.ajaxLoadingGroup.getData) {
-      if (!this.$slots.default) {
-        return console.error(
-          '没有传入getData函数，ajax-loading子元素不能异步渲染'
-        )
-      }
-      const vm = this.$slots.default.find(
-        slot => slot.componentInstance?.fetchData
-      )?.componentInstance
-      if (!vm) {
-        return
-      }
-      // 原始fetchData
-      const rawFetchData = (this.$_getData = vm.fetchData)
-      // 装饰：调用时自动执行 this.$loadManage.exec
-      vm.fetchData = function() {
-        return this.$loadManage.exec(rawFetchData)
-      }
-    } else {
-      const rawFetchData = (this.$_getData =
-        this.getData || this.ajaxLoadingGroup.getData)
-      // 找到父组件装饰方法
-      let p = this.$parent,
-        methodName = ''
-      while (p) {
-        if (
-          Object.keys(p.$options.methods).some(method => {
-            if (p[method] === rawFetchData) {
-              methodName = method
-              return true
-            }
-          })
-        ) {
-          break
-        }
-        p = p.$parent
-      }
-      if (methodName) {
-        p[methodName] = function() {
-          return this.$loadManage.exec(rawFetchData)
-        }
-      }
-    }
-    this.$loadManage.addEffect(this.$_getData, this.$_execEffect, this.once)
-    if (!this.lazy) {
-      this.$loadManage.exec(this.$_getData)
-    }
+    this.initGetDataMethod()
   },
   beforeDestroy() {
     this.$loadManage.delEffect(this.$_getData, this.$_execEffect)
   },
   methods: {
+    initGetDataMethod() {
+      if (!this.getData && !this.ajaxLoadingGroup.getData) {
+        if (!this.$slots.default && !this.$children.length) {
+          return console.error(
+            '没有传入getData函数，ajax-loading子元素不能异步渲染'
+          )
+        }
+        let vm = null
+        if (this.$slots.default) {
+          vm = this.$slots.default.find(
+            slot => slot.componentInstance?.fetchData
+          )?.componentInstance
+        } else {
+          vm = this.$children.find(
+            componentInstance => componentInstance.fetchData
+          )
+        }
+        if (!vm) {
+          return
+        }
+        vm.$once('hook:destroyed', () => {
+          // 子组件注销
+          setTimeout(() => {
+            setTimeout(() => {
+              // AjaxLoading 组件被注销
+              if (this._isDestroyed) return
+              // AjaxLoading 没有子组件
+              if (!this.$slots.default && !this.$children.length) return
+              // 子组件切换 重新装饰 fetchData 方法
+              this.initGetDataMethod()
+            })
+          })
+        })
+        // 原始fetchData
+        const rawFetchData = (this.$_getData = vm.fetchData)
+        // 装饰：调用时自动执行 this.$loadManage.exec
+        vm.fetchData = function(...args) {
+          return this.$loadManage.exec(rawFetchData, args)
+        }
+      } else {
+        const rawFetchData = (this.$_getData =
+          this.getData || this.ajaxLoadingGroup.getData)
+        // 找到父组件装饰方法
+        let p = this.$parent,
+          methodName = ''
+        while (p) {
+          if (
+            Object.keys(p.$options.methods).some(method => {
+              if (p[method] === rawFetchData) {
+                methodName = method
+                return true
+              }
+            })
+          ) {
+            break
+          }
+          p = p.$parent
+        }
+        if (methodName) {
+          p[methodName] = function(...args) {
+            return this.$loadManage.exec(rawFetchData, args)
+          }
+        }
+      }
+      this.$loadManage.addEffect(this.$_getData, this.$_execEffect, this.once)
+      if (!this.lazy) {
+        this.$loadManage.exec(this.$_getData)
+      }
+    },
     refresh(e) {
       e.stopPropagation()
       this.$loadManage.exec(this.$_getData)
@@ -129,13 +152,10 @@ export default {
     return c(
       this.tag,
       {
-        props: {
-          ...this.$attrs
-        },
+        props: this.$attrs,
+        on: this.$listeners,
         class: 'ajax-loading',
-        scopedSlots: {
-          ...this.$scopedSlots
-        }
+        scopedSlots: this.$scopedSlots
       },
       [
         ...(this.$slots.default || []),

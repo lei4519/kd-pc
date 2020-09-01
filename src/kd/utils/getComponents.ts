@@ -89,7 +89,8 @@ function createComponentList(modules: RC): ComponentList {
             editorProps = () => [],
             dragConfig,
             props,
-            minSpan = 4,
+            minSpan,
+            maxSpan,
             commonSetting = {}
           } = options
 
@@ -105,6 +106,7 @@ function createComponentList(modules: RC): ComponentList {
               zhName,
               iconClass,
               minSpan,
+              maxSpan,
               path: `${path}/${name}`,
               props: getDefaultProps(props)
             })

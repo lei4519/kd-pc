@@ -59,9 +59,7 @@ export default {
   },
   mounted() {
     setTimeout(() => {
-      this.project.themeEl = document.getElementById('_EditPageWrapper')
-      // eslint-disable-next-line no-self-assign
-      this.project.updateTheme()
+      this.project.updateTheme(document.getElementById('_EditPageWrapper'))
     })
   },
   methods: {

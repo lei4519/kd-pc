@@ -63,7 +63,6 @@ export class Row {
     Object.entries(source).forEach(([key, val]) => {
       if (key === 'id') return
       if (key === 'parent') return (target.parent = this)
-      if (key === 'renderComponent') return
       ;(target as any)[key] = cloneDeep(val)
     })
     return target
@@ -130,7 +129,9 @@ export class Row {
     return {
       ...style,
       display: 'flex',
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
+      marginLeft: '-8px',
+      marginRight: '-8px'
     }
   }
   toJSON() {
@@ -304,7 +305,7 @@ export class ColElement {
       flex: '1',
       minWidth: `${(this.minSpan / 24) * 100}%`,
       maxWidth: `${(this.maxSpan / 24) * 100}%`,
-
+      padding: '0 8px',
       ...style
     }
   }

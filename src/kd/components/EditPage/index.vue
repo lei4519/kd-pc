@@ -39,6 +39,22 @@
                 :class="{ disabled: undoRedoHistory.currentIndex <= 0 }"
                 @click="handleOperate('undo')"
               >
+                <el-color-picker
+                  v-model="project.themeColor"
+                  @change="updateColor"
+                  size="mini"
+                />
+              </div>
+              <div slot="content">
+                主题换肤
+              </div>
+            </el-tooltip>
+            <el-tooltip class="operation" effect="dark" placement="bottom">
+              <div
+                class="operate-item"
+                :class="{ disabled: undoRedoHistory.currentIndex <= 0 }"
+                @click="handleOperate('undo')"
+              >
                 <IconFont type="undo" />
               </div>
               <div slot="content">
@@ -101,7 +117,7 @@
                 v-for="(row, rowIndex) in page.rows"
                 :key="row.id"
               >
-                <Interact
+                <!-- <Interact
                   class="row-vdr"
                   :edges="['bottom']"
                   :h="row.getStyle().height || 'auto'"
@@ -109,82 +125,80 @@
                     marginBottom: row.getStyle().marginBottom
                   }"
                   @resizeEnd="onResizeEnd(row, ...arguments)"
+                > -->
+                <transition-group
+                  tag="div"
+                  name="fade"
+                  class="clearfix layout-row"
+                  :ref="page.rows.length - 1 === rowIndex ? 'lastRow' : ''"
+                  :style="row.getStyle()"
                 >
-                  <transition-group
-                    tag="div"
-                    name="fade"
-                    class="clearfix layout-row"
-                    :ref="page.rows.length - 1 === rowIndex ? 'lastRow' : ''"
-                    :style="{ ...row.getStyle(), marginBottom: 0 }"
+                  <div
+                    class="layout-col transition"
+                    :style="el.getStyle()"
+                    v-for="(el, colIndex) in row.elements"
+                    :key="el.id"
+                    @click="handleComponentOperate('setting', row, el)"
                   >
-                    <div
-                      class="layout-col transition"
-                      :style="el.getStyle()"
-                      v-for="(el, colIndex) in row.elements"
-                      :key="el.id"
-                      @click="handleComponentOperate('setting', row, el)"
-                    >
-                      <transition name="fade" mode="out-in">
-                        <div
-                          v-if="el.name === 'dropPlaceholder'"
-                          key="dropPlaceholder"
-                          class="drop-section"
-                          :data-row_index="rowIndex"
-                          @drop="onDropEvent('drop', $event)"
-                          @dragover="onDropEvent('dragover', $event)"
-                          @dragenter="onDropEvent('dragenter', $event)"
-                          @dragleave="onDropEvent('dragleave', $event)"
-                        >
-                          <i class="el-icon-plus"></i>
-                        </div>
-                        <CatchEvents
-                          v-else
-                          draggable
-                          @dragstart="onSwapEvent('dragstart', $event)"
-                          @dragend="onSwapEvent('dragend', $event)"
-                          @drop="onSwapEvent('drop', $event)"
-                          @dragover="onSwapEvent('dragover', $event)"
-                          @dragenter="onSwapEvent('dragenter', $event)"
-                          @dragleave="onSwapEvent('dragleave', $event)"
-                          class="component-drag-box"
-                          data-type="swap"
-                          :data-row_index="rowIndex"
-                          :data-col_index="colIndex"
-                          :data-min_span="el.minSpan"
-                          :data-el_id="el.id"
-                          :data-row_free_space="row.getFreeSpace()"
-                          :class="{
-                            active:
-                              page.editingElement &&
-                              page.editingElement.id === el.id,
-                            swap:
-                              swapingComponentInfo &&
-                              swapingComponentInfo.id !== el.id
-                          }"
-                        >
-                          <AjaxLoading>
-                            <component
-                              @componentMounted="
-                                onAddComponentMounted(el, ...arguments)
-                              "
-                              :data-row_index="rowIndex"
-                              :data-col_index="colIndex"
-                              :is="pathToComp[el.path].ctor"
-                              v-bind="el.props"
-                            />
-                          </AjaxLoading>
-                          <OperateList
-                            :layout="asideLayout"
-                            @click="
-                              handleComponentOperate(...arguments, row, el)
+                    <transition name="fade" mode="out-in">
+                      <div
+                        v-if="el.name === 'dropPlaceholder'"
+                        key="dropPlaceholder"
+                        class="drop-section"
+                        :data-row_index="rowIndex"
+                        @drop="onDropEvent('drop', $event)"
+                        @dragover="onDropEvent('dragover', $event)"
+                        @dragenter="onDropEvent('dragenter', $event)"
+                        @dragleave="onDropEvent('dragleave', $event)"
+                      >
+                        <i class="el-icon-plus"></i>
+                      </div>
+                      <CatchEvents
+                        v-else
+                        draggable
+                        @dragstart="onSwapEvent('dragstart', $event)"
+                        @dragend="onSwapEvent('dragend', $event)"
+                        @drop="onSwapEvent('drop', $event)"
+                        @dragover="onSwapEvent('dragover', $event)"
+                        @dragenter="onSwapEvent('dragenter', $event)"
+                        @dragleave="onSwapEvent('dragleave', $event)"
+                        class="component-drag-box"
+                        data-type="swap"
+                        :data-row_index="rowIndex"
+                        :data-col_index="colIndex"
+                        :data-min_span="el.minSpan"
+                        :data-el_id="el.id"
+                        :data-row_free_space="row.getFreeSpace()"
+                        :class="{
+                          active:
+                            page.editingElement &&
+                            page.editingElement.id === el.id,
+                          swap:
+                            swapingComponentInfo &&
+                            swapingComponentInfo.id !== el.id
+                        }"
+                      >
+                        <AjaxLoading>
+                          <component
+                            @componentMounted="
+                              onAddComponentMounted(el, ...arguments)
                             "
+                            :data-row_index="rowIndex"
+                            :data-col_index="colIndex"
+                            :is="pathToComp[el.path].ctor"
+                            v-bind="el.props"
                           />
-                          <IconFont type="jiaohuan" />
-                        </CatchEvents>
-                      </transition>
-                    </div>
-                  </transition-group>
-                </Interact>
+                        </AjaxLoading>
+                        <OperateList
+                          :layout="asideLayout"
+                          @click="handleComponentOperate(...arguments, row, el)"
+                        />
+                        <IconFont type="jiaohuan" />
+                      </CatchEvents>
+                    </transition>
+                  </div>
+                </transition-group>
+                <!-- </Interact> -->
               </div>
             </transition-group>
           </div>
@@ -219,7 +233,7 @@
 import { getComponents, pathToComp } from '@/kd/utils/getComponents'
 import { CatchEvents } from '../utils/CatchEvents'
 import OperateList from '../OperateList/index'
-import Interact from '../utils/Interact.vue'
+// import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
 import { readonly, onceEventListener } from '@/kd/utils'
@@ -237,7 +251,7 @@ export default {
     SinglePageApp,
     CatchEvents,
     OperateList,
-    Interact,
+    // Interact,
     EditPageAside
   },
   props: {
@@ -345,7 +359,7 @@ export default {
           count + 1 >= dragConfig.max && (component.draggable = false)
         }
       }
-      let newElement
+      let newElement = null
       if (isDragEvent) {
         // 拖拽触发
         const row = this.page.rows[rowIndex]
@@ -355,17 +369,17 @@ export default {
         newElement = this.page.addRows({
           elements: [component]
         })[0].elements[0]
+        // 本次事件循环执行时间太长，切分至下次循环
+        setTimeout(() => {
+          // 滚动到底部
+          const [{ $el }] = this.$refs.lastRow
+          $el.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end'
+          })
+        })
       }
       this.page.setEditingElement(newElement)
-      // 本次事件循环执行时间太长，切分至下次循环
-      setTimeout(() => {
-        // 滚动到底部
-        const [{ $el }] = this.$refs.lastRow
-        $el.scrollIntoView({
-          behavior: 'smooth',
-          block: 'end'
-        })
-      })
     },
     onAddComponentMounted(el, component) {
       el.setRenderComponent(component)
@@ -568,6 +582,9 @@ export default {
           localStorage.setItem('edit-aside-layout', this.asideLayout)
         }
       }[type]())
+    },
+    updateColor() {
+      this.project.updateTheme(document.getElementById('_EditPageWrapper'))
     },
     onShortcutKey(e) {
       const { metaKey, shiftKey, ctrlKey, keyCode } = e
