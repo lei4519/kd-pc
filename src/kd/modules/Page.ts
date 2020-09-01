@@ -13,7 +13,8 @@ let id = 0
 export interface LayoutInfo {
   counter: { [cName: string]: number }
   layouts: string[][]
-  dropRowIndex: number
+  rowIndex?: number
+  colIndex?: number
 }
 interface Permission {
   name: string
@@ -101,7 +102,7 @@ export class Page implements PageProps {
       toRow.replaceElement(formEl, toEl)
     }
   }
-  getLayout(dropRowIndex: number) {
+  getLayout(rowIndex?: number, colIndex?: number) {
     return this.rows.reduce(
       (res, row, i) => {
         res.layouts[i] = []
@@ -115,7 +116,8 @@ export class Page implements PageProps {
       {
         counter: {},
         layouts: [],
-        dropRowIndex
+        rowIndex,
+        colIndex
       } as LayoutInfo
     )
   }

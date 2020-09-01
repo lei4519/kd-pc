@@ -4,7 +4,7 @@ import { cloneDeep, get } from 'lodash'
 import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
 import Vue, { Component } from 'vue'
-
+import { componentPadding } from '@/kd/style/global-variable.scss'
 export interface RowProps {
   style?: Partial<CSSStyleDeclaration>
   elements: ColElementProp[]
@@ -130,8 +130,8 @@ export class Row {
       ...style,
       display: 'flex',
       flexWrap: 'wrap',
-      marginLeft: '-8px',
-      marginRight: '-8px'
+      marginLeft: `-${parseFloat(componentPadding) / 2}px`,
+      marginRight: `-${parseFloat(componentPadding) / 2}px`
     }
   }
   toJSON() {
@@ -333,7 +333,7 @@ export class ColElement {
       flex: '1',
       minWidth: `${(this.minSpan / 24) * 100}%`,
       maxWidth: `${(this.maxSpan / 24) * 100}%`,
-      padding: '0 8px',
+      padding: `0 ${parseFloat(componentPadding) / 2}px`,
       ...style
     }
   }

@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6529905",
+      "name": "空",
+      "font_class": "kong",
+      "unicode": "e708",
+      "unicode_decimal": 59144
+    },
+    {
+      "icon_id": "2698974",
+      "name": "旋转",
+      "font_class": "xuanzhuan",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
       "icon_id": "16068173",
       "name": "执行",
       "font_class": "zhihang",
