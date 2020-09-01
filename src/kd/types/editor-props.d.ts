@@ -58,7 +58,7 @@ interface FormItem {
 }
 /**
  * @description 自定义渲染配置
- * @property {} componentPath 相对当前文件的自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取
+ * @property {} componentPath 自定义编辑组件路径，以 -editor.vue 结尾，否则会被当作正常组件读取。路径应以 components/ 开头的绝对路径 如：components/form/form-editor.vue
  * @property {} component （开发组件时不要填写此值）自定义编辑组件对象，由getComponents方法自动获取
  * @property {} component.props.value 接受配置项中指定的prop值
  * @property {} component.props.vm 当前渲染的组件实例对象（只读）

@@ -419,7 +419,7 @@ export default {
                 {
                   type: 'customEditor',
                   prop: 'mergeCol',
-                  componentPath: './columns-editor.vue'
+                  componentPath: 'components/Table/columns-editor.vue'
                 }
               ]
             }

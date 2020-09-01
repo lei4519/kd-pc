@@ -172,16 +172,17 @@ export function getEditorComponent(
   customEditor: CustomEditor,
   el: ColElement
 ): Vue.VueConstructor | Vue.Component {
-  let componentPath = customEditor.componentPath
-  let path = el.path.replace(/\/[A-Za-z0-9_-]+\.vue$/, '')
-  while (componentPath.startsWith('../')) {
-    path = path.replace(/\/[A-Za-z0-9_-]+$/, '')
-    componentPath = componentPath.replace('../', '')
-  }
-  if (componentPath.startsWith('./')) {
-    componentPath = componentPath.replace('./', '')
-  }
-  const editCompPath = `./${path}/${componentPath}`
+  if (customEditor.component) return customEditor.component
+  // let componentPath = customEditor.componentPath
+  // let path = el.path.replace(/\/[A-Za-z0-9_-]+\.vue$/, '')
+  // while (componentPath.startsWith('../')) {
+  //   path = path.replace(/\/[A-Za-z0-9_-]+$/, '')
+  //   componentPath = componentPath.replace('../', '')
+  // }
+  // if (componentPath.startsWith('./')) {
+  //   componentPath = componentPath.replace('./', '')
+  // }
+  const editCompPath = customEditor.componentPath.replace('components', '.')
   return pathToEditorComponent[editCompPath]
 }
 
