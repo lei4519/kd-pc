@@ -190,12 +190,12 @@ export class ColElement {
     this.path = element.path
     this.style = cloneDeep(
       element.style || {
-        fontSize: '12',
+        fontSize: '',
         color: '',
         fontWeight: 'inherit',
         fontStyle: 'inherit',
         textAlign: 'left',
-        fontFamily: '微软雅黑'
+        fontFamily: 'inherit'
       }
     )
     this.props = cloneDeep(element.props)
@@ -219,7 +219,7 @@ export class ColElement {
                   label: '字体大小',
                   prop: 'style.fontSize',
                   type: 'inputNumber',
-                  defaultValue: this.style.fontSize
+                  defaultValue: this.style.fontSize || 12
                 },
                 {
                   label: '字体',
@@ -227,6 +227,14 @@ export class ColElement {
                   type: 'select',
                   defaultValue: this.style.fontFamily,
                   options: [
+                    {
+                      label: '继承父级',
+                      value: 'inherit'
+                    },
+                    {
+                      label: '苹方',
+                      value: 'PingFang SC'
+                    },
                     {
                       label: '微软雅黑',
                       value: '微软雅黑'
@@ -264,6 +272,26 @@ export class ColElement {
                       value: 'right'
                     }
                   ]
+                },
+                {
+                  label: '粗体',
+                  prop: 'style.fontWeight',
+                  type: 'switch',
+                  formCompProps: {
+                    activeValue: 'bold',
+                    inactiveValue: 'inherit'
+                  },
+                  defaultValue: this.style.fontWeight
+                },
+                {
+                  label: '斜体',
+                  prop: 'style.fontStyle',
+                  type: 'switch',
+                  formCompProps: {
+                    activeValue: 'italic',
+                    inactiveValue: 'inherit'
+                  },
+                  defaultValue: this.style.fontStyle
                 }
               ]
             }
