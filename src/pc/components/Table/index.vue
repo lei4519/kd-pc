@@ -430,7 +430,11 @@ export default {
         : [])
     ]
   },
-  inject: ['buildMode'],
+  inject: {
+    buildMode: {
+      default: false
+    }
+  },
   data() {
     return {
       operateList: [],

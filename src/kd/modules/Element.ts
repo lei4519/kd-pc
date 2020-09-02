@@ -42,11 +42,15 @@ export class Row {
   private freeSpace = 24
   private dirty = true
   parent?: Page
-  style: Partial<CSSStyleDeclaration>
+  style: {
+    [P in keyof Partial<CSSStyleDeclaration>]:
+      | Partial<CSSStyleDeclaration>[P]
+      | number
+  }
   elements: ColElement[] = []
   constructor(row: RowProps) {
     this.style = row.style || {
-      marginBottom: '16'
+      marginBottom: 16
     }
     row.elements && this.addElements(row.elements)
   }
@@ -178,7 +182,11 @@ export class ColElement {
   path: string
   props: any
   disabled = true
-  style: Partial<CSSStyleDeclaration>
+  style: {
+    [P in keyof Partial<CSSStyleDeclaration>]:
+      | Partial<CSSStyleDeclaration>[P]
+      | number
+  }
   renderComponent?: Component | null = null
   immediateValidate: { [key: string]: any } | null = null
   constructor(element: ColElementProp) {

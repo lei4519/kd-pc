@@ -250,6 +250,9 @@ import Vue from 'vue'
 const theme = Vue.observable({
   color: ''
 })
+const provideAsideLayout = Vue.observable({
+  direction: ''
+})
 /**
  *   @desc 编辑区
  *   @property {} page 当前编辑的页面，Page实例
@@ -293,6 +296,12 @@ export default {
     }
   },
   watch: {
+    asideLayout: {
+      handler(v) {
+        provideAsideLayout.direction = v
+      },
+      immediate: true
+    },
     'page.editingElement'(v) {
       // 本次事件循环执行时间太长，切分至下次循环
       setTimeout(() => {
@@ -325,7 +334,8 @@ export default {
   provide() {
     return {
       buildMode: true,
-      theme
+      theme,
+      asideLayout: provideAsideLayout
     }
   },
   methods: {
