@@ -1,9 +1,14 @@
 <template>
   <div class="editor-component-wrapper">
     <el-collapse :value="sectionIdx" ref="collapse">
-      <el-collapse-item title="页面设置" name="page-setting">
+      <el-collapse-item
+        v-if="element"
+        title="页面设置"
+        name="page-setting"
+        key="page-setting"
+      >
         <el-form>
-          <el-form-item v-if="element">
+          <el-form-item>
             <span slot="label">
               下间距
               <template>
