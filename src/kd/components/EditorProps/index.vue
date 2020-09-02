@@ -21,10 +21,7 @@
                 </el-tooltip>
               </template>
             </span>
-            <el-input-number
-              v-model="element.parent.style.marginBottom"
-              controls-position="right"
-            />
+            <el-slider v-model="element.parent.style.marginBottom" :step="4" />
           </el-form-item>
         </el-form>
       </el-collapse-item>
