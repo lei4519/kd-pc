@@ -224,14 +224,16 @@ export default {
     }
   },
   dragConfig: {
-    max: 100,
     onDrop({ layouts, dropRowIndx }) {
       const dropRow = layouts[dropRowIndx]
       if (
         dropRow &&
-        dropRow.some(name => !(name === 'Table' || name === 'Chart'))
+        dropRow.some(({ name }) => !(name === 'Table' || name === 'Chart'))
       ) {
-        this.$message.error('当前组件只能与表格、图标组件放置一行内')
+        this.$message.error({
+          message: '表格组件只能与表格、图标组件放置一行内',
+          duration: 5000
+        })
         return false
       }
     }
@@ -518,8 +520,6 @@ export default {
     this.genMockData()
   },
   methods: {
-    // TODO getLayout一个事件循环只执行一次
-    // TODO canDrop 事件行调用
     genMockData(syncRetrueData = false) {
       const res = {
         code: 0,

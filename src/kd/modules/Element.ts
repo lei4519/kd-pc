@@ -93,8 +93,8 @@ export class Row {
     let elements = this.elements
     elements.splice(elements.findIndex(e => e.id === element.id)!, 1)
     const component = componentList.find(c => c.name === element.name)!
-    if (!component.draggable) {
-      component.draggable = true
+    if (!component.disabled) {
+      component.disabled = true
     }
     // 以下为聚焦其他节点逻辑
     // 删除后再取值
@@ -161,7 +161,7 @@ export interface ColElementProp {
  * @property {} iconClass 组件展示图表类名 iconfont 类名
  * @property {} path 组件路径
  * @property {} props 组件的props，组件配置区写入属性的地方
- * @property {} draggable 是否可拖拽
+ * @property {} disabled 是否禁用
  * @property {} renderComponent 搭建页面中真实渲染的只读Vue组件实例，传给配置区取值使用
  * @property {} immediateValidate 配置区渲染后立即校验表单，配合 Page.validate 使用
  */
@@ -177,7 +177,7 @@ export class ColElement {
   iconClass: string
   path: string
   props: any
-  draggable = true
+  disabled = true
   style: Partial<CSSStyleDeclaration>
   renderComponent?: Component | null = null
   immediateValidate: { [key: string]: any } | null = null

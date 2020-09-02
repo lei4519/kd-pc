@@ -7,13 +7,13 @@ let id = 0
 /**
  * @description 页面布局信息
  * @property {} counter 记录每个组件在当前页面的数量
- * @property {} layouts 二维数组，记录每行里具体存放的组件名称
+ * @property {} layouts 二维数组，记录每行里具体存放的组件信息
  * @property {} rowIndx 当前元素所在的行数
  * @property {} colIndex 当前元素所在行的索引
  */
 export interface LayoutInfo {
   counter: { [cName: string]: number }
-  layouts: string[][]
+  layouts: Partial<ColElement>[][]
   rowIndex?: number
   colIndex?: number
 }
@@ -39,6 +39,7 @@ export interface PageProps {
  * @property {} rows 编辑区（一个页面中多行）
  * @property {} permissions 页面权限
  */
+let cacheLayout: LayoutInfo | null = null
 export class Page implements PageProps {
   readonly type = 'page'
   readonly routeID = 'page_' + id++
@@ -104,14 +105,21 @@ export class Page implements PageProps {
     }
   }
   getLayout(rowIndex?: number, colIndex?: number) {
-    return this.rows.reduce(
+    if (cacheLayout) return { ...cacheLayout, rowIndex, colIndex }
+    cacheLayout = this.rows.reduce(
       (res, row, i) => {
         res.layouts[i] = []
         row.elements.forEach(el => {
           if (el.name === 'dropPlaceholder') return
           if (!res.counter[el.name]) res.counter[el.name] = 0
           res.counter[el.name]++
-          res.layouts[i].push(el.name)
+          res.layouts[i].push({
+            name: el.name,
+            path: el.path,
+            disabled: el.disabled,
+            maxSpan: el.maxSpan,
+            minSpan: el.minSpan
+          })
         })
         return res
       },
@@ -122,6 +130,11 @@ export class Page implements PageProps {
         colIndex
       } as LayoutInfo
     )
+    // 本次渲染缓存布局信息，下次任务队列清空
+    setTimeout(() => {
+      cacheLayout = null
+    })
+    return cacheLayout
   }
   addDropPlaceholder(element: ColElement) {
     this.rows.forEach(row => {

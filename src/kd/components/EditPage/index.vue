@@ -346,14 +346,18 @@ export default {
     addComponent(component, rowIndex = -1) {
       // > -1 代表是拖拽触发
       const isDragEvent = rowIndex > -1
-      if (!component.draggable) return // 阻止点击事件触发
-      // 拖拽配置
-      const dragConfig = this.pathToComp[component.path].dragConfig
-      if (dragConfig) {
+      if (!component.disabled) return // 阻止点击事件触发
+
+      let newElement = null
+      if (isDragEvent) {
+        // 拖拽触发
+        // 页面布局信息
         const { counter, layouts, rowIndex: dropRowIndx } = this.page.getLayout(
           rowIndex
         )
-        if (isDragEvent) {
+        // 当前组件拖拽配置
+        const dragConfig = this.pathToComp[component.path].dragConfig
+        if (dragConfig) {
           if (
             dragConfig.onDrop?.call(readonly(this), {
               counter,
@@ -363,16 +367,39 @@ export default {
           ) {
             return
           }
+          // max 监测
+          if (dragConfig.max) {
+            const count = counter[component.name] || 0
+            count + 1 >= dragConfig.max && (component.disabled = false)
+          }
         }
-        // max 监测
-        if (dragConfig.max) {
-          const count = counter[component.name] || 0
-          count + 1 >= dragConfig.max && (component.draggable = false)
+        // 检查同行组件 canDrop
+        if (
+          layouts[dropRowIndx].some(el => {
+            const { dragConfig } = this.pathToComp[el.path]
+            const count = counter[component.name] || 0
+            const newLayouts = [...layouts]
+            newLayouts[dropRowIndx] = [
+              ...newLayouts[dropRowIndx],
+              {
+                name: component.name,
+                path: component.path,
+                disabled: component.disabled,
+                maxSpan: component.maxSpan,
+                minSpan: component.minSpan
+              }
+            ]
+            return (
+              dragConfig?.onDrop?.call(readonly(this), {
+                counter: { ...counter, [component.name]: count + 1 },
+                layouts: newLayouts,
+                dropRowIndx
+              }) === false
+            )
+          })
+        ) {
+          return
         }
-      }
-      let newElement = null
-      if (isDragEvent) {
-        // 拖拽触发
         const row = this.page.rows[rowIndex]
         newElement = row.replaceDropPlaceholder(component)
       } else {
@@ -851,7 +878,7 @@ export default {
           color: #fff;
           transition: all $duration;
           cursor: not-allowed;
-          &.draggable {
+          &.disabled {
             cursor: grab;
             &:hover {
               color: $theme-color;

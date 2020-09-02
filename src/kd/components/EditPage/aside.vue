@@ -31,14 +31,14 @@
                   component.zhName
                 }`
               "
-              :disabled="component.draggable"
+              :disabled="component.disabled"
               placement="top"
             >
               <div
                 class="component-item"
-                :class="{ draggable: component.draggable }"
+                :class="{ disabled: component.disabled }"
                 @click="addComponent(component)"
-                :draggable="component.draggable"
+                :draggable="component.disabled"
                 @dragstart="onDragEvent('start', component, $event)"
                 @dragend="onDragEvent('end', component, $event)"
               >
