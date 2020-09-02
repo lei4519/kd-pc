@@ -282,6 +282,7 @@ export default {
       if (item.onChange) {
         let changeSelf = false
         const setProps = (p, v) => {
+          p = this.encodeProp(p)
           if (p === prop) {
             changeSelf = true
           }
@@ -289,7 +290,10 @@ export default {
           this.form[p] = v
           this.setProps(p, v)
         }
-        item.onChange.call(this.element.renderComponent, setProps, value, prop)
+        item.onChange.call(this.element.renderComponent, setProps, {
+          value,
+          prop
+        })
         // 如果组件调用setProps改了自身的值，那下方就不需要再重复调用
         if (changeSelf) return
       }

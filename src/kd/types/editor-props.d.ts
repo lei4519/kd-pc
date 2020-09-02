@@ -34,7 +34,7 @@ type RenderExpand = (createElement: CreateElement, props: any) => VNode
  * @property {} label el-formItem label
  * @property {} prop 要修改的props值，可以传入props路径来对数组、对象属性进行修改
  * @example prop: 'array.1' | 'object.src' | 'src'
- * @property {} onChange 上方 prop 值变化时调用，函数的this，是页面中渲染组件的实例（只读）。传入（setProps函数，改变的值, 当前修改的prop），setProps调用需要传入prop路径和值 ，可以通过setProps改变自身值(number 改成 string )或别的prop值。
+ * @property {} onChange 上方 prop 值变化时调用，函数的this，是页面中渲染组件的实例（只读）。传入（setProps函数，{改变的值, 当前修改的prop}），setProps调用需要传入prop路径和值 ，可以通过setProps改变自身值(number 改成 string )或别的prop值。
  * @example onChange(setProps, value) { setProps('object.1', {}) | setProps('src', 'img.jpg') }
  * @property {} tips 属性相关提示 支持传入文字 或者 render函数; 文字使用el-tooltip渲染，render函数使用 el-dialog 渲染
  * @property {} formItemProps 此属性会作为 el-formItem 的props传入其中
@@ -46,8 +46,7 @@ interface FormItem {
   prop: string
   onChange?: (
     setProps: (prop: string, value: any) => void,
-    value: any,
-    prop: any
+    { value: any, prop: any }
   ) => void
   tips?:
     | ((createElement: CreateElement, hack: RenderContext<Props>) => VNode)
