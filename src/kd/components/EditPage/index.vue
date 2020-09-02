@@ -185,6 +185,7 @@
                             "
                             :data-row_index="rowIndex"
                             :data-col_index="colIndex"
+                            :layouts="page.getLayout(rowIndex, colIndex)"
                             :is="pathToComp[el.path].ctor"
                             v-bind="el.props"
                           />
@@ -199,6 +200,14 @@
                   </div>
                 </transition-group>
                 <!-- </Interact> -->
+              </div>
+              <div
+                v-if="page.rows.length === 0"
+                key="empty-alert"
+                class="empty-alert"
+              >
+                <IconFont type="kong" />
+                请添加组件
               </div>
             </transition-group>
           </div>
@@ -341,7 +350,9 @@ export default {
       // 拖拽配置
       const dragConfig = this.pathToComp[component.path].dragConfig
       if (dragConfig) {
-        const { counter, layouts, dropRowIndx } = this.page.getLayout(rowIndex)
+        const { counter, layouts, rowIndex: dropRowIndx } = this.page.getLayout(
+          rowIndex
+        )
         if (isDragEvent) {
           if (
             dragConfig.onDrop?.call(readonly(this), {
@@ -624,6 +635,19 @@ export default {
 .EditPage-wrapper {
   min-height: 100%;
   position: relative;
+}
+.empty-alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgba(0, 0, 0, 0.25);
+
+  .iconfont {
+    display: block;
+    font-size: 120px;
+  }
 }
 .drop-section {
   display: flex;

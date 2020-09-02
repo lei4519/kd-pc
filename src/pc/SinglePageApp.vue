@@ -4,18 +4,22 @@
       <div class="single-main-wrap" v-if="page">
         <div
           class="layout-row"
-          v-for="row in page.rows"
+          v-for="(row, rowIndex) in page.rows"
           :key="row.id"
           :style="row.getStyle()"
         >
           <div
             class="layout-col transition"
-            v-for="el in row.elements"
+            v-for="(el, colIndex) in row.elements"
             :key="el.id"
             :style="el.getStyle()"
           >
-            <AjaxLoading>
-              <component :is="getComponent(el)" v-bind="el.props" />
+            <AjaxLoading style="box-shadow: 0 0 5px rgba(0, 0, 0, .1);">
+              <component
+                :is="getComponent(el)"
+                v-bind="el.props"
+                :layouts="page.getLayout(rowIndex, colIndex)"
+              />
             </AjaxLoading>
           </div>
         </div>

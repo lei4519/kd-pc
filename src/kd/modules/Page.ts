@@ -8,12 +8,14 @@ let id = 0
  * @description 页面布局信息
  * @property {} counter 记录每个组件在当前页面的数量
  * @property {} layouts 二维数组，记录每行里具体存放的组件名称
- * @property {} dropRowIndx 放下元素所在的行数
+ * @property {} rowIndx 当前元素所在的行数
+ * @property {} colIndex 当前元素所在行的索引
  */
 export interface LayoutInfo {
   counter: { [cName: string]: number }
   layouts: string[][]
-  dropRowIndex: number
+  rowIndex?: number
+  colIndex?: number
 }
 interface Permission {
   name: string
@@ -101,11 +103,12 @@ export class Page implements PageProps {
       toRow.replaceElement(formEl, toEl)
     }
   }
-  getLayout(dropRowIndex: number) {
+  getLayout(rowIndex?: number, colIndex?: number) {
     return this.rows.reduce(
       (res, row, i) => {
         res.layouts[i] = []
         row.elements.forEach(el => {
+          if (el.name === 'dropPlaceholder') return
           if (!res.counter[el.name]) res.counter[el.name] = 0
           res.counter[el.name]++
           res.layouts[i].push(el.name)
@@ -115,7 +118,8 @@ export class Page implements PageProps {
       {
         counter: {},
         layouts: [],
-        dropRowIndex
+        rowIndex,
+        colIndex
       } as LayoutInfo
     )
   }

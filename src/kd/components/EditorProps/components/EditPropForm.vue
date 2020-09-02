@@ -165,7 +165,7 @@
       ></el-color-picker>
       <component
         v-else-if="item.type === 'customEditor'"
-        :is="getEditorComponent(item, element)"
+        :is="getEditorComponent(item)"
         :vm="element.renderComponent"
         :setProps="setProps"
         v-model="form[item.prop]"
