@@ -7,6 +7,7 @@
     clearable
     :multiple="multiple"
     :placeholder="placeholder"
+    style="width:100%;height:100%"
   >
     <el-option
       v-for="(label, value) in list || data"
@@ -55,50 +56,6 @@ export default {
         return null
       }
     }
-  },
-  editorProps: () => {
-    return [
-      {
-        title: '城市配置',
-        props: [
-          {
-            label: '数据源',
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            tips: '一期只支持自定义数据接口',
-            prop: 'url',
-            type: 'dataSource'
-          },
-          {
-            label: '标题',
-            tips: 'tips 值：String类型',
-            prop: 'label',
-            type: 'input'
-          },
-          {
-            label: '数据字段名',
-            tips: 'tips 值：String类型',
-            prop: 'dataField',
-            type: 'input'
-          },
-          {
-            label: '占位符',
-            tips: 'tips 值：String类型',
-            prop: 'placeholder',
-            type: 'input'
-          },
-          {
-            label: '是否多选',
-            prop: 'multiple',
-            type: 'switch'
-          },
-          {
-            label: '是否筛选',
-            prop: 'filterable',
-            type: 'switch'
-          }
-        ]
-      }
-    ]
   },
   data() {
     return {
