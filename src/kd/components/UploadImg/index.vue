@@ -91,20 +91,20 @@
               <img :src="cropperUrl" :style="previews.img" />
             </div>
           </div>
-          <div class="rotate-wrap">
+          <!-- <div class="rotate-wrap">
             <IconFont
               class="left-rotate csp hover-color"
               type="zuoxuanzhuan"
-              size="30"
+              size="50"
               @click.native="rotate(-90)"
             />
             <IconFont
               class="right-rotate csp hover-color"
               type="youxuanzhuan"
-              size="30"
+              size="50"
               @click.native="rotate(90)"
             />
-          </div>
+          </div> -->
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -262,10 +262,12 @@ export default {
       this.$refs.cropper.getCropData(async data => {
         try {
           const {
-            data: {
-              msg: [{ furl }]
-            }
+            data: { code, msg }
           } = await this.upload(data)
+          if (code !== 100) {
+            return this.$message.error(msg)
+          }
+          const [{ furl }] = msg
           if (this.multiple) {
             this.multipleUrls.push(furl)
             this.$emit('input', this.multipleUrls)
@@ -289,21 +291,19 @@ export default {
       this.outputType = 'jpeg'
     },
     upload(data) {
-      return Promise.resolve({
-        data: {
-          msg: [{ furl: data }]
+      return this.$ajax({
+        url: 'http://open-yun.leju.com/openapi/v1/resource/upload',
+        method: 'POST',
+        headers: {
+          'x-requested-with': 'XMLHttpRequest'
+        },
+        formData: {
+          filedata: [data],
+          filename: [this.fileName],
+          XM: this.mkey,
+          XP: this.pkey
         }
       })
-      // this.$ajax({
-      //   url: 'http://open-yun.leju.com/openapi/v1/resource/upload',
-      //   method: 'POST',
-      //   formData: {
-      //     filedata: [data],
-      //     filename: [this.fileName],
-      //     XM: this.mkey,
-      //     XP: this.pkey
-      //   }
-      // })
     },
     realTime({ img, div, w, h }) {
       this.previews.previewWrapStyle = {
@@ -382,7 +382,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
+  font-size: 28px;
   border: 1px dashed;
   border-radius: 6px;
   color: #c0ccda;
@@ -415,7 +415,7 @@ export default {
       flex: 0 0 200px;
       .rotate-wrap {
         position: absolute;
-        bottom: 0;
+        bottom: 16px;
         width: 100%;
         display: flex;
         justify-content: space-around;

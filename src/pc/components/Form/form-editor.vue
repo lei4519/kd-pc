@@ -2,7 +2,7 @@
  * @Author: zijian6@leju.com
  * @Date: 2020-08-21 11:21:35
  * @LastEditors: zijian6@leju.com
- * @LastEditTime: 2020-09-01 16:57:49
+ * @LastEditTime: 2020-09-02 11:35:02
  * @FilePath: /res.leju.com/dev/mvvm-project/vue/kd-pc/src/pc/components/Form/form-editor.vue
 -->
 <template>
@@ -16,9 +16,9 @@
         >{{ item.name }}</el-button
       >
     </div>
-    <div class="com-setting" v-if="value.length > 0">
-      <h2>组件配置</h2>
-      <div v-for="(item, index) in value" v-bind:key="index">
+    <div class="com-setting mt-12" v-if="value.length > 0">
+      <h2 class="mb-8">组件配置</h2>
+      <div v-for="(item, index) in value" v-bind:key="index" class="mb-8">
         <el-button plain>{{
           item.label
         }}</el-button>
@@ -74,7 +74,7 @@
                 <span>数据字段名</span>
               </el-col>
               <el-col :span="20">
-                <el-input v-model="form.dataField" @change="setProps(form.dataField, ...arguments)"></el-input> 
+                <el-input v-model="form.props.dataField" @change="setProps(form.props.dataField, ...arguments)"></el-input> 
               </el-col>
             </el-row>
           </el-form-item>
@@ -84,7 +84,7 @@
                 <span>占位文本</span>
               </el-col>
               <el-col :span="20">
-                <el-input v-model="form.props.placeholder" @change="setProps(form.dataField, ...arguments)"></el-input> 
+                <el-input v-model="form.props.placeholder" @change="setProps(form.props.placeholder, ...arguments)"></el-input> 
               </el-col>
             </el-row>
           </el-form-item>
@@ -137,9 +137,9 @@
               <el-col :span="20">
                 <el-switch
                   v-model="form.props.multiple"
-                  :active-value="'custom'"
                   active-color="#13ce66"
                   inactive-color="#ff4949"
+                  @change="setProps(form.props.multiple, ...arguments)"
                 >
                 </el-switch>
               </el-col>
@@ -205,20 +205,13 @@ export default {
         label: label || '标题',
         type: type,
         props: {
-          placeholder: '请选择'
+          placeholder: '请选择',
+          dataField: ''
         },
         ...(type === 'select' ? { options: ['选项'] } : [])
       })
       this.$emit('change', this.value)
       this.currentIndex = this.value.length - 1
-    },
-    changeSetting() {
-      this.value.push({
-        label: '标题',
-        type: 'input'
-      })
-      this.$emit('change', this.value)
-      this.drawer = true
     },
     setProps(prop, val) {
       this.value[this.currentIndex][prop] = val

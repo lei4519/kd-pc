@@ -148,6 +148,7 @@ export interface ColElementProp {
   zhName?: string
   minSpan?: number
   maxSpan?: number
+  needParentStyle?: boolean
   iconClass?: string
   path: string
   props: any
@@ -166,6 +167,7 @@ export interface ColElementProp {
  * @property {} path 组件路径
  * @property {} props 组件的props，组件配置区写入属性的地方
  * @property {} disabled 是否禁用
+ * @property {} needParentStyle 是否自动给元素加上阴影和 hover 边框样式
  * @property {} renderComponent 搭建页面中真实渲染的只读Vue组件实例，传给配置区取值使用
  * @property {} immediateValidate 配置区渲染后立即校验表单，配合 Page.validate 使用
  */
@@ -178,6 +180,7 @@ export class ColElement {
   zhName: string
   minSpan: number
   maxSpan: number
+  needParentStyle: boolean
   iconClass: string
   path: string
   props: any
@@ -192,6 +195,7 @@ export class ColElement {
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
     this.zhName = element.zhName || '未命名'
+    this.needParentStyle = element.needParentStyle || true
     this.iconClass = element.iconClass || 'zujianicon'
     this.minSpan = element.minSpan || 1
     this.maxSpan = element.maxSpan || 24

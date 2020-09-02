@@ -9,6 +9,7 @@ declare module 'vue/types/options' {
    * @property {} zhName 组件中文名称
    * @property {} iconClass iconfont.cn 图表类名
    * @property {} commonSetting commonSetting 控制通用设置的某一项是否显示
+   * @property {} needParentStyle 默认 true，自动给元素加上阴影和 hover 边框样式
    * @property {} maxSpan 最大占比 el-col span属性 默认24
    * @property {} minSpan 最小占比 el-col span属性 默认1
    * @property {} editorProps 组件配置区 配置
@@ -21,6 +22,7 @@ declare module 'vue/types/options' {
   export interface ComponentOptions<V extends Vue> {
     zhName?: string
     commonSetting?: CommonSetting
+    needParentStyle?: boolean
     iconClass?: string
     maxSpan?: number
     minSpan?: number

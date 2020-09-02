@@ -14,7 +14,7 @@
             :key="el.id"
             :style="el.getStyle()"
           >
-            <AjaxLoading style="box-shadow: 0 0 5px rgba(0, 0, 0, .1);">
+            <AjaxLoading :class="{ decoration: el.needParentStyle }">
               <component
                 :is="getComponent(el)"
                 v-bind="el.props"
@@ -89,5 +89,14 @@ export default {
   min-height: 100%;
   background-color: $mainBgColor;
   padding: 24px;
+  .decoration {
+    border: 2px solid transparent;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: all $duration;
+    &:hover {
+      border-color: $theme-color;
+    }
+  }
 }
 </style>
