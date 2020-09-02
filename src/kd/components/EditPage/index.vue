@@ -13,7 +13,6 @@
       <EditPageAside
         v-if="asideLayout === 'left'"
         :asideLayout="asideLayout"
-        :project="project"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -216,7 +215,6 @@
       <EditPageAside
         v-if="asideLayout === 'right'"
         :asideLayout="asideLayout"
-        :project="project"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -315,6 +313,11 @@ export default {
           }
         }
       })
+    },
+    'page.editingElement.immediateValidate'(v) {
+      if (v) {
+        this.activeTab = 'setting'
+      }
     },
     'project.themeColor': {
       handler(color) {

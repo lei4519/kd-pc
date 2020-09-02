@@ -76,12 +76,6 @@ export default {
       type: String,
       default: ''
     },
-    project: {
-      type: Object,
-      default() {
-        return {}
-      }
-    },
     page: {
       type: Object,
       default() {
