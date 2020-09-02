@@ -221,6 +221,10 @@ export default {
       default() {
         return {}
       }
+    },
+    iheritPageSearch: {
+      type: Boolean,
+      default: true
     }
   },
   dragConfig: {
@@ -359,6 +363,11 @@ export default {
             formItemProps: {
               // rules: [{ required: true, message: '数据源不能为空' }]
             }
+          },
+          {
+            label: '继承页面搜索',
+            prop: 'iheritPageSearch',
+            type: 'switch'
           },
           {
             label: '标题',
@@ -624,6 +633,7 @@ export default {
       this.fetchData({ download: 1 })
     },
     fetchData(params = {}) {
+      if (params.pageSearch && !this.iheritPageSearch) return
       params = {
         ...params,
         ...this._params,

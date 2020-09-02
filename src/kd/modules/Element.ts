@@ -6,7 +6,11 @@ import { Page } from './Page'
 import Vue, { Component } from 'vue'
 import { componentPadding } from '@/kd/style/global-variable.scss'
 export interface RowProps {
-  style?: Partial<CSSStyleDeclaration>
+  style?: {
+    [P in keyof Partial<CSSStyleDeclaration>]:
+      | Partial<CSSStyleDeclaration>[P]
+      | number
+  }
   elements: ColElementProp[]
 }
 /**
@@ -152,7 +156,11 @@ export interface ColElementProp {
   iconClass?: string
   path: string
   props: any
-  style?: Partial<CSSStyleDeclaration>
+  style?: {
+    [P in keyof Partial<CSSStyleDeclaration>]:
+      | Partial<CSSStyleDeclaration>[P]
+      | number
+  }
 }
 
 /**
