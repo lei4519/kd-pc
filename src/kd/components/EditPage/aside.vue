@@ -99,15 +99,15 @@ export default {
       default() {
         return null
       }
-    }
-  },
-  data() {
-    return {
-      editPageAsideWidth: localStorage.getItem('editPageAsideWidth') || 300
+    },
+    editPageAsideWidth: {
+      type: [Number, String],
+      default: 300
     }
   },
   methods: {
     onResizeEnd({ width }) {
+      this.$emit('update:editPageAsideWidth', width)
       localStorage.setItem('editPageAsideWidth', `${width | 0}px`)
     },
     onDragEvent(type, c) {

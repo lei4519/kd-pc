@@ -13,6 +13,7 @@
       <EditPageAside
         v-if="asideLayout === 'left'"
         :asideLayout="asideLayout"
+        :editPageAsideWidth.sync="editPageAsideWidth"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -215,6 +216,7 @@
       <EditPageAside
         v-if="asideLayout === 'right'"
         :asideLayout="asideLayout"
+        :editPageAsideWidth.sync="editPageAsideWidth"
         :componentList="componentList"
         :pathToComp="pathToComp"
         :page="page"
@@ -249,7 +251,8 @@ const theme = Vue.observable({
   color: ''
 })
 const provideAsideLayout = Vue.observable({
-  direction: ''
+  direction: '',
+  width: 'auto'
 })
 /**
  *   @desc 编辑区
@@ -290,13 +293,20 @@ export default {
       asideLayout: localStorage.getItem('edit-aside-layout') || 'left',
       activeTab: 'select', // 当前选中的tab
       dragingComponent: null, // 正在从组件列表中拖拽的组件
-      swapingComponentInfo: null // 正在交换位置的组件
+      swapingComponentInfo: null, // 正在交换位置的组件
+      editPageAsideWidth: localStorage.getItem('editPageAsideWidth') || 300
     }
   },
   watch: {
     asideLayout: {
       handler(v) {
         provideAsideLayout.direction = v
+      },
+      immediate: true
+    },
+    editPageAsideWidth: {
+      handler(v) {
+        provideAsideLayout.width = v
       },
       immediate: true
     },
