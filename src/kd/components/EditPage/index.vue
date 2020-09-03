@@ -111,7 +111,12 @@
         </el-header>
         <el-main>
           <div class="EditPage-wrapper" id="_EditPageWrapper">
-            <transition-group tag="div" name="fade" class="components-wrapper">
+            <transition-group
+              tag="div"
+              name="fade"
+              class="components-wrapper"
+              :class="{ dragging: dragingComponent }"
+            >
               <div
                 class="transition"
                 v-for="(row, rowIndex) in page.rows"
@@ -247,6 +252,7 @@ import EditPageAside from './aside.vue'
 import SinglePageApp from '@/pc/SinglePageApp.vue'
 import { readonly, onceEventListener } from '@/kd/utils'
 import Vue from 'vue'
+import { cloneDeep } from 'lodash'
 const theme = Vue.observable({
   color: ''
 })
@@ -375,50 +381,27 @@ export default {
       if (isDragEvent) {
         // 拖拽触发
         // 页面布局信息
-        const { counter, layouts, rowIndex: dropRowIndx } = this.page.getLayout(
-          rowIndex
-        )
+        const { counter, layouts } = this.page.getLayout()
         // 当前组件拖拽配置
         const dragConfig = this.pathToComp[component.path].dragConfig
         if (dragConfig) {
-          if (
-            dragConfig.onDrop?.call(readonly(this), {
-              counter,
-              layouts,
-              dropRowIndx
-            }) === false
-          ) {
-            return
-          }
           // max 监测
           if (dragConfig.max) {
             const count = counter[component.name] || 0
             count + 1 >= dragConfig.max && (component.disabled = false)
           }
         }
-        // 检查同行组件 canDrop
+        // 检查同行所有组件 canDrop
+        const count = counter[component.name] || 0
+        const newLayouts = cloneDeep(layouts)
+        newLayouts[rowIndex] = [
+          ...newLayouts[rowIndex],
+          this.page.createLayoutItem(component)
+        ]
         if (
-          layouts[dropRowIndx].some(el => {
-            const { dragConfig } = this.pathToComp[el.path]
-            const count = counter[component.name] || 0
-            const newLayouts = [...layouts]
-            newLayouts[dropRowIndx] = [
-              ...newLayouts[dropRowIndx],
-              {
-                name: component.name,
-                path: component.path,
-                disabled: component.disabled,
-                maxSpan: component.maxSpan,
-                minSpan: component.minSpan
-              }
-            ]
-            return (
-              dragConfig?.onDrop?.call(readonly(this), {
-                counter: { ...counter, [component.name]: count + 1 },
-                layouts: newLayouts,
-                dropRowIndx
-              }) === false
-            )
+          this.validateRowCanDrop(newLayouts, rowIndex, {
+            layouts: newLayouts,
+            counter: { ...counter, [component.name]: count + 1 }
           })
         ) {
           return
@@ -441,6 +424,18 @@ export default {
         })
       }
       this.page.setEditingElement(newElement)
+    },
+    validateRowCanDrop(layouts, rowIndex, info = {}) {
+      return layouts[rowIndex]?.some((el, i) => {
+        const { dragConfig } = this.pathToComp[el.path]
+        return (
+          dragConfig?.onDrop?.call(readonly(this), {
+            ...info,
+            rowIndex,
+            colIndex: i
+          }) === false
+        )
+      })
     },
     onAddComponentMounted(el, component) {
       el.setRenderComponent(component)
@@ -498,9 +493,45 @@ export default {
           drop: e => {
             e.preventDefault()
             e.currentTarget.classList.remove('enter')
+            // 检查剩余空间是否可以交换
             if (this.swapHandler.canDrop(e.currentTarget.dataset)) {
               const { rowIndex, colIndex, el } = this.swapingComponentInfo
               const { row_index: ri, col_index: ci } = e.currentTarget.dataset
+              // 页面布局信息
+              const { counter, layouts } = this.page.getLayout()
+              // 检查两行组件 dragConfig.canDrop 是否允许交换
+              // 拖拽组件元素
+              const dragEl = this.page.rows[rowIndex].elements[colIndex]
+              // 交换组件元素
+              const dropEl = this.page.rows[ri].elements[ci]
+              // 构造新的布局信息
+              const newLayouts = cloneDeep(layouts)
+              // 将交换组件元素 替换成 拖拽组件元素
+              newLayouts[ri].splice(ci, 1, this.page.createLayoutItem(dragEl))
+              // 将拖拽组件元素 替换成 交换组件元素
+              newLayouts[rowIndex].splice(
+                colIndex,
+                1,
+                this.page.createLayoutItem(dropEl)
+              )
+              // 校验交换行canDrop
+              if (
+                this.validateRowCanDrop(newLayouts, ri, {
+                  counter,
+                  layouts: newLayouts
+                })
+              ) {
+                return
+              }
+              // 校验拖拽行canDrop
+              if (
+                this.validateRowCanDrop(newLayouts, rowIndex, {
+                  counter,
+                  layouts: newLayouts
+                })
+              ) {
+                return
+              }
               this.page.swapElement({
                 formRowIndex: +rowIndex,
                 formColIndex: +colIndex,
@@ -537,6 +568,8 @@ export default {
           },
           dragover: e => {
             e.preventDefault()
+          },
+          dragenter: e => {
             if (this.swapHandler.canDrop(e.currentTarget.dataset)) {
               if (!this.swapAddClassFlag) {
                 e.dataTransfer.dropEffect = 'copy'
@@ -544,9 +577,6 @@ export default {
                 this.swapAddClassFlag = true
               }
             }
-          },
-          dragenter: () => {
-            //
           },
           dragleave: ({ currentTarget }) => {
             if (this.swapingComponentInfo) {
@@ -561,6 +591,7 @@ export default {
             min_span: mi,
             row_free_space: fs
           }) => {
+            // 校验行剩余空间
             if (this.swapingComponentInfo) {
               const {
                 /* 拖拽元素数据 */
@@ -741,6 +772,10 @@ export default {
     outline-color: $theme-color;
   }
   &.swap {
+    > * {
+      // 子元素不会变成鼠标事件的 target
+      pointer-events: none;
+    }
     /deep/ .iconfont {
       opacity: 1;
       transform: scale(1);
@@ -776,6 +811,13 @@ export default {
     background-color: #40a0ff9c;
     opacity: 0;
     transition: all $duration;
+  }
+}
+.components-wrapper {
+  transition: all $duration;
+  transform-origin: top;
+  &.dragging {
+    transform: scale(0.8);
   }
 }
 </style>

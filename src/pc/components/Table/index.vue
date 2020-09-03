@@ -224,8 +224,8 @@ export default {
     }
   },
   dragConfig: {
-    onDrop({ layouts, dropRowIndx }) {
-      const dropRow = layouts[dropRowIndx]
+    onDrop({ layouts, rowIndex }) {
+      const dropRow = layouts[rowIndex]
       if (
         dropRow &&
         dropRow.some(({ name }) => !(name === 'Table' || name === 'Chart'))
@@ -460,7 +460,7 @@ export default {
       // 布局信息
       const { layouts, rowIndex } = this.$attrs.layouts
       // 所在行只有一个元素
-      if (layouts[rowIndex].length === 1) {
+      if (layouts[rowIndex].length <= 1) {
         return void 0
       }
       let height = 238
@@ -569,7 +569,7 @@ export default {
               align: 'right'
             }
           ],
-          data: Array(15).fill({
+          data: Array(0).fill({
             city: '北京',
             pv: (Math.random() * 1000) | 0,
             uv: (Math.random() * 1000) | 0,

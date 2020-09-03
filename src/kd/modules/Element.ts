@@ -16,7 +16,7 @@ export interface RowProps {
 /**
  * @description 装饰类方法 调用时开启脏检查
  */
-function editDirty(methods: string[]) {
+export function editDirty(methods: string[]) {
   return function(target: Function) {
     methods.forEach(method => {
       const origin = target.prototype[method]
@@ -57,6 +57,9 @@ export class Row {
       marginBottom: 16
     }
     row.elements && this.addElements(row.elements)
+  }
+  remove() {
+    return this.parent!.delRow(this)
   }
   getFreeSpace() {
     if (this.dirty) {
@@ -108,7 +111,7 @@ export class Row {
     // 删除后再取值
     let len = this.elements.length
     if (len === 0) {
-      const delIdx = page.delRow(this)
+      const delIdx = this.remove()
       const rowSize = page.rows.length
       // 页面已经没有任何元素了
       if (delIdx === 0 && rowSize === 0) return page.setEditingElement(null)

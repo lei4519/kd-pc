@@ -1,8 +1,9 @@
 import AsyncValidator from 'async-validator'
 import { Menu } from './Menu'
-import { Row, RowProps, ColElement } from './Element'
+import { Row, RowProps, ColElement, editDirty } from './Element'
 import { cloneDeep, get } from 'lodash'
 import { Message } from 'element-ui'
+import Vue from 'vue'
 let id = 0
 /**
  * @description 页面布局信息
@@ -39,8 +40,17 @@ export interface PageProps {
  * @property {} rows 编辑区（一个页面中多行）
  * @property {} permissions 页面权限
  */
-let cacheLayout: LayoutInfo | null = null
+@editDirty([
+  'addRows',
+  'delRow',
+  'swapElement',
+  'addDropPlaceholder',
+  'removeDropPlaceholder',
+  'remove'
+])
 export class Page implements PageProps {
+  private dirty = true
+  private layoutInfo: LayoutInfo | null = null
   readonly type = 'page'
   readonly routeID = 'page_' + id++
   parent?: Menu
@@ -104,37 +114,44 @@ export class Page implements PageProps {
       toRow.replaceElement(formEl, toEl)
     }
   }
+  createLayoutItem(el: ColElement): Partial<ColElement> {
+    return {
+      name: el.name,
+      path: el.path,
+      disabled: el.disabled,
+      maxSpan: el.maxSpan,
+      minSpan: el.minSpan
+    }
+  }
   getLayout(rowIndex?: number, colIndex?: number) {
-    if (cacheLayout) return { ...cacheLayout, rowIndex, colIndex }
-    cacheLayout = this.rows.reduce(
-      (res, row, i) => {
-        res.layouts[i] = []
-        row.elements.forEach(el => {
-          if (el.name === 'dropPlaceholder') return
-          if (!res.counter[el.name]) res.counter[el.name] = 0
-          res.counter[el.name]++
-          res.layouts[i].push({
-            name: el.name,
-            path: el.path,
-            disabled: el.disabled,
-            maxSpan: el.maxSpan,
-            minSpan: el.minSpan
+    if (this.dirty) {
+      this.dirty = false
+      this.layoutInfo = this.rows.reduce(
+        (res, row) => {
+          // // 占位行
+          // if (row.elements[0].name === 'dropPlaceholder') {
+          //   return res
+          // }
+          const item: Partial<ColElement>[] = []
+          res.layouts.push(item)
+          row.elements.forEach(el => {
+            // 占位元素
+            if (el.name === 'dropPlaceholder') return
+            if (!res.counter[el.name]) res.counter[el.name] = 0
+            res.counter[el.name]++
+            item.push(this.createLayoutItem(el))
           })
-        })
-        return res
-      },
-      {
-        counter: {},
-        layouts: [],
-        rowIndex,
-        colIndex
-      } as LayoutInfo
-    )
-    // 本次渲染缓存布局信息，下次任务队列清空
-    setTimeout(() => {
-      cacheLayout = null
-    })
-    return cacheLayout
+          return res
+        },
+        {
+          counter: {},
+          layouts: [],
+          rowIndex,
+          colIndex
+        } as LayoutInfo
+      )
+    }
+    return { ...this.layoutInfo, rowIndex, colIndex }
   }
   addDropPlaceholder(element: ColElement) {
     this.rows.forEach(row => {
@@ -151,30 +168,37 @@ export class Page implements PageProps {
         })
       }
     })
-    // 最后一行
-    this.addRows({
-      elements: [
-        {
-          name: 'dropPlaceholder',
-          zhName: 'drop放置区',
-          minSpan: 1,
-          maxSpan: 24,
-          iconClass: '',
-          path: '',
-          props: null
-        }
-      ]
-    })
+    for (let i = 0, l = this.rows.length; i <= l; i++) {
+      const row = new Row({
+        elements: [
+          {
+            name: 'dropPlaceholder',
+            zhName: 'drop放置区',
+            minSpan: 1,
+            maxSpan: 24,
+            iconClass: '',
+            path: '',
+            props: null
+          }
+        ]
+      })
+      row.parent = this
+      this.rows.splice(i * 2, 0, row)
+    }
   }
   removeDropPlaceholder() {
     const { rows } = this
-    rows.forEach(row => {
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i]
       row.delDropPlaceholder()
-    })
-    // 检查最后一行
-    if (rows[rows.length - 1].elements.length === 0) {
-      rows.pop()
+      if (row.elements.length === 0) {
+        this.delRow(row)
+        i--
+      }
     }
+    // rows.forEach(row => {
+    //   row.delDropPlaceholder()
+    // })
   }
   remove() {
     this.parent?.delChild(this)
