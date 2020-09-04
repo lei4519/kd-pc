@@ -1,7 +1,24 @@
 import axios from 'axios'
+import jsonp from 'jsonp'
+import qs from 'qs'
 import { Message } from 'element-ui'
 
 const instance = axios.create()
+instance.jsonp = function({ url, params = {} }: { url: string; params: any }) {
+  return new Promise((resolve, reject) => {
+    const query = qs.stringify(params)
+    if (query) {
+      url += url.includes('?') ? `&${query}` : `?${query}`
+    }
+    jsonp(url, (err, data) => {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(data)
+      }
+    })
+  })
+}
 // 处理 请求格式 URLSearchParams FormData
 instance.interceptors.request.use(config => {
   if (config.formData) {

@@ -49,16 +49,19 @@
       <div class="right">
         <IconFont
           type="expend"
-          class="full-screen"
+          class="icon full-screen"
           @click.native="onFullScreen"
           v-show="!fullScreen"
+          size="26"
         ></IconFont>
         <IconFont
           type="compress"
-          class="full-screen-exit"
+          class="icon full-screen-exit"
           @click.native="onFullScreen"
           v-show="fullScreen"
+          size="26"
         ></IconFont>
+        <IconFont class="icon" type="tuichu" size="30" @click.native="logout" />
       </div>
     </el-header>
     <el-container>
@@ -126,6 +129,7 @@
 <script>
 import MenuItem from './MenuItem.vue'
 import EditPage from '../EditPage/index'
+import { removeToken } from '@/kd/utils/auth'
 const MAX_NAV = 5
 /**
  *   @desc 可编辑的布局组件
@@ -242,6 +246,10 @@ export default {
         this.fullScreen = !this.fullScreen
       })
     },
+    logout() {
+      removeToken()
+      this.$router.push('/login')
+    },
     // 以下 编辑模式逻辑
     addMenu() {
       if (this.project.menu.length >= MAX_NAV) {
@@ -321,9 +329,10 @@ $aside_width: 200px;
       display: flex;
       align-items: center;
       margin-right: 20px;
-      .full-screen,
-      .full-screen-exit {
-        font-size: 26px;
+      .icon {
+        & + .icon {
+          margin-left: 24px;
+        }
         color: #fff;
         cursor: pointer;
         transition: scale $duration;

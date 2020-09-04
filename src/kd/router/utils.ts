@@ -4,7 +4,7 @@ import router, { routes } from './index'
 import { routeMap } from './routeMap'
 import store from '../store'
 import { Page } from '../modules/Page'
-
+import { getToken, removeToken } from '@/kd/utils/auth'
 /**
  * @description 权限控制，注册路由
  */
@@ -79,10 +79,10 @@ export function resetRouter() {
   }) as any).matcher
 }
 // 拦截器
+const whiteList: string[] = ['/login']
 export const beforeEach: NavigationGuard = (to, from, next) => {
   // determine whether the user has logged in
-  const whiteList: string[] = ['/login']
-  const isLogin = true
+  const isLogin = getToken().userId
   if (isLogin) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -92,13 +92,14 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
       if (!store.state.project.project) {
         // 浏览器刷新时project为空，重新设置
         const project = JSON.parse(localStorage.getItem('project') || 'null')
-        // TEST 测试使用
+        // 目前没有权限控制，所以 project 一直为空
         // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
           next(to.path)
         } else {
           // 如果登录成功了却没有获取到menu，就返回重新登录
+          removeToken()
           next(`/login?redirect=${to.path}`)
         }
       } else {
@@ -106,6 +107,10 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
       }
     }
   } else {
+    if (localStorage.getItem('userInfo')) {
+      store.commit('user/SET_USER_INFO', {})
+      localStorage.clear()
+    }
     if (whiteList.includes(to.path)) {
       next()
     } else {
@@ -117,5 +122,5 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
 }
 
 export const afterEach = () => {
-  // localStorage.setItem('routeName', to.name!)
+  //
 }

@@ -10,7 +10,12 @@
   </div>
 </template>
 <script>
+import { Theme } from './modules/Theme'
+
 export default {
-  name: 'App'
+  name: 'App',
+  mounted() {
+    new Theme('#409EFF', document.documentElement)
+  }
 }
 </script>

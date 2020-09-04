@@ -13,6 +13,9 @@ module.exports = {
       config.devtool = 'source-map'
     }
   },
+  devServer: {
+    disableHostCheck: true
+  },
   css: {
     loaderOptions: {
       sass: {
