@@ -15,6 +15,7 @@ export default {
   iconClass: 'biaodanzujian-biaoge',
   minSpan: 24,
   maxSpan: 24,
+  // needParentStyle: false,
   commonSetting: {
     font: true
   },

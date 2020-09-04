@@ -13,6 +13,14 @@ export default {
       default: () => {
         return null
       }
+    },
+    chartType: {
+      type: String,
+      default: ''
+    },
+    windowWidth: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -26,25 +34,36 @@ export default {
         '#6c7ee4',
         '#ff9c6e',
         '#81c784',
-        '#b47fec'
+        '#b47fec',
       ]
     }
   },
   watch: {
-    option(newVal, oldVal) {
+    chartType(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.chartInstance.clear()
         this.setOption()
-        this.chartInstance.resize()
+      }
+    },
+    'asideLayout.width': function(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.setOption()
+      }
+    },
+    windowWidth(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.setOption()
       }
     }
   },
+  inject: ['asideLayout'],
   mounted() {
     this.chartInstance = echarts.init(this.$el)
     this.setOption()
   },
   methods: {
     setOption() {
+      this.chartInstance.clear()
+      this.chartInstance.resize()
       this.chartInstance.setOption(
         Object.assign(this.option, { color: this.color })
       )
@@ -55,6 +74,7 @@ export default {
 
 <style lang="scss" scoped>
 .echart {
-  height: 200px;
+  height: 100%;
+  height: 100%;
 }
 </style>

@@ -37,7 +37,7 @@
             >
           </template>
           <el-date-picker
-            class="search-date-input"
+            class="mini"
             v-if="showSearch"
             v-model="searchDateModel"
             type="daterange"
@@ -777,28 +777,6 @@ export default {
       margin: auto;
       background-color: #dcdfe6;
     }
-  }
-}
-/deep/ .search-date-input {
-  width: auto;
-  padding: 4px;
-  .el-icon-date {
-    flex: 0 0 25px;
-    margin: 0;
-  }
-  .el-range-input {
-    flex: 1;
-  }
-  .el-range-separator {
-    flex: 0 0 20px;
-  }
-  .el-range__close-icon {
-    display: none;
-  }
-  .el-range-input,
-  .el-range-separator,
-  .el-range__close-icon {
-    display: none;
   }
 }
 </style>

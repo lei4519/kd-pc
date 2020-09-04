@@ -10,42 +10,67 @@
       :key="item.id"
     >
       <div class="inner">
-        <div class="title">30日 | 平均单次使用时长（秒）</div>
-        <div class="time">2020-07-26-2020-08-24</div>
-        <div class="horizontal" v-show="compose === 'horizontal'">
-          <div class="subtime">8-24</div>
+        <div class="options">
+          <el-date-picker
+            class="search-date-input"
+            v-if="showSearch"
+            v-model="searchDateModel"
+            type="daterange"
+            size="mini"
+            :clearable="false"
+            :pickerOptions="pickerOptions"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+          />
+          <el-button
+            v-if="download"
+            v-skeleton
+            type="primary"
+            size="mini"
+            icon="el-icon-download"
+            @click="handlerDownload"
+            class="download"
+          >
+            下载
+          </el-button>
+          <a v-if="download" ref="downLoadRef"></a>
+        </div>
+        <div class="title">{{item.title}}</div>
+        <div class="time">{{item.startTime}}-{{item.endTime}}</div>
+        <div class="horizontal" v-if="compose === 'horizontal'">
+          <div class="subtime">{{item.endTime}}</div>
           <div class="horizontal-compare-sum">
             <div class="current-box">
-              <div class="current"><span class="val">601.24</span>人</div>
+              <div class="current"><span class="val">{{item.endNum}}</span>{{item.endUnit}}</div>
               <div class="compare">
-                <div class="huanbi">环比<span class="val_red">50%</span></div>
-                <div class="tongbi">同比<span class="val_green">50%</span></div>
+                <div class="huanbi">环比<span class="val_red">{{item.huanBi}}</span></div>
+                <div class="tongbi">同比<span class="val_green">{{item.tongBi}}</span></div>
               </div>
             </div>
             <div class="sum-average">
-              <div class="sum">合计<span class="val">599.38</span>人</div>
-              <div class="average">均值<span class="val">599.2</span>人</div>
+              <div class="sum">合计<span class="val">{{item.sum}}</span>{{item.sumUnit}}</div>
+              <div class="average">均值<span class="val">{{item.average}}</span>{{item.averageUnit}}</div>
             </div>
           </div>
           <div class="vertical-r">
-            <EchartComponent :option="item.option" />
+            <EchartComponent :option="item.option" :chart-type="chartType" :windowWidth="windowWidth" />
           </div>
         </div>
-        <div class="vertical" v-show="compose === 'vertical'">
+        <div class="vertical" v-if="compose === 'vertical'">
           <div class="vertical-l">
-            <div class="subtime">8-24</div>
-            <div class="current"><span class="val">601.24</span>人</div>
+            <div class="subtime">{{item.endTime}}</div>
+            <div class="current"><span class="val">{{item.endNum}}</span>{{item.endUnit}}</div>
             <div class="compare">
-              <div class="huanbi">环比<span class="val_red">50%</span></div>
-              <div class="tongbi">同比<span class="val_green">50%</span></div>
+              <div class="huanbi">环比<span class="val_red">{{item.huanBi}}</span></div>
+              <div class="tongbi">同比<span class="val_green">{{item.tongBi}}</span></div>
             </div>
             <div class="sum-average">
-              <div class="sum">合计<span class="val">599.38</span>人</div>
-              <div class="average">均值<span class="val">599.2</span>人</div>
+              <div class="sum">合计<span class="val">{{item.sum}}</span>{{item.sumUnit}}</div>
+              <div class="average">均值<span class="val">{{item.average}}</span>{{item.averageUnit}}</div>
             </div>
           </div>
           <div class="vertical-r">
-            <EchartComponent :option="item.option" />
+            <EchartComponent :option="item.option" :chart-type="chartType" :windowWidth="windowWidth" />
           </div>
         </div>
       </div>
@@ -55,14 +80,25 @@
 
 <script>
 import EchartComponent from '@/pc/_components/echart'
+import { setTimeoutResolve } from '@/kd/utils'
+
+const throttle = (fn, context) => {
+    let t = null
+    return () => {
+      if (t) {
+        clearTimeout(t)
+        t = null
+      } 
+      t = setTimeout(() => {
+        fn.call(context)
+      }, 1000)
+    }
+}
 
 export default {
   name: 'Chart',
   zhName: '图表组件',
   minSpan: 2,
-  components: {
-    EchartComponent
-  },
   editorProps() {
     return [
       {
@@ -71,111 +107,116 @@ export default {
           {
             label: '数据源',
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            // tips: h => {
-            //     return (
-            //         <div>
-            //         <el-alert
-            //             class="mb-16"
-            //             title="一期只支持自定义数据接口"
-            //             type="info"
-            //             show-icon
-            //             closable={false}
-            //         />
-            //         <InterfaceDoc
-            //             title="表格数据接口文档"
-            //             columns={[
-            //             {
-            //                 label: '字段',
-            //                 prop: 'prop'
-            //             },
-            //             {
-            //                 label: '数据类型',
-            //                 prop: 'type'
-            //             },
-            //             {
-            //                 label: '说明',
-            //                 prop: 'desc'
-            //             }
-            //             ]}
-            //             data={[
-            //             {
-            //                 prop: 'code',
-            //                 type: 'number - 数字',
-            //                 desc: '接口状态值'
-            //             },
-            //             {
-            //                 prop: 'pageSize',
-            //                 type: 'number - 数字',
-            //                 desc: '每次请求返回数据条目'
-            //             },
-            //             {
-            //                 prop: 'page',
-            //                 type: 'number - 数字',
-            //                 desc: '当前页码'
-            //             },
-            //             {
-            //                 prop: 'total',
-            //                 type: 'number - 数字',
-            //                 desc: '数据总量'
-            //             },
-            //             {
-            //                 prop: 'data',
-            //                 type: 'object - 对象',
-            //                 desc: '数据主体',
-            //                 children: [
-            //                 {
-            //                     prop: 'columns',
-            //                     type: 'array - 数组',
-            //                     desc:
-            //                     '表头配置, label，prop必须返回。其他属性也可在页面中进行可视化编辑',
-            //                     children: [
-            //                     {
-            //                         prop: 'label',
-            //                         type: 'string - 字符串',
-            //                         desc: '每列表头标题'
-            //                     },
-            //                     {
-            //                         prop: 'prop',
-            //                         type: 'string - 字符串',
-            //                         desc: '列内容的字段名'
-            //                     },
-            //                     {
-            //                         prop: 'sortable',
-            //                         type: 'boolean - 布尔值',
-            //                         desc:
-            //                         '指定当前字段为排序字段，发送请求时参数为 sort: "prop:ascending"'
-            //                     },
-            //                     {
-            //                         prop: 'defaultSort',
-            //                         type: '"ascending" | "descending"',
-            //                         desc:
-            //                         '如果指定了此属性则会将当前字段作为列表默认排序字段，如果指定多个则只会生效遍历中遇到的第一个。'
-            //                     },
-            //                     {
-            //                         prop: 'align',
-            //                         type: '"left" | "right" ｜ "center"',
-            //                         desc: '列文字对齐方式'
-            //                     },
-            //                     {
-            //                         prop: 'fixed',
-            //                         type: '"left" | "right"',
-            //                         desc: '列是否固定在左侧或者右侧'
-            //                     }
-            //                     ]
-            //                 },
-            //                 {
-            //                     prop: 'data',
-            //                     type: 'array - 数组',
-            //                     desc: '表格主体数据'
-            //                 }
-            //                 ]
-            //             }
-            //             ]}
-            //             code={this.genMockData(true)}
-            //         />
-            //         </div>
-            //     )
-            // },
+            tips: h => {
+                return (
+                    <div>
+                    <el-alert
+                        class="mb-16"
+                        title="一期只支持自定义数据接口"
+                        type="info"
+                        show-icon
+                        closable={false}
+                    />
+                    <InterfaceDoc
+                        title="表图数据接口文档"
+                        columns={[
+                          {
+                            label: '字段',
+                            prop: 'prop'
+                          },
+                          {
+                            label: '数据类型',
+                            prop: 'type'
+                          },
+                          {
+                            label: '说明',
+                            prop: 'desc'
+                          }
+                        ]}
+                        data={[
+                          {
+                              prop: 'title',
+                              type: 'string - 字符串',
+                              desc: '标题'
+                          },
+                          {
+                              prop: 'startTime',
+                              type: 'string - 字符串',
+                              desc: '开始日期'
+                          },
+                          {
+                              prop: 'endTime',
+                              type: 'string - 字符串',
+                              desc: '结束日期'
+                          },
+                          {
+                              prop: 'endNum',
+                              type: 'number - 数字',
+                              desc: '结束日期当天的数据'
+                          },
+                          {
+                              prop: 'endUnit',
+                              type: 'string - 字符串',
+                              desc: '结束日期当天数据的单位'
+                          },
+                          {
+                              prop: 'huanBi',
+                              type: 'string - 字符串',
+                              desc: '环比'
+                          },
+                          {
+                              prop: 'tongBi',
+                              type: 'string - 字符串',
+                              desc: '同比'
+                          },
+                          {
+                              prop: 'sum',
+                              type: 'number - 数字',
+                              desc: '合计'
+                          },
+                          {
+                              prop: 'sumUnit',
+                              type: 'string - 字符串',
+                              desc: '合计单位'
+                          },
+                          {
+                              prop: 'average',
+                              type: 'number - 数字',
+                              desc: '均值'
+                          },
+                          {
+                              prop: 'averageUnit',
+                              type: 'string - 字符串',
+                              desc: '均值单位'
+                          },
+                          {
+                            prop: 'option',
+                            type: 'object - 对象',
+                            des: '绘制图表的数据对象',
+                            // children: [
+                            //   {
+                            //     prop: 'xAxis',
+                            //     type: '',
+                            //     desc: '',
+                            //   },
+                            //   {
+                            //     prop: 'yAxis',
+                            //     type: '',
+                            //     desc: '',
+                            //   },
+                            //   {
+                            //     prop: 'series',
+                            //     type: '',
+                            //     desc: ''
+                            //   },
+                            // ]
+                          },
+                        ]}
+                        code={this.genMockData(true)}
+                    />
+                    </div>
+                )
+            },
             prop: 'url',
             type: 'dataSource'
           },
@@ -195,83 +236,11 @@ export default {
               {
                 label: '饼图',
                 value: 'pie'
-              }
-              // {
-              //     label: '散点（气泡）图',
-              //     value: 'scatter',
-              // },
-              // {
-              //     label: '带有涟漪特效动画的散点（气泡）图',
-              //     value: 'effectScatter'
-              // },
-              // {
-              //     label: '雷达图',
-              //     value: 'radar',
-              // },
-              // {
-              //     label: '树图',
-              //     value: 'tree',
-              // },
-              // {
-              //     label: 'treemap',
-              //     value: 'treemap',
-              // },
-              // {
-              //     label: '旭日图',
-              //     value: 'sunburst',
-              // },
-              // {
-              //     label: 'boxplot',
-              //     value: 'boxplot',
-              // },
-              // {
-              //     label: 'K线图',
-              //     value: 'candlestick',
-              // },
-              // {
-              //     label: '热力图',
-              //     value: 'heatmap',
-              // },
-              // {
-              //     label: '地图',
-              //     value: 'map',
-              // },
-              // {
-              //     label: '平行坐标系',
-              //     value: 'parallel',
-              // },
-              // {
-              //     label: '路径图',
-              //     value: 'lines',
-              // },
-              // {
-              //     label: '关系图',
-              //     value: 'graph',
-              // },
-              // {
-              //     label: '桑基图',
-              //     value: 'sankey',
-              // },
-              // {
-              //     label: '漏斗图',
-              //     value: 'funnel',
-              // },
-              // {
-              //     label: '仪表盘',
-              //     value: 'gauge',
-              // },
-              // {
-              //     label: '象形柱图',
-              //     value: 'pictorialBar',
-              // },
-              // {
-              //     label: '主题河流',
-              //     value: 'themeRiver',
-              // },
-              // {
-              //     label: '自定义系列',
-              //     value: 'custom',
-              // },
+              },
+              {
+                  label: '漏斗图',
+                  value: 'funnel',
+              },
             ]
           },
           {
@@ -288,31 +257,62 @@ export default {
                 value: 'vertical'
               }
             ]
+          },
+          {
+            label: '搜索',
+            prop: 'showSearch',
+            type: 'switch',
+          },
+          {
+            label: '下载',
+            prop: 'download',
+            type: 'switch',
           }
         ]
       }
     ]
   },
+  components: {
+    EchartComponent
+  },
+  inject: ['asideLayout', 'buildMode'],
   props: {
-    chartType: {
-      type: String,
-      default: 'line'
-    },
     url: {
       type: String,
       default: ''
     },
+    // 图表类型
+    chartType: {
+      type: String,
+      default: 'line'
+    },
+    // 排版
     compose: {
       type: String,
       default: 'horizontal'
+    },
+    showSearch: {
+      type: Boolean,
+      default: false
+    },
+    download: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      list: [{}]
+      list: [{}],
+      windowWidth: 0,
+      searchDateModel: []
     }
   },
   watch: {
+    'asideLayout.width': function(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.configChange()
+      }
+    },
     chartType(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.configChange()
@@ -322,7 +322,20 @@ export default {
       if (newVal !== oldVal) {
         this.configChange()
       }
-    }
+    },
+    searchDateModel() {
+      this.fetchData()
+    },
+  },
+  computed: {
+    dateDesc() {
+      const [start, end] = this.searchDateModel
+
+      return `${parseTime(start, '{y}-{m}-{d}')} ~ ${parseTime(
+        end,
+        '{y}-{m}-{d}'
+      )}  |  ${(end - start) / 3600 / 1000 / 24}天`
+    },
   },
   created() {
     this.list.forEach(item => {
@@ -344,43 +357,132 @@ export default {
         ]
       }
     })
+    this.shortcutMap = [
+      {
+        label: '当天',
+        value: 0
+      },
+      {
+        label: '最近一周',
+        value: -7
+      },
+      {
+        label: '最近一个月',
+        value: -30
+      },
+      {
+        label: '最近三个月',
+        value: -90
+      },
+      {
+        label: '最近一年',
+        value: -365
+      }
+    ]
+    this.pickerOptions = {
+      shortcuts: this.shortcutMap.map(({ label, value }) => ({
+        text: label,
+        onClick(picker) {
+          picker.$emit('pick', getRelativeTime(value))
+        }
+      }))
+    }
+  },
+  mounted() {
+    this.throttle = throttle(this.resizeHandle, this)
+    window.addEventListener('resize', this.throttle)
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.throttle)
   },
   methods: {
     configChange() {
       this.list.forEach(item => {
-        item.option = {
-          xAxis: {
-            type: 'category',
-            boundaryGap: false,
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-          },
-          yAxis: {
-            type: 'value'
-          },
-          series: [
-            {
-              data: [820, 932, 901, 934, 1290, 1330, 1320],
-              type: this.chartType,
-              areaStyle: {}
-            }
-          ]
-        }
+        item.option.series.forEach((v) => {
+          v.type = this.chartType
+        })
       })
       this.$forceUpdate()
     },
+    resizeHandle() {
+      this.windowWidth = window.outerWidth
+      this.configChange()
+    },
+    genMockData(syncRetrueData = false) {
+      const res = [
+        {
+          title: '30日 | 平均单次使用时长（秒）',
+          startTime: '2020-07-26',
+          endTime: '2020-08-24',
+          endNum: '666',
+          endUnit: '次',
+          huanBi: '50%',
+          tongBi: '50%',
+          sum: '1000',
+          sumUnit: '次',
+          average: '100',
+          averageUnit: '次',
+          option: {
+            xAxis: {
+              type: 'category',
+              boundaryGap: false,
+              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+              type: 'value'
+            },
+            series: [
+              {
+                data: [820, 932, 901, 934, 1290, 1330, 1320],
+                type: this.chartType,
+                areaStyle: {}
+              }
+            ]
+          }
+        }
+      ]
+      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+    },
     fetchData(params = {}) {
-      return this.$ajax({
-        url: this.url,
-        method: 'POST',
-        params
+      params = {
+        ...params
+      }
+      if (params.download) {
+        return this.$ajax({
+          url: this.url,
+          method: 'post',
+          params,
+          responseType: 'blob'
+        }).then(({ data: blob, headers } = {}) => {
+          if (!blob) {
+            return this.$message.error('接口错误，请返回下载数据')
+          }
+          const url = window.URL.createObjectURL(
+            new Blob([blob], { type: blob.type })
+          )
+          const a = this.$refs.downLoadRef
+          a.href = url
+          const filename =
+            /filename="(.*?)"/g.exec(headers['content-disposition'])?.[1] ||
+            this.tableTitle + '.xlsx'
+          a.download = decodeURIComponent(filename)
+          a.click()
+        })
+      }
+      return (this.buildMode && !this.url
+        ? this.genMockData()
+        : this.$ajax({
+            url: this.url,
+            method: 'post',
+            params
+          })
+      ).then((res) => {
+        this.list = res
       })
-        .then(() => {
-          //
-        })
-        .catch(() => {
-          //
-        })
-    }
+    },
+    handlerDownload() {
+      this.fetchData({ download: 1 })
+    },
   }
 }
 </script>
@@ -398,9 +500,19 @@ export default {
       border: 2px solid transparent;
       background-color: #ffffff;
       border-radius: 3px;
+      position: relative;
       &:hover {
-        border: 2px solid #3ad1c5;
+        // border: 2px solid #3ad1c5;
         border-radius: 3px;
+      }
+      .options{
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 10;
+        .download{
+          margin-left: 16px;
+        }
       }
       .title {
         color: #5f6e82;
@@ -490,6 +602,19 @@ export default {
 }
 .chart-list-1 {
   .chart-item-1 {
+    .inner{
+      height: 390px;
+      .horizontal{
+        .vertical-r{
+          height: 220px;
+        }
+      }
+      .vertical{
+        .vertical-r{
+          height: 320px;
+        }
+      }
+    }
   }
 }
 .chart-list-more {
@@ -497,6 +622,41 @@ export default {
   flex-wrap: wrap;
   .chart-item-more {
     width: 50%;
+    .inner{
+      height: 364px;
+      .horizontal{
+        .vertical-r{
+          height: 194px;
+        }
+      }
+      .vertical{
+        .vertical-r{
+          height: 294px;
+        }
+      }
+    }
+  }
+}
+/deep/ .search-date-input {
+  width: auto;
+  padding: 4px;
+  .el-icon-date {
+    flex: 0 0 25px;
+    margin: 0;
+  }
+  .el-range-input {
+    flex: 1;
+  }
+  .el-range-separator {
+    flex: 0 0 20px;
+  }
+  .el-range__close-icon {
+    display: none;
+  }
+  .el-range-input,
+  .el-range-separator,
+  .el-range__close-icon {
+    display: none;
   }
 }
 </style>
