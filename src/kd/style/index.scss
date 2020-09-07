@@ -4,6 +4,7 @@
 
 html,
 body {
+  height: 100%;
   box-sizing: border-box;
   * {
     box-sizing: inherit;
@@ -32,7 +33,9 @@ body {
   line-height: 1.4;
   font-family: 'PingFang SC', '微软雅黑';
 }
-
+#app {
+  height: 100%;
+}
 .iconfont {
   vertical-align: text-bottom;
 }

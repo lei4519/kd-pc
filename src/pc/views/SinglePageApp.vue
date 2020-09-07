@@ -90,12 +90,13 @@ export default {
   background-color: $mainBgColor;
   padding: 24px;
   .decoration {
-    border: 2px solid transparent;
-    border-radius: 4px;
+    outline: 0 solid transparent;
+    // outline-radius: 4px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: all $duration;
+    transition: outline-color $duration;
     &:hover {
-      border-color: $theme-color;
+      outline-width: 2px;
+      outline-color: $theme-color;
     }
   }
 }

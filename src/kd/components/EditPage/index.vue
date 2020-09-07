@@ -206,15 +206,15 @@
                 </transition-group>
                 <!-- </Interact> -->
               </div>
-              <div
-                v-if="page.rows.length === 0"
-                key="empty-alert"
-                class="empty-alert"
-              >
-                <IconFont type="kong" />
-                请添加组件
-              </div>
             </transition-group>
+            <div
+              v-if="page.rows.length === 0"
+              key="empty-alert"
+              class="empty-alert"
+            >
+              <IconFont type="kong" />
+              请添加组件
+            </div>
           </div>
         </el-main>
       </el-container>
@@ -249,7 +249,7 @@ import { CatchEvents } from '../utils/CatchEvents'
 import OperateList from '../OperateList/index'
 // import Interact from '../utils/Interact.vue'
 import EditPageAside from './aside.vue'
-import SinglePageApp from '@/pc/SinglePageApp.vue'
+import SinglePageApp from '@/pc/views/SinglePageApp'
 import { readonly, onceEventListener } from '@/kd/utils'
 import Vue from 'vue'
 import { cloneDeep } from 'lodash'
@@ -294,13 +294,17 @@ export default {
   },
   data() {
     return {
-      page: this.project.menu[0].children[0],
       visiblePreviewPage: false,
       asideLayout: localStorage.getItem('edit-aside-layout') || 'left',
       activeTab: 'select', // 当前选中的tab
       dragingComponent: null, // 正在从组件列表中拖拽的组件
       swapingComponentInfo: null, // 正在交换位置的组件
       editPageAsideWidth: localStorage.getItem('editPageAsideWidth') || 300
+    }
+  },
+  computed: {
+    page() {
+      return this.project.menu[0].children[0]
     }
   },
   watch: {
@@ -747,6 +751,9 @@ export default {
     color: #fff;
     background-color: rgba(39, 209, 152, 0.5);
   }
+  .el-icon-plus {
+    pointer-events: none;
+  }
 }
 .row-vdr {
   padding: 8px;
@@ -816,6 +823,7 @@ export default {
 .components-wrapper {
   transition: all $duration;
   transform-origin: top;
+  will-change: transform;
   &.dragging {
     transform: scale(0.8);
   }

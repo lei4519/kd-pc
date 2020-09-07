@@ -81,7 +81,7 @@ export function resetRouter() {
 // 拦截器
 export const beforeEach: NavigationGuard = (to, from, next) => {
   // determine whether the user has logged in
-  const whiteList: string[] = ['/login']
+  const whiteList: string[] = ['/login', '/SinglePageApp']
   const isLogin = true
   if (isLogin) {
     if (to.path === '/login') {

@@ -42,6 +42,8 @@ export default {
     }
   },
   created() {
+    // 第一次初始化不监听，更新颜色时再当做第一次 存入
+    this.replaceFlag = true
     const projectConfig = JSON.parse(sessionStorage.getItem('project')) || {
       menu: [
         {

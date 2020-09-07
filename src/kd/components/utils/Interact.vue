@@ -149,6 +149,7 @@ export default {
 
 <style lang="scss" scoped>
 .vdr {
+  will-change: width;
   position: relative;
   transition: outline $duration;
   outline: 2px solid transparent;
