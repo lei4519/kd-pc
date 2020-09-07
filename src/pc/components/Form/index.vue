@@ -2,7 +2,7 @@
  * @Author: zijian6@leju.com
  * @Date: 2020-08-19 10:28:04
  * @LastEditors: zijian6@leju.com
- * @LastEditTime: 2020-09-04 15:08:29
+ * @LastEditTime: 2020-09-07 14:42:06
  * @FilePath: /res.leju.com/dev/mvvm-project/vue/kd-pc/src/pc/components/Form/index.vue
 -->
 <template>
@@ -46,9 +46,6 @@
       </el-form-item>
     </el-form>
     <div v-else>请添加表单组件</div>
-    <div>
-      <Cascader></Cascader>
-    </div>
   </div>
 </template>
 
@@ -58,6 +55,7 @@ import Cascader from '@/kd/components/Form/Cascader'
 
 export default {
   name: 'Form',
+  needParentStyle: false,
   components: {
     Select,
     Cascader
@@ -68,7 +66,7 @@ export default {
   props: {
     searchArray: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     }
@@ -87,14 +85,14 @@ export default {
       }
     ]
   },
-  data() {
+  data () {
     return {
       searchModel: {},
       pickerOptions: {
         shortcuts: [
           {
             text: '最近一周',
-            onClick(picker) {
+            onClick (picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
@@ -103,7 +101,7 @@ export default {
           },
           {
             text: '最近一个月',
-            onClick(picker) {
+            onClick (picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
@@ -112,7 +110,7 @@ export default {
           },
           {
             text: '最近三个月',
-            onClick(picker) {
+            onClick (picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
@@ -125,11 +123,11 @@ export default {
   },
   watch: {},
   methods: {
-    onSearch() {
+    onSearch () {
       console.log(this.searchModel)
       this.$emit('on-search', this.searchModel)
     },
-    resetField() {
+    resetField () {
       this.$refs.form.resetFields()
     }
   }

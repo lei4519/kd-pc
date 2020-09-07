@@ -9,6 +9,12 @@ $mainBgColor: #f7f8f9;
 // 组件 padding 值
 $component-padding: 16px;
 
+@mixin ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // 导出供vuex使用
 :export {
   themeColor: $theme-color;

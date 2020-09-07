@@ -11,7 +11,7 @@ export default {
     option: {
       type: Object,
       default: () => {
-        return null
+        return {}
       }
     },
     chartType: {
@@ -39,26 +39,15 @@ export default {
     }
   },
   watch: {
-    chartType(newVal, oldVal) {
+    option(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.setOption()
-      }
-    },
-    'asideLayout.width': function(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.setOption()
-      }
-    },
-    windowWidth(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.setOption()
+        this.option && this.setOption()
       }
     }
   },
-  inject: ['asideLayout'],
   mounted() {
     this.chartInstance = echarts.init(this.$el)
-    this.setOption()
+    this.option && this.setOption()
   },
   methods: {
     setOption() {
@@ -74,7 +63,6 @@ export default {
 
 <style lang="scss" scoped>
 .echart {
-  height: 100%;
   height: 100%;
 }
 </style>

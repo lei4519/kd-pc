@@ -2,7 +2,7 @@
   <div class="table-component-wrap clearfix">
     <div class="title-wrap">
       <div class="title">
-        <div v-skeleton="{ width: '100px', height: '20px' }">
+        <div class="title-text" v-skeleton="{ width: '100px', height: '20px' }">
           {{ tableTitle }}
         </div>
         <div
@@ -357,13 +357,16 @@ export default {
             prop: 'url',
             type: 'dataSource',
             formItemProps: {
-              // rules: [{ required: true, message: '数据源不能为空' }]
+              rules: [{ required: true, message: '数据源不能为空' }]
             }
           },
           {
             label: '标题',
             prop: 'tableTitle',
-            type: 'input'
+            type: 'input',
+            formCompProps: {
+              maxlength: 20
+            }
           },
           {
             label: '表格提示',
@@ -569,8 +572,9 @@ export default {
               align: 'right'
             }
           ],
-          data: Array(0).fill({
-            city: '北京',
+          data: Array(15).fill({
+            city:
+              '北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京北京',
             pv: (Math.random() * 1000) | 0,
             uv: (Math.random() * 1000) | 0,
             xs: (Math.random() * 1000) | 0,
@@ -702,11 +706,16 @@ export default {
     line-height: 28px;
     font-size: 14px;
     color: #5f6e82;
+    max-width: 65%;
+    .title-text {
+      @include ellipsis;
+    }
   }
   .desc {
     font-size: 12px;
     line-height: 1;
     color: #8492a6;
+    @include ellipsis;
   }
 }
 .table-wrap {

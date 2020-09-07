@@ -2,7 +2,7 @@
  * @Author: zijian6@leju.com
  * @Date: 2020-08-21 11:21:35
  * @LastEditors: zijian6@leju.com
- * @LastEditTime: 2020-09-04 14:44:16
+ * @LastEditTime: 2020-09-07 16:30:54
  * @FilePath: /res.leju.com/dev/mvvm-project/vue/kd-pc/src/pc/components/Form/form-editor.vue
 -->
 <template>
@@ -11,31 +11,40 @@
       <el-button
         v-for="(item, index) in components"
         :key="index"
+        class="com-btn"
         plain
         @click="addComponent(item)"
       >{{item.name}}</el-button>
     </div>
     <div class="com-setting mt-12" v-if="value.length > 0">
       <h2 class="mb-8">组件配置</h2>
-      <div v-for="(item, index) in value" v-bind:key="index" class="mb-8">
+      <el-table :data="value" style="width: 100%">
+        <el-table-column prop="name" label="组件名称" align="center" width="80"></el-table-column>
+        <el-table-column prop="label" label="标题" show-overflow-tooltip align="center" width="100"></el-table-column>
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-tooltip
+              class="ml-4 hover-color click-effect"
+              effect="dark"
+              content="删除"
+              placement="top"
+            >
+              <el-button icon="el-icon-delete-solid" @click.native="deleteComponent(scope.$index)"></el-button>
+            </el-tooltip>
+            <el-tooltip
+              class="ml-4 hover-color click-effect"
+              effect="dark"
+              content="编辑"
+              placement="top"
+            >
+              <el-button icon="el-icon-edit" @click.native="editComponent(scope.$index)"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- <div v-for="(item, index) in value" v-bind:key="index" class="mb-8">
         <el-button plain>{{item.label}}</el-button>
-        <el-tooltip
-          class="ml-4 hover-color click-effect"
-          effect="dark"
-          content="删除"
-          placement="top"
-        >
-          <el-button icon="el-icon-delete-solid" @click.native="deleteComponent(index)"></el-button>
-        </el-tooltip>
-        <el-tooltip
-          class="ml-4 hover-color click-effect"
-          effect="dark"
-          content="编辑"
-          placement="top"
-        >
-          <el-button icon="el-icon-edit" @click.native="editComponent(index)"></el-button>
-        </el-tooltip>
-      </div>
+      </div>-->
     </div>
 
     <el-drawer
@@ -128,21 +137,14 @@
               </el-button>
             </div>
           </el-form-item>
-
-          <el-form-item v-if="currentType === 'select'">
-            <el-row>
-              <el-col :span="4">
-                <span>是否多选</span>
-              </el-col>
-              <el-col :span="20">
-                <el-switch
-                  v-model="form.props.multiple"
-                  active-color="#13ce66"
-                  inactive-color="#ff4949"
-                  @change="setProps(form.props.multiple, ...arguments)"
-                ></el-switch>
-              </el-col>
-            </el-row>
+          <!-- <el-tooltip effect="dark" :content="item.tips" placement="top">
+            <i class="el-icon-info"></i>
+          </el-tooltip>-->
+          <el-form-item v-if="currentType === 'select' || currentType === 'cascader'" label="是否多选">
+            <el-switch
+              v-model="form.props.multiple"
+              @change="setProps(form.props.multiple, ...arguments)"
+            ></el-switch>
           </el-form-item>
         </el-form>
       </div>
@@ -158,7 +160,7 @@ export default {
   props: {
     value: {
       type: Array,
-      default() {
+      default () {
         return []
       }
     }
@@ -169,7 +171,7 @@ export default {
       default: ''
     }
   },
-  data() {
+  data () {
     return {
       drawer: false,
       form: {
@@ -203,27 +205,29 @@ export default {
     }
   },
   computed: {
-    currentType() {
+    currentType () {
       return this.value[this.currentIndex]?.type || ''
     },
-    direction() {
+    direction () {
       return this.asideLayout.direction === 'left' ? 'rtl' : 'ltr'
     }
   },
   methods: {
-    deleteComponent(index) {
+    deleteComponent (index) {
       this.value.splice(index, 1)
       this.$emit('change', this.value)
     },
-    editComponent(index) {
+    editComponent (index) {
+      console.log(index)
       this.currentIndex = index
       this.form = this.value[index]
       this.drawer = true
     },
-    addComponent({ type, label }) {
+    addComponent ({ type, label }) {
       if (type === 'input') {
         this.value.push({
           label: label || '标题',
+          name: '输入框',
           type,
           props: {
             placeholder: '请选择',
@@ -233,6 +237,7 @@ export default {
       } else if (type === 'select') {
         this.value.push({
           label: label || '标题',
+          name: '选择器',
           type,
           props: {
             placeholder: '请选择',
@@ -247,6 +252,7 @@ export default {
       } else if (type === 'datePicker') {
         this.value.push({
           label: label || '标题',
+          name: '日期选择器',
           type,
           props: {
             placeholder: '请选择',
@@ -259,6 +265,7 @@ export default {
       } else if (type === 'cascader') {
         this.value.push({
           label: label || '标题',
+          name: '级联选择器',
           type,
           props: {
             placeholder: '请选择',
@@ -270,28 +277,28 @@ export default {
       this.$emit('change', this.value)
       this.currentIndex = this.value.length - 1
     },
-    setProps(prop, val) {
+    setProps (prop, val) {
       this.value[this.currentIndex][prop] = val
       this.$emit('change', this.value)
     },
-    deleteSelectOption(index) {
+    deleteSelectOption (index) {
       this.form.options.splice(index, 1)
       this.$emit('change', this.value)
     },
-    addSelectOption() {
+    addSelectOption () {
       this.form.options.push({
         [this.form.props.optionLabel]: '',
         [this.form.props.optionKey]: ''
       })
       this.$emit('change', this.value)
     },
-    onSubmit() {
+    onSubmit () {
       Object.assign(this.value[this.currentIndex], this.form)
       console.log(this.value)
       this.drawer = false
       this.$emit('change', this.value)
     },
-    fetchData(params = {}) {
+    fetchData (params = {}) {
       return this.$ajax({
         url: this.form.url,
         method: 'POST',
@@ -348,6 +355,14 @@ export default {
   }
   .el-input {
     flex: 1;
+  }
+}
+
+.component-btn {
+  display: flex;
+  flex-wrap: wrap;
+  .com-btn {
+    margin-bottom: 10px;
   }
 }
 </style>

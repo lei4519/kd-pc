@@ -346,6 +346,7 @@ export default {
       }
     }
     .el-form-item__content {
+      width: 100%;
       .el-select {
         width: 100%;
       }

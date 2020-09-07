@@ -49,7 +49,7 @@ export interface PageProps {
   'remove'
 ])
 export class Page implements PageProps {
-  private dirty = true
+  dirty = true
   private layoutInfo: LayoutInfo | null = null
   readonly type = 'page'
   readonly routeID = 'page_' + id++

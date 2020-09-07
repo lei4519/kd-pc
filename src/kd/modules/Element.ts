@@ -101,6 +101,8 @@ export class Row {
   }
   delElement(element: ColElement, componentList: ColElement[]) {
     const page = this.parent!
+    // 页面更新布局信息
+    page.dirty = true
     let elements = this.elements
     elements.splice(elements.findIndex(e => e.id === element.id)!, 1)
     const component = componentList.find(c => c.name === element.name)!
@@ -191,7 +193,7 @@ export class ColElement {
   zhName: string
   minSpan: number
   maxSpan: number
-  needParentStyle: boolean
+  needParentStyle = true
   iconClass: string
   path: string
   props: any
@@ -206,7 +208,7 @@ export class ColElement {
   constructor(element: ColElementProp) {
     this.name = element.name || 'component_' + componentID++
     this.zhName = element.zhName || '未命名'
-    this.needParentStyle = element.needParentStyle || true
+    this.needParentStyle = !!element.needParentStyle
     this.iconClass = element.iconClass || 'zujianicon'
     this.minSpan = element.minSpan || 1
     this.maxSpan = element.maxSpan || 24

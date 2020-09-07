@@ -1,77 +1,67 @@
 <template>
-  <div
-    class="chart-list"
-    :class="[list.length <= 1 ? 'chart-list-1' : 'chart-list-more']"
-  >
-    <div
-      class="chart-item"
-      :class="[list.length <= 1 ? 'chart-item-1' : 'chart-item-more']"
-      v-for="item in list"
-      :key="item.id"
-    >
-      <div class="inner">
-        <div class="options">
-          <el-date-picker
-            class="search-date-input"
-            v-if="showSearch"
-            v-model="searchDateModel"
-            type="daterange"
-            size="mini"
-            :clearable="false"
-            :pickerOptions="pickerOptions"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-          />
-          <el-button
-            v-if="download"
-            v-skeleton
-            type="primary"
-            size="mini"
-            icon="el-icon-download"
-            @click="handlerDownload"
-            class="download"
-          >
-            下载
-          </el-button>
-          <a v-if="download" ref="downLoadRef"></a>
-        </div>
-        <div class="title">{{item.title}}</div>
-        <div class="time">{{item.startTime}}-{{item.endTime}}</div>
-        <div class="horizontal" v-if="compose === 'horizontal'">
-          <div class="subtime">{{item.endTime}}</div>
-          <div class="horizontal-compare-sum">
-            <div class="current-box">
-              <div class="current"><span class="val">{{item.endNum}}</span>{{item.endUnit}}</div>
-              <div class="compare">
-                <div class="huanbi">环比<span class="val_red">{{item.huanBi}}</span></div>
-                <div class="tongbi">同比<span class="val_green">{{item.tongBi}}</span></div>
-              </div>
-            </div>
-            <div class="sum-average">
-              <div class="sum">合计<span class="val">{{item.sum}}</span>{{item.sumUnit}}</div>
-              <div class="average">均值<span class="val">{{item.average}}</span>{{item.averageUnit}}</div>
-            </div>
-          </div>
-          <div class="vertical-r">
-            <EchartComponent :option="item.option" :chart-type="chartType" :windowWidth="windowWidth" />
-          </div>
-        </div>
-        <div class="vertical" v-if="compose === 'vertical'">
-          <div class="vertical-l">
-            <div class="subtime">{{item.endTime}}</div>
-            <div class="current"><span class="val">{{item.endNum}}</span>{{item.endUnit}}</div>
+  <div class="chart-mod">
+    <div class="inner" :class="[h ? 'h-' + h: '']">
+      <div class="options">
+        <el-date-picker
+          class="search-date-input"
+          v-if="showSearch"
+          v-model="searchDateModel"
+          type="daterange"
+          size="mini"
+          :clearable="false"
+          :pickerOptions="pickerOptions"
+          start-placeholder="开始时间"
+          end-placeholder="结束时间"
+        />
+        <el-button
+          v-if="download"
+          v-skeleton
+          type="primary"
+          size="mini"
+          icon="el-icon-download"
+          @click="handlerDownload"
+          class="download"
+        >
+          下载
+        </el-button>
+        <a v-if="download" ref="downLoadRef"></a>
+      </div>
+      <div class="title">{{chartObj.title}}</div>
+      <div class="time">{{chartObj.startTime}}-{{chartObj.endTime}}</div>
+      <div class="horizontal" v-if="compose === 'horizontal'">
+        <div class="subtime">{{chartObj.currentEndTime}}</div>
+        <div class="horizontal-compare-sum">
+          <div class="current-box">
+            <div class="current"><span class="val">{{chartObj.endNum}}</span>{{chartObj.endUnit}}</div>
             <div class="compare">
-              <div class="huanbi">环比<span class="val_red">{{item.huanBi}}</span></div>
-              <div class="tongbi">同比<span class="val_green">{{item.tongBi}}</span></div>
-            </div>
-            <div class="sum-average">
-              <div class="sum">合计<span class="val">{{item.sum}}</span>{{item.sumUnit}}</div>
-              <div class="average">均值<span class="val">{{item.average}}</span>{{item.averageUnit}}</div>
+              <div class="huanbi">环比<span class="val_red">{{chartObj.huanBi}}</span></div>
+              <div class="tongbi">同比<span class="val_green">{{chartObj.tongBi}}</span></div>
             </div>
           </div>
-          <div class="vertical-r">
-            <EchartComponent :option="item.option" :chart-type="chartType" :windowWidth="windowWidth" />
+          <div class="sum-average">
+            <div class="sum">合计<span class="val">{{chartObj.sum}}</span>{{chartObj.sumUnit}}</div>
+            <div class="average">均值<span class="val">{{chartObj.average}}</span>{{chartObj.averageUnit}}</div>
           </div>
+        </div>
+        <div class="vertical-r">
+          <EchartComponent :option="chartObj.option" ref="echart-component"/>
+        </div>
+      </div>
+      <div class="vertical" v-if="compose === 'vertical'">
+        <div class="vertical-l">
+          <div class="subtime">{{chartObj.currentEndTime}}</div>
+          <div class="current"><span class="val">{{chartObj.endNum}}</span>{{chartObj.endUnit}}</div>
+          <div class="compare">
+            <div class="huanbi">环比<span class="val_red">{{chartObj.huanBi}}</span></div>
+            <div class="tongbi">同比<span class="val_green">{{chartObj.tongBi}}</span></div>
+          </div>
+          <div class="sum-average">
+            <div class="sum">合计<span class="val">{{chartObj.sum}}</span>{{chartObj.sumUnit}}</div>
+            <div class="average">均值<span class="val">{{chartObj.average}}</span>{{chartObj.averageUnit}}</div>
+          </div>
+        </div>
+        <div class="vertical-r">
+          <EchartComponent :option="chartObj.option" ref="echart-component" />
         </div>
       </div>
     </div>
@@ -80,7 +70,7 @@
 
 <script>
 import EchartComponent from '@/pc/_components/echart'
-import { setTimeoutResolve } from '@/kd/utils'
+import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
 
 const throttle = (fn, context) => {
     let t = null
@@ -291,10 +281,12 @@ export default {
       type: String,
       default: 'horizontal'
     },
+    // 是否开启日期搜索
     showSearch: {
       type: Boolean,
       default: false
     },
+    // 是否开启下载功能
     download: {
       type: Boolean,
       default: false
@@ -302,26 +294,41 @@ export default {
   },
   data() {
     return {
-      list: [{}],
-      windowWidth: 0,
-      searchDateModel: []
+      options: {},
+      chartObj: {}, // 请求返回数据
+      searchDateModel: [], // 开启日期搜索时的选中日期
+      h: 344, // .inner高
     }
   },
   watch: {
+    // 组件选择或组件设置宽变化要重绘图表
     'asideLayout.width': function(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.configChange()
+        this.redraw()
       }
     },
+    // 图表类型变化重绘图表
     chartType(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.configChange()
+        this.chartObj.option = this.options[newVal] ? this.options[newVal] : {}
+        this.redraw()
       }
     },
+    // 横排、竖排变化重绘图表
     compose(newVal, oldVal) {
       if (newVal !== oldVal) {
-        this.configChange()
+        this.redraw()
       }
+    },
+    // 布局一行中增加一列重绘图表
+    '$attrs.layouts': function(newVal) {
+      if (newVal.layouts[newVal.rowIndex].length > 1) {
+        this.h = 344
+        this.redraw()
+      } else {
+        this.h = 370
+      }
+      
     },
     searchDateModel() {
       this.fetchData()
@@ -338,25 +345,6 @@ export default {
     },
   },
   created() {
-    this.list.forEach(item => {
-      item.option = {
-        xAxis: {
-          type: 'category',
-          boundaryGap: false,
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-        },
-        yAxis: {
-          type: 'value'
-        },
-        series: [
-          {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
-            type: this.chartType,
-            areaStyle: {}
-          }
-        ]
-      }
-    })
     this.shortcutMap = [
       {
         label: '当天',
@@ -389,58 +377,40 @@ export default {
     }
   },
   mounted() {
+    // 监听winodw.onresize事件
     this.throttle = throttle(this.resizeHandle, this)
     window.addEventListener('resize', this.throttle)
   },
   destroyed() {
+    // 销毁winodw.onresize事件
     window.removeEventListener('resize', this.throttle)
   },
   methods: {
-    configChange() {
-      this.list.forEach(item => {
-        item.option.series.forEach((v) => {
-          v.type = this.chartType
-        })
-      })
-      this.$forceUpdate()
+    // 重绘图表方法
+    redraw() {
+      this.$refs['echart-component'].setOption()
     },
+    // 监听window.onresize事件的处理方法
     resizeHandle() {
-      this.windowWidth = window.outerWidth
-      this.configChange()
+      this.redraw()
     },
     genMockData(syncRetrueData = false) {
-      const res = [
-        {
-          title: '30日 | 平均单次使用时长（秒）',
-          startTime: '2020-07-26',
-          endTime: '2020-08-24',
-          endNum: '666',
-          endUnit: '次',
-          huanBi: '50%',
-          tongBi: '50%',
-          sum: '1000',
-          sumUnit: '次',
-          average: '100',
-          averageUnit: '次',
-          option: {
-            xAxis: {
-              type: 'category',
-              boundaryGap: false,
-              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-            },
-            yAxis: {
-              type: 'value'
-            },
-            series: [
-              {
-                data: [820, 932, 901, 934, 1290, 1330, 1320],
-                type: this.chartType,
-                areaStyle: {}
-              }
-            ]
-          }
-        }
-      ]
+      const res = {
+        title: '30日 | 平均单次使用时长（秒）',
+        startTime: '2020-07-26',
+        endTime: '2020-08-24',
+        currentEndTime: '08-24',
+        endNum: '666',
+        endUnit: '次',
+        huanBi: '50%',
+        tongBi: '50%',
+        sum: '1000',
+        sumUnit: '次',
+        average: '100',
+        averageUnit: '次',
+        option:  {}
+      }
+      
       return syncRetrueData ? res : setTimeoutResolve(res, 1000)
     },
     fetchData(params = {}) {
@@ -477,9 +447,84 @@ export default {
             params
           })
       ).then((res) => {
-        this.list = res
+        this.options = {
+          line: {
+            xAxis: {
+                type: 'category',
+                data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [{
+                data: [820, 932, 901, 934, 1290, 1330, 1320],
+                type: 'line'
+            }]
+          },
+          pie: {
+            series: [
+                {
+                    type: 'pie',
+                    data: [
+                        {value: 1548, name: '幽州'},
+                        {value: 535, name: '荆州'},
+                        {value: 510, name: '兖州'},
+                        {value: 634, name: '益州'},
+                        {value: 735, name: '西凉'}
+                    ],
+                }
+            ]
+          },
+          bar: {
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    type: 'bar',
+                    barWidth: '60%',
+                    data: [10, 52, 200, 334, 390, 330, 220]
+                }
+            ]
+          },
+          funnel: {
+             tooltip: {
+                trigger: 'item',
+                formatter: "{a} <br/>{b} : {c}%"
+              },
+              series: [
+                  {
+                    top: 0,
+                    bottom: 0,
+                    type:'funnel',
+                    label: {
+                        show: true,
+                        position: 'inside'
+                    },
+                    data: [
+                        {value: 60, name: '访问'},
+                        {value: 40, name: '咨询'},
+                        {value: 20, name: '订单'},
+                        {value: 80, name: '点击'},
+                        {value: 100, name: '展现'}
+                    ]
+                  }
+              ]
+          }
+        }
+        res.option = this.options[this.chartType]
+        this.chartObj = res
       })
     },
+    // 下载
     handlerDownload() {
       this.fetchData({ download: 1 })
     },
@@ -491,150 +536,145 @@ export default {
 .flex {
   display: flex;
 }
-.chart-list {
-  background-color: #f7f9fa;
-  .chart-item {
-    padding: 10px;
-    .inner {
-      padding: 20px;
-      border: 2px solid transparent;
-      background-color: #ffffff;
+.chart-mod {
+  .inner {
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 3px;
+    position: relative;
+    &:hover {
       border-radius: 3px;
-      position: relative;
-      &:hover {
-        // border: 2px solid #3ad1c5;
-        border-radius: 3px;
-      }
-      .options{
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        z-index: 10;
-        .download{
-          margin-left: 16px;
-        }
-      }
-      .title {
-        color: #5f6e82;
-        font-weight: 400;
-        font-size: 14px;
-        &:hover {
-          color: #559ff0;
-        }
-      }
-      .time {
-        font-size: 12px;
-        color: #8492a6;
-      }
-      .subtime {
-        font-size: 13px;
-        color: #8492a6;
-        margin-top: 8px;
-      }
-      .current {
-        .val {
-          font-size: 40px;
-          color: #475669;
-        }
-      }
-      .compare {
-        margin-top: 7px;
-        margin-left: 10px;
-        .val_red {
-          color: #fc6772;
-          &::before {
-            content: '';
-            display: inline-block;
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-top: 5px solid #fc6772;
-            border-right: 5px solid transparent;
-          }
-        }
-        .val_green {
-          color: #2dca93;
-          &::before {
-            content: '';
-            display: inline-block;
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-top: 5px solid #2dca93;
-            border-right: 5px solid transparent;
-          }
-        }
-      }
     }
-    .sum-average {
-      padding: 12px 0 12px 11px;
-      border-left: 1px solid #e9f0f7;
-      .val {
-        font-size: 18px;
-        color: #475669;
-      }
-    }
-    .horizontal-compare-sum {
-      display: flex;
-      align-items: center;
-      .current-box {
-        display: flex;
-        align-items: center;
-        width: 67%;
-      }
-    }
-    .vertical {
-      display: flex;
-      .vertical-l {
-        width: 20%;
-      }
-      .vertical-r {
-        flex: 1;
-      }
-      .sum-average {
-        border-left: none;
-        border-top: 1px solid #e9f0f7;
-        padding: 28px 0 0;
-        margin-top: 28px;
-      }
-    }
-  }
-}
-.chart-list-1 {
-  .chart-item-1 {
-    .inner{
-      height: 390px;
+    &.h-370{
+      height: 370px;
       .horizontal{
         .vertical-r{
-          height: 220px;
+          height: 200px;
         }
       }
       .vertical{
         .vertical-r{
-          height: 320px;
+          height: 300px;
         }
       }
     }
+    &.h-344{
+      height: 344px;
+      .horizontal{
+        .vertical-r{
+          height: 174px;
+        }
+      }
+      .vertical{
+        .vertical-r{
+          height: 274px;
+        }
+      }
+    }
+    .options{
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      .download{
+        margin-left: 16px;
+      }
+    }
+    .title {
+      color: #5f6e82;
+      font-weight: 400;
+      font-size: 14px;
+      &:hover {
+        color: #559ff0;
+      }
+    }
+    .time {
+      font-size: 12px;
+      color: #8492a6;
+    }
+    .subtime {
+      font-size: 13px;
+      color: #8492a6;
+      margin-top: 8px;
+    }
+    .current {
+      .val {
+        font-size: 40px;
+        color: #475669;
+      }
+    }
+    .compare {
+      margin-top: 7px;
+      margin-left: 10px;
+      .val_red {
+        color: #fc6772;
+        &::before {
+          content: '';
+          display: inline-block;
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-top: 5px solid #fc6772;
+          border-right: 5px solid transparent;
+        }
+      }
+      .val_green {
+        color: #2dca93;
+        &::before {
+          content: '';
+          display: inline-block;
+          width: 0;
+          height: 0;
+          border-left: 5px solid transparent;
+          border-top: 5px solid #2dca93;
+          border-right: 5px solid transparent;
+        }
+      }
+    }
+  }
+  .sum-average {
+    padding: 12px 0 12px 11px;
+    border-left: 1px solid #e9f0f7;
+    .val {
+      font-size: 18px;
+      color: #475669;
+    }
+  }
+  .horizontal-compare-sum {
+    display: flex;
+    align-items: center;
+    .current-box {
+      display: flex;
+      align-items: center;
+      width: 67%;
+    }
+  }
+  .vertical {
+    display: flex;
+    .vertical-l {
+      width: 20%;
+    }
+    .vertical-r {
+      flex: 1;
+    }
+    .sum-average {
+      border-left: none;
+      border-top: 1px solid #e9f0f7;
+      padding: 28px 0 0;
+      margin-top: 28px;
+    }
+  }
+}
+.chart-list-1 {
+  .chart-chartObj-1 {
+    
   }
 }
 .chart-list-more {
   display: flex;
   flex-wrap: wrap;
-  .chart-item-more {
+  .chart-chartObj-more {
     width: 50%;
-    .inner{
-      height: 364px;
-      .horizontal{
-        .vertical-r{
-          height: 194px;
-        }
-      }
-      .vertical{
-        .vertical-r{
-          height: 294px;
-        }
-      }
-    }
   }
 }
 /deep/ .search-date-input {

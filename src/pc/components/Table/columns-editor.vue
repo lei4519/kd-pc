@@ -1,5 +1,5 @@
 <template>
-  <div class="columns-editor-wrapper">
+  <div class="columns-editor-wrapper" style="width: 100%">
     <el-table :data="vm.selfColumns" size="mini">
       <el-table-column prop="label" label="标题">
         <template slot-scope="scope">
