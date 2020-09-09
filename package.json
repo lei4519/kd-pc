@@ -8,7 +8,8 @@
     "build:kd_bch": "cross-env BUILD_PLATFORM=kd BUILD_MODE=bch vue-cli-service build --mode test & cross-env BUILD_PLATFORM=pc BUILD_MODE=bch vue-cli-service build --mode test",
     "build:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service build --mode production & cross-env BUILD_PLATFORM=pc vue-cli-service build --mode production",
     "serve:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service serve --fix",
-    "build:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service build"
+    "build:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service build",
+    "postbuild:sc": "node  build/sc-build-after.js"
   },
   "dependencies": {
     "animate.css": "^4.1.0",

@@ -1,6 +1,7 @@
 const isDev = process.env.NODE_ENV === 'development'
 const isBCH = process.env.BUILD_MODE === 'bch'
 const path = require('path')
+const { replaceColorToVar } = require('../build/custom-theme-plugin')
 
 module.exports = {
   outputDir: path.resolve(
@@ -11,7 +12,7 @@ module.exports = {
     ? '/'
     : `https://res${
         isBCH ? '.bch' : ''
-      }.leju.com/mvvm-project/vue/kd-mobile/quicklyBuild`,
+      }.leju.com/mvvm-project/vue/kd-pc/quicklyBuild`,
   filenameHashing: false,
   productionSourceMap: false,
   configureWebpack: config => {
@@ -33,6 +34,9 @@ module.exports = {
     loaderOptions: {
       sass: {
         prependData: `@import "~@/kd/style/global-variable.scss";`
+      },
+      postcss: {
+        plugins: [require('autoprefixer')(), replaceColorToVar]
       }
     }
   }

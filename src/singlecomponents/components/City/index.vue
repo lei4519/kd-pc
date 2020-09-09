@@ -69,7 +69,9 @@ export default Vue.extend({
   },
   mounted(){
     this.ismultiple = this.multiple
-    this.city = this.ismultiple ? this.choosevalue.split(','):this.choosevalue
+    if(this.choosevalue.trim()){
+      this.city = this.ismultiple ? this.choosevalue.split(','):this.choosevalue
+    }
   },
   watch:{
     city(newVal, oldVal) {
