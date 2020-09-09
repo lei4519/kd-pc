@@ -29,12 +29,6 @@ const mutations: Mutation = {
                 name: '单页列表',
                 show: true,
                 routeName: 'SinglePageList'
-              },
-              {
-                type: 'page',
-                name: '角色设置',
-                show: true,
-                routeName: 'RoleSetting'
               }
             ]
           }
