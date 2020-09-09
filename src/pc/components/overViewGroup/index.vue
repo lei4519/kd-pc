@@ -11,7 +11,7 @@ import overView from '../overView/index.vue'
 export default {
   ...overView,
   name: 'OverViewGroup',
-  zhName: '概览组件组',
+  zhName: '概览组',
   iconClass: 'gailan',
   minSpan: 24,
   maxSpan: 24,
@@ -24,6 +24,41 @@ export default {
         code: 0,
         data: [
           {
+            title: '今日222 | 累计新增用户今日222 | 累计新增用户今日222 | 累计新增用户',
+            date: '2020-08-27~2020-08-27 | 今日',
+            dateCn: '今日',
+            num: 100,
+            unit: '人',
+            datarr: [
+              {
+                name: '环比 ',
+                ratio: 'up',
+                num: '12%',
+                desc:'环比上涨12%'
+              },
+              {
+                name: '同比 ',
+                ratio: 'down',
+                num: '23.5%',
+                desc:'环比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日222 | 累计新增用户今日222 | 累计新增用户今日222 | 累计新增用户今日222 | 累计新增用户今日222 | 累计新增用户',
+                content:'今日 | 累计新增用户'
+              },
+              {
+                title:'今日 | 累计新增用户',
+                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
+              },
+              {
+                title:'今日 | 累计新增用户',
+                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
+              }
+            ]
+          },
+          {
             title: '今日222 | 累计新增用户',
             date: '2020-08-27~2020-08-27 | 今日',
             dateCn: '今日',
@@ -33,12 +68,101 @@ export default {
               {
                 name: '环比 ',
                 ratio: 'up',
-                num: '12%'
+                num: '12%',
+                desc:'环比上涨12%'
               },
               {
                 name: '同比 ',
                 ratio: 'down',
-                num: '23.5%'
+                num: '23.5%',
+                desc:'环比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日',
+                content:'今日 | 累计新增用户'
+              }
+            ]
+          },
+          {
+            title: '今日222 | 累计新增用户',
+            date: '2020-08-27~2020-08-27 | 今日',
+            dateCn: '今日',
+            num: 100,
+            unit: '人',
+            datarr: [
+              {
+                name: '环比 ',
+                ratio: 'up',
+                num: '12%',
+                desc:'环比上涨12%'
+              },
+              {
+                name: '同比 ',
+                ratio: 'down',
+                num: '23.5%',
+                desc:'环比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日',
+                content:'今日 | 累计新增用户'
+              }
+            ]
+          },
+          {
+            title: '今日222 | 累计新增用户',
+            date: '2020-08-27~2020-08-27 | 今日',
+            dateCn: '今日',
+            num: 100,
+            unit: '人',
+            datarr: [
+              {
+                name: '环比 ',
+                ratio: 'up',
+                num: '12%',
+                desc:'环比上涨12%'
+              },
+              {
+                name: '同比 ',
+                ratio: 'down',
+                num: '23.5%',
+                desc:'环比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日',
+                content:'今日 | 累计新增用户'
+              }
+            ]
+          },
+          {
+            title: '今日222 | 累计新增用户',
+            date: '2020-08-27~2020-08-27 | 今日',
+            dateCn: '今日',
+            num: 100,
+            unit: '人',
+            datarr: [
+              {
+                name: '环比 ',
+                ratio: 'up',
+                num: '12%',
+                desc:'环比上涨12%'
+              },
+              {
+                name: '同比 ',
+                ratio: 'down',
+                num: '23.5%',
+                desc:'环比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日',
+                content:'今日 | 累计新增用户'
               }
             ]
           }

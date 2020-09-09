@@ -141,7 +141,7 @@
                 </div>
               </el-form-item>
             </div>
-            <div>
+            <div class="login-btn-warp">
               <el-button
                 size="medium"
                 :loading="loading"
@@ -468,7 +468,7 @@ $light_gray: #eee;
       ::v-deep .el-input__inner {
         height: 52px;
         line-height: 52px;
-        padding-left: 45px;
+        padding-left: 15px;
       }
       .mobile-code,
       .verifycode {
@@ -529,5 +529,8 @@ $light_gray: #eee;
       padding-top: 10px;
     }
   }
+}
+.login-btn-warp{
+  margin-top: 20px;
 }
 </style>

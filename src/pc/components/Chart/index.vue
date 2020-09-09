@@ -26,7 +26,7 @@
         </el-button>
         <a v-if="download" ref="downLoadRef"></a>
       </div>
-      <div class="title">{{chartObj.title}}</div>
+      <div class="title ellipsis" :title="chartObj.title">{{chartObj.title}}</div>
       <div class="time">{{chartObj.startTime}}-{{chartObj.endTime}}</div>
       <div class="horizontal" v-if="compose === 'horizontal'">
         <div class="subtime">{{chartObj.currentEndTime}}</div>
@@ -233,6 +233,15 @@ export default {
               },
             ]
           },
+          ...((this.chartType === 'line' || this.chartType === 'bar')? [{
+            label: 'x轴倾斜度',
+            prop: 'rotate',
+            type: 'slider',
+            formCompProps: {
+              min: -90,
+              max: 90
+            }
+          }]: []),
           {
             label: '排版',
             prop: 'compose',
@@ -257,7 +266,7 @@ export default {
             label: '下载',
             prop: 'download',
             type: 'switch',
-          }
+          },
         ]
       }
     ]
@@ -290,6 +299,11 @@ export default {
     download: {
       type: Boolean,
       default: false
+    },
+    // x轴刻度倾斜
+    rotate: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -328,11 +342,19 @@ export default {
       } else {
         this.h = 370
       }
-      
     },
     searchDateModel() {
       this.fetchData()
     },
+    //  x轴倾斜度变化
+    rotate(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        if (this.chartType === 'line' || this.chartType === 'bar') {
+          this.chartObj.option.xAxis.axisLabel.rotate = newVal
+          this.redraw()
+        }
+      }
+    }
   },
   computed: {
     dateDesc() {
@@ -1269,28 +1291,42 @@ export default {
             grid: {
                 top: 10,
                 bottom: 50,
+                left: 40,
+                right: 10,
             },
             legend: {
-                data: ['pv', 'uv'], // 
-                bottom: 0,
+                data: [
+                  {
+                    name: 'pv',
+                  },
+                  {
+                    name: 'uv',
+                  },
+                ], // 
+                bottom: 8,
+                type: 'scroll'
             },
             xAxis: {
                 type: 'category',
-                data: Object.keys(res.option.pv), // 
+                data: Object.keys(res.option.pv).map((item) => item.split('-' || '/').slice(1).join('-')), // 
                 nameTextStyle: {
-                  color: '#5f6e82',
-                  fontSize: '12px',
+                  color: '#8492A6',
+                  fontSize: '10px',
                   fontFamily: '"PingFang SC", 微软雅黑'
                 },
                 axisTick: {
                   alignWithLabel: true
                 },
+                axisLabel: {
+                  rotate: 0
+                }
             },
             yAxis: {
+                name: '万',
                 type: 'value',
                 nameTextStyle: {
-                  color: '#5f6e82',
-                  fontSize: '12px',
+                  color: '#8492A6',
+                  fontSize: '10px',
                 },
                 axisLine: {
                   show: false,
@@ -1298,8 +1334,8 @@ export default {
                 axisTick: {
                   show: false,
                 },
-                min: Math.min.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
-                max: Math.max.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
+                // min: Math.min.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
+                // max: Math.max.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
                 splitLine: {
                   lineStyle: {
                     type: 'dotted'
@@ -1308,11 +1344,23 @@ export default {
             },
             series: [{
                 name: 'pv',
-                data: Object.values(res.option.pv),
+                data: Object.values(res.option.pv).map((item) => {
+                if (item > 10000) {
+                  return (item / 10000)
+                } else {
+                  return item
+                }
+              }),
                 type: 'line'
             }, {
               name: 'uv',
-              data: Object.values(res.option.uv),
+              data: Object.values(res.option.uv).map((item) => {
+                if (item > 10000) {
+                  return (item / 10000)
+                } else {
+                  return item
+                }
+              }),
               type: 'line'
             }]
           },
@@ -1321,12 +1369,13 @@ export default {
                 top: 10,
                 bottom: 30,
             },
-            xAxis: [
-                {
-                    type: 'category',
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                }
-            ],
+            xAxis: {
+              type: 'category',
+              data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+              axisLabel: {
+                rotate: 0
+              }
+            },
             yAxis: {
                 axisLine: {
                   show: false,
@@ -1334,6 +1383,11 @@ export default {
                 axisTick: {
                   show: false,
                 },
+                splitLine: {
+                  lineStyle: {
+                    type: 'dotted'
+                  }
+                }
             },
             series: [
                 {
@@ -1403,9 +1457,16 @@ export default {
 .flex {
   display: flex;
 }
+.ellipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  white-space: nowrap;
+}
 .chart-mod {
+  font-family: Roboto,'Helvetica Neue',Helvetica,Arial,sans-serif;
   .inner {
-    padding: 20px 20px 0;
+    padding: $component-padding $component-padding 0;
     background-color: #ffffff;
     border-radius: 3px;
     position: relative;
@@ -1465,6 +1526,7 @@ export default {
       margin-top: 8px;
     }
     .current {
+      color: #8492A6;
       .val {
         font-size: 40px;
         color: #475669;
@@ -1498,13 +1560,16 @@ export default {
         }
       }
     }
+    .huanbi, .tongbi, .sum, .average{
+      color: #8492A6;
+    }
   }
   .sum-average {
     padding: 12px 0 12px 11px;
     border-left: 1px solid #e9f0f7;
     .val {
-      font-size: 18px;
       color: #475669;
+      font-size: 18px;
     }
   }
   .horizontal-compare-sum {

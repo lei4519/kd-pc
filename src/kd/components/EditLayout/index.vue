@@ -129,7 +129,6 @@
 <script>
 import MenuItem from './MenuItem.vue'
 import EditPage from '../EditPage/index'
-import { removeToken } from '@/kd/utils/auth'
 const MAX_NAV = 5
 /**
  *   @desc 可编辑的布局组件
@@ -247,8 +246,9 @@ export default {
       })
     },
     logout() {
-      removeToken()
-      this.$router.push('/login')
+      this.$store.dispatch('user/logout').then(() => {
+        this.$router.push('/login')
+      })
     },
     // 以下 编辑模式逻辑
     addMenu() {

@@ -13,7 +13,7 @@ body {
 // rem布局
 html {
   $designSize: 19.2; /* 设计稿尺寸 */
-  $minWidth: 1000;
+  $minWidth: 1080;
   $maxWidth: 1920;
   font-size: calc(100vw / #{$designSize});
   height: 100%;

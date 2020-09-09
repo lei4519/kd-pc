@@ -1,27 +1,27 @@
 <template>
   <!-- <div class> -->
-  <div class="overview-warp">
+  <div :class="!groupcompent ? 'overview-warp':'overview-warp negativeright' ">
     <div
       :class="!groupcompent ? 'view_item' : 'view_item widt25'"
       v-for="(item, index) in list"
       :key="index"
-      :style="groupcompent ? 'padding-right:16px; padding-bottom:16px' : ''"
     >
       <div class="view_inner">
-        <div class="title">{{ item.title }}</div>
-        <div class="range">{{ item.date }}</div>
+        <div class="title nowrap-ellipsis" :title="item.title">{{ item.title }}</div>
+        <div class="range nowrap-ellipsis"  :title="item.date">{{ item.date }}</div>
         <div class="container">
           <div>{{ item.dateCn }}</div>
           <div>
             <span class="number">{{ item.num }}</span>
             <span>{{ item.unit }}</span>
           </div>
+          <template 
+            v-for="arritem in item.datarr">
           <el-tooltip
             class="kpi-warp"
-            effect="dark"
-            content="Top Left 提示文字"
+            effect="dark" 
+            :content="arritem.desc"
             placement="top-start"
-            v-for="arritem in item.datarr"
           >
             <div class="kpi-contont">
               <span>{{ arritem.name }}</span>
@@ -37,8 +37,21 @@
               </span>
             </div>
           </el-tooltip>
-          <div>
-            <i class="el-icon-question" style="float:right"></i>
+          </template>
+          <div class="tips-warp">
+            <el-popover trigger="hover">
+            <div class="tip">
+               <div v-for="(i,k) in item.desc" :key="k">
+                <div class="title nowrap-ellipsis" v-if="item.title" :title="i.title">{{i.title}}</div>
+                <div
+                  :class="[{ 'tip-desc-one': i.title || i.content }, 'tip-desc']"
+                  v-if="i.content"
+                  v-html="i.content"
+                ></div>
+              </div>
+            </div>
+            <div slot="reference"  class="el-icon-question" style="float:right"></div>
+          </el-popover>
           </div>
         </div>
       </div>
@@ -51,7 +64,7 @@
 import { setTimeoutResolve } from '@/kd/utils'
 export default {
   name: 'OverView',
-  zhName: '概览组件',
+  zhName: '概览',
   iconClass: 'gailan',
   minSpan: 6,
   maxSpan: 6,
@@ -113,7 +126,7 @@ export default {
                       },
                       {
                         prop: 'data',
-                        type: 'object - 对象',
+                        type: 'Array - 数组',
                         desc: '数据主体',
                         children: [
                           {
@@ -160,6 +173,27 @@ export default {
                                 prop: 'num',
                                 type: 'string-字符串',
                                 desc: '数值'
+                              },
+                              {
+                                prop: 'desc',
+                                type: 'string-字符串',
+                                desc: 'tips描述'
+                              }
+                            ]
+                          },{
+                            prop: 'desc',
+                            type: 'array-数组',
+                            desc: '描述',
+                            children: [
+                              {
+                                prop: 'title',
+                                type: 'string - 字符串',
+                                desc: '标题'
+                              },
+                              {
+                                prop: 'content',
+                                type: 'string-字符串',
+                                desc: '内容'
                               }
                             ]
                           }
@@ -209,12 +243,24 @@ export default {
               {
                 name: '环比 ',
                 ratio: 'up',
-                num: '12%'
+                num: '12%',
+                desc:'环比上涨12%'
               },
               {
                 name: '同比 ',
                 ratio: 'down',
-                num: '23.5%'
+                num: '23.5%',
+                desc:'同比上涨12%'
+              }
+            ],
+            desc:[
+              {
+                title:'今日 | 累计新增用户',
+                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
+              },
+              {
+                title:'今日 | 累计新增用户',
+                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
               }
             ]
           }
@@ -242,11 +288,19 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.nowrap-ellipsis{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .overview-warp {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   min-height: 178px;
+  &.negativeright{
+    margin-right: -$component-padding;
+  }
 }
 .view_item {
   width: 100%;
@@ -257,6 +311,12 @@ export default {
   }
   &.widt25 {
     width: 25%;
+    padding-right: $component-padding;
+    margin-bottom: $component-padding;
+    &:nth-child(n + 5) {
+        margin-bottom: 0;
+
+    }
   }
 }
 .title {
@@ -264,13 +324,13 @@ export default {
   margin-bottom: 4px;
   font-weight: 400;
   color: #777c7c;
+  &:hover {
+      color: #559ff0;
+    }
 }
 .range {
   font-size: 12px;
   color: #8492a6;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .container {
   font-weight: 400;
@@ -295,4 +355,36 @@ export default {
     color: #2dca93;
   }
 }
+.tip {
+  width: 290px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 16px 16px;
+  color: #777c7c;
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .tip-desc {
+    font-size: 12px;
+    color: #8492a6;
+    &.tip-desc-one {
+      margin-bottom: 24px;
+    }
+  }
+}
+.el-icon-question {
+  cursor: pointer;
+  color: #ccc;
+  &:hover {
+    color: #559ff0;
+  }
+}
+.tips-warp {
+    width: 16px;
+    height: 16px;
+    float: right;
+    margin-top: 10px;
+  }
 </style>

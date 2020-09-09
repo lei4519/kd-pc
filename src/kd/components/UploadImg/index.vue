@@ -259,6 +259,9 @@ export default {
       this.$emit('change', '')
     },
     onCropper() {
+      if (this.uploadFlag) return
+      this.uploadFlag = true
+      const loading = this.$message.info('图片上传中...')
       this.$refs.cropper.getCropData(async data => {
         try {
           const {
@@ -277,11 +280,14 @@ export default {
             this.$emit('input', this.singleUrl)
             this.$emit('change', this.singleUrl)
           }
+          loading.close()
           this.$message.success('上传成功')
           this.onCancelCropper()
         } catch {
+          loading.close()
           this.$message.error('上传失败，请重试')
         }
+        this.uploadFlag = false
       })
     },
     onCancelCropper() {

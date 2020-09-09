@@ -75,7 +75,7 @@ export default {
         .then(() => {
           commit
           // commit('SET_USER_INFO', {})
-          dispatch('resetToken')
+          return dispatch('resetToken')
         })
     },
     // remove token
