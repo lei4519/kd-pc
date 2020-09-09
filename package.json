@@ -5,8 +5,8 @@
   "scripts": {
     "serve:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service serve --fix",
     "//": "build:kd_bch、build:kd 命令同时打包 kd 和 pc 两个项目；打包文件名：kd：quicklyBuild；pc：quicklyBuildPreview",
-    "build:kd_bch": "cross-env BUILD_PLATFORM=kd BUILD_MODE=bch vue-cli-service build --mode test & cross-env BUILD_PLATFORM=pc BUILD_MODE=bch vue-cli-service build --mode test",
-    "build:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service build --mode production & cross-env BUILD_PLATFORM=pc vue-cli-service build --mode production",
+    "build:kd_bch": "node build/kd_build test",
+    "build:kd": "node build/kd_build production",
     "serve:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service serve --fix",
     "build:sc": "cross-env BUILD_PLATFORM=sc vue-cli-service build",
     "postbuild:sc": "node  build/sc-build-after.js"

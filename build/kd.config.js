@@ -2,7 +2,6 @@ const isDev = process.env.NODE_ENV === 'development'
 const isBCH = process.env.BUILD_MODE === 'bch'
 const path = require('path')
 const { replaceColorToVar } = require('../build/custom-theme-plugin')
-
 module.exports = {
   outputDir: path.resolve(
     __dirname,
