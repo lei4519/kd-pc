@@ -18,5 +18,6 @@ $component-padding: 16px;
 // 导出供vuex使用
 :export {
   themeColor: $theme-color;
+  duration: $duration;
   componentPadding: $component-padding;
 }
