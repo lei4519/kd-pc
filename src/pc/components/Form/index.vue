@@ -8,7 +8,11 @@
 <template>
   <div class="search-wrapper">
     <el-form ref="form" v-if="searchArray.length > 0" label-position="left">
-      <el-form-item :label="item.label" v-for="(item, i) in searchArray" :key="i">
+      <el-form-item
+        :label="item.label"
+        v-for="(item, i) in searchArray"
+        :key="i"
+      >
         <el-input
           v-if="item.type === 'input'"
           v-bind="item.props || { placeholder: `请选择${item.label}` }"
@@ -19,7 +23,9 @@
           v-model="searchModel[item.props.dataField]"
           class="select-city"
           v-bind="item.props || { placeholder: `请选择${item.label}` }"
-          :option-data="item.props.optionRadio === '1' ? item.options : item.list"
+          :option-data="
+            item.props.optionRadio === '1' ? item.options : item.list
+          "
           v-else-if="item.type === 'select'"
         ></Select>
         <el-date-picker
@@ -35,7 +41,7 @@
         <Cascader
           v-else-if="item.type === 'cascader'"
           ref="cascader"
-          v-bind="item.props || {placeholder: `请选择${item.label}`}"
+          v-bind="item.props || { placeholder: `请选择${item.label}` }"
           v-model="searchModel[item.props.dataField]"
           :list="item.list"
         ></Cascader>
@@ -61,12 +67,12 @@ export default {
     Cascader
   },
   zhName: '表单组件',
-  iconClass: 'biaodanzujian-biaoge',
+  iconClass: 'biaodan1',
   minSpan: 8,
   props: {
     searchArray: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     }
@@ -85,14 +91,14 @@ export default {
       }
     ]
   },
-  data () {
+  data() {
     return {
       searchModel: {},
       pickerOptions: {
         shortcuts: [
           {
             text: '最近一周',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
@@ -101,7 +107,7 @@ export default {
           },
           {
             text: '最近一个月',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
@@ -110,7 +116,7 @@ export default {
           },
           {
             text: '最近三个月',
-            onClick (picker) {
+            onClick(picker) {
               const end = new Date()
               const start = new Date()
               start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
@@ -123,11 +129,11 @@ export default {
   },
   watch: {},
   methods: {
-    onSearch () {
+    onSearch() {
       console.log(this.searchModel)
       this.$emit('on-search', this.searchModel)
     },
-    resetField () {
+    resetField() {
       this.$refs.form.resetFields()
     }
   }

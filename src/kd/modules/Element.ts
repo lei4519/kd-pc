@@ -5,6 +5,7 @@ import { pathToComp } from '@/kd/utils/getComponents'
 import { Page } from './Page'
 import Vue, { Component } from 'vue'
 import { componentPadding } from '@/kd/style/global-variable.scss'
+import { addHistoryState } from './History'
 export interface RowProps {
   style?: {
     [P in keyof Partial<CSSStyleDeclaration>]:
@@ -34,6 +35,18 @@ export function editDirty(methods: string[]) {
  * @property {} style 行样式
  * @property {} freeSpace 每行剩余空间 计算minSpan
  */
+@addHistoryState([
+  'replaceElement',
+  [
+    'addElements',
+    el => {
+      el = Array.isArray(el) ? el : [el]
+      return el[0].name !== 'dropPlaceholder'
+    }
+  ],
+  'delElement',
+  'setStyle'
+])
 @editDirty([
   'addElements',
   'delElement',
@@ -185,6 +198,7 @@ export interface ColElementProp {
  * @property {} immediateValidate 配置区渲染后立即校验表单，配合 Page.validate 使用
  */
 let componentID = 0
+@addHistoryState(['setProps'])
 export class ColElement {
   readonly id = genUUID()
   readonly type = 'element'

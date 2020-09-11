@@ -173,7 +173,7 @@ import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
 export default {
   name: 'Table',
   zhName: '表格组件',
-  iconClass: 'biaodanzujian-biaoge',
+  iconClass: 'biaoge',
   minSpan: 12,
   props: {
     url: {
@@ -231,7 +231,7 @@ export default {
         dropRow.some(({ name }) => !(name === 'Table' || name === 'Chart'))
       ) {
         this.$message.error({
-          message: '表格组件只能与表格、图标组件放置一行内',
+          message: '表格组件只能与表格、图表组件放置一行内',
           duration: 5000
         })
         return false

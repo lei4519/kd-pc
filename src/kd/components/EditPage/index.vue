@@ -183,7 +183,7 @@
                             swapingComponentInfo.id !== el.id
                         }"
                       >
-                        <AjaxLoading>
+                        <AjaxLoading :key="el.path">
                           <component
                             @componentMounted="
                               onAddComponentMounted(el, ...arguments)
@@ -278,12 +278,6 @@ export default {
       type: Boolean,
       default: false
     },
-    undoRedoHistory: {
-      type: Object,
-      default() {
-        return {}
-      }
-    },
     project: {
       type: Object,
       required: true,
@@ -303,6 +297,9 @@ export default {
     }
   },
   computed: {
+    undoRedoHistory() {
+      return this.$store.state.editor.undoRedoHistory
+    },
     page() {
       return this.project.menu[0].children[0]
     }
@@ -945,7 +942,7 @@ export default {
         padding: 8px;
         user-select: none;
         .component-item {
-          margin: 8px;
+          margin: 8px 16px;
           font-size: 12px;
           text-align: center;
           color: #fff;

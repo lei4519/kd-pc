@@ -1,5 +1,6 @@
 import { Page, PageProps } from './Page'
 import { genUUID } from '../utils'
+import { addHistoryState } from './History'
 export type Children = Menu | Page
 export type ChildrenProps = MenuProps | PageProps
 
@@ -19,6 +20,7 @@ export interface MenuProps {
  * @property {} edit 目录是否处于编辑模式
  * @property {} children 目录下的子目录、子页面数组
  */
+@addHistoryState(['addChild', 'delChild'])
 export class Menu implements MenuProps {
   readonly id = genUUID()
   readonly type = 'menu'

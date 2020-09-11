@@ -12,7 +12,7 @@
 export default {
   name: 'TextComponent',
   zhName: '文本',
-  iconClass: 'biaodanzujian-biaoge',
+  iconClass: 'wenzi',
   needParentStyle: false,
   minSpan: 24,
   maxSpan: 24,

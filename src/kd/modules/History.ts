@@ -1,6 +1,7 @@
 import { cloneDeep } from 'lodash'
+import store from '@/kd/store'
 
-class UndoRedoHistory {
+export class UndoRedoHistory {
   history: any[] = []
   currentIndex = -1
   listeners: Set<Function> = new Set()
@@ -23,14 +24,22 @@ class UndoRedoHistory {
 
   undo() {
     if (!this.canUndo) return
-    const prevState = this.history[--this.currentIndex]
-    this.emit(cloneDeep(prevState))
+    const prevState = cloneDeep(this.history[--this.currentIndex])
+    this.emit(prevState)
+    store.commit('editor/SET_PROJECT', prevState)
   }
 
   redo() {
     if (!this.canRedo) return
-    const nextState = this.history[++this.currentIndex]
-    this.emit(cloneDeep(nextState))
+    const nextState = cloneDeep(this.history[++this.currentIndex])
+    this.emit(nextState)
+    store.commit('editor/SET_PROJECT', nextState)
+  }
+
+  clear() {
+    this.history = []
+    this.currentIndex = -1
+    this.listeners = new Set()
   }
 
   on(fn: Function) {
@@ -45,5 +54,37 @@ class UndoRedoHistory {
     this.listeners.forEach(fn => fn(state))
   }
 }
+const undoRedoHistory = ((window as any).undoRedoHistory = new UndoRedoHistory())
+export default undoRedoHistory
 
-export default UndoRedoHistory
+let flag = true
+const addState = () => {
+  if (flag) {
+    flag = false
+    setTimeout(() => {
+      flag = true
+      undoRedoHistory.addState(store.state.editor.project)
+    })
+  }
+}
+export function addHistoryState(
+  methods: Array<string | [string, (...args: any[]) => boolean]>
+) {
+  return function(target: Function) {
+    methods.forEach((item: string | [string, (...args: any[]) => boolean]) => {
+      let condition: Function | null = null
+      let method: string = ''
+      if (Array.isArray(item)) {
+        condition = item[1]
+        method = item[0]
+      } else {
+        method = item
+      }
+      const origin = target.prototype[method]
+      target.prototype[method] = function(...args: any[]) {
+        condition ? condition(...args) && addState() : addState()
+        return origin.call(this, ...args)
+      }
+    })
+  }
+}

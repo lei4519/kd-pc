@@ -1,6 +1,7 @@
 import { Menu, MenuProps } from './Menu'
 import { genUUID } from '../utils'
 import { Theme } from './Theme'
+import { addHistoryState } from './History'
 
 export interface ProjectProps {
   name?: string
@@ -18,6 +19,7 @@ export interface ProjectProps {
  * @property {} expire 到期时间
  * @property {} menu 项目目录
  */
+@addHistoryState(['addMenu', 'delMenu'])
 export class Project extends Theme implements ProjectProps {
   readonly id = genUUID()
   name: string

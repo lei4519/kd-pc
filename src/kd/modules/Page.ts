@@ -4,6 +4,7 @@ import { Row, RowProps, ColElement, editDirty } from './Element'
 import { cloneDeep, get } from 'lodash'
 import { Message } from 'element-ui'
 import Vue from 'vue'
+import { addHistoryState } from './History'
 let id = 0
 /**
  * @description 页面布局信息
@@ -40,6 +41,7 @@ export interface PageProps {
  * @property {} rows 编辑区（一个页面中多行）
  * @property {} permissions 页面权限
  */
+@addHistoryState(['addRows', 'delRow', 'swapElement', 'setEditingElement'])
 @editDirty([
   'addRows',
   'delRow',
@@ -192,13 +194,10 @@ export class Page implements PageProps {
       const row = rows[i]
       row.delDropPlaceholder()
       if (row.elements.length === 0) {
-        this.delRow(row)
+        this.rows.splice(i, 1)
         i--
       }
     }
-    // rows.forEach(row => {
-    //   row.delDropPlaceholder()
-    // })
   }
   remove() {
     this.parent?.delChild(this)

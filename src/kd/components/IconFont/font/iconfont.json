@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5643686",
+      "name": "表单",
+      "font_class": "biaodan1",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "8263910",
+      "name": "文字",
+      "font_class": "wenzi",
+      "unicode": "e71e",
+      "unicode_decimal": 59166
+    },
+    {
+      "icon_id": "13110458",
+      "name": "表格",
+      "font_class": "biaoge",
+      "unicode": "e64f",
+      "unicode_decimal": 58959
+    },
+    {
+      "icon_id": "14190307",
+      "name": "文本",
+      "font_class": "wenben",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
       "icon_id": "6529905",
       "name": "空",
       "font_class": "kong",
@@ -186,13 +214,6 @@
       "font_class": "biaodanzujian-shurukuang",
       "unicode": "eb94",
       "unicode_decimal": 60308
-    },
-    {
-      "icon_id": "4354241",
-      "name": "表单组件-表格",
-      "font_class": "biaodanzujian-biaoge",
-      "unicode": "eb95",
-      "unicode_decimal": 60309
     },
     {
       "icon_id": "4354242",

@@ -1,19 +1,13 @@
 <template>
   <div style="height: 100%">
-    <EditPage
-      v-if="project"
-      :visible.sync="visiblePage"
-      :undoRedoHistory="undoRedoHistory"
-      :project="project"
-    />
+    <EditPage v-if="project" :visible.sync="visiblePage" :project="project" />
   </div>
 </template>
 
 <script>
 import EditPage from '@/kd/components/EditPage/index.vue'
-import UndoRedoHistory from '@/kd/modules/History'
-import { debounce } from 'lodash'
 import { Project } from '@/kd/modules/Project'
+
 export default {
   name: 'EditSinglePage',
   components: {
@@ -21,29 +15,18 @@ export default {
   },
   data() {
     return {
-      project: null,
-      visiblePage: true,
-      undoRedoHistory: new UndoRedoHistory()
+      visiblePage: true
     }
   },
-  watch: {
-    project: {
-      handler: debounce(function(project) {
-        if (this.replaceFlag) {
-          this.$nextTick(() => {
-            this.replaceFlag = false
-          })
-          return
-        }
-        this.undoRedoHistory.addState(project)
-      }),
-      immediate: true,
-      deep: true
+  computed: {
+    undoRedoHistory() {
+      return this.$store.state.editor.undoRedoHistory
+    },
+    project() {
+      return this.$store.state.editor.project
     }
   },
   created() {
-    // 第一次初始化不监听，更新颜色时再当做第一次 存入
-    this.replaceFlag = true
     const projectConfig = JSON.parse(sessionStorage.getItem('project')) || {
       menu: [
         {
@@ -56,19 +39,13 @@ export default {
         }
       ]
     }
-    this.project = new Project(projectConfig)
-    this.undoRedoHistory.on(this.replaceState)
+    this.$store.commit('editor/SET_PROJECT', new Project(projectConfig))
   },
   mounted() {
     setTimeout(() => {
       this.project.updateTheme(document.getElementById('_EditPageWrapper'))
     })
-  },
-  methods: {
-    replaceState(project) {
-      this.replaceFlag = true
-      this.project = project
-    }
+    this.undoRedoHistory.clear()
   }
 }
 </script>
