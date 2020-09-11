@@ -1,57 +1,74 @@
 <template>
   <!-- <div class> -->
-  <div :class="!groupcompent ? 'overview-warp':'overview-warp negativeright' ">
+  <div :class="!groupcompent ? 'overview-warp' : 'overview-warp negativeright'">
     <div
       :class="!groupcompent ? 'view_item' : 'view_item widt25'"
       v-for="(item, index) in list"
       :key="index"
     >
       <div class="view_inner">
-        <div class="title nowrap-ellipsis" :title="item.title">{{ item.title }}</div>
-        <div class="range nowrap-ellipsis"  :title="item.date">{{ item.date }}</div>
+        <div class="title nowrap-ellipsis" :title="item.title">
+          {{ item.title }}
+        </div>
+        <div class="range nowrap-ellipsis" :title="item.date">
+          {{ item.date }}
+        </div>
         <div class="container">
           <div>{{ item.dateCn }}</div>
           <div>
             <span class="number">{{ item.num }}</span>
             <span>{{ item.unit }}</span>
           </div>
-          <template 
-            v-for="arritem in item.datarr">
-          <el-tooltip
-            class="kpi-warp"
-            effect="dark" 
-            :content="arritem.desc"
-            placement="top-start"
-          >
-            <div class="kpi-contont">
-              <span>{{ arritem.name }}</span>
-              <span :class="arritem.ratio == 'up' ? 'kpi-drop' : 'kpi-rise'">
-                <i
-                  :class="
-                    arritem.ratio == 'up'
-                      ? 'el-icon-caret-bottom'
-                      : 'el-icon-caret-top'
-                  "
-                ></i>
-                <span>{{ arritem.num }}</span>
-              </span>
-            </div>
-          </el-tooltip>
+          <template v-for="(arritem, i) in item.datarr">
+            <el-tooltip
+              :key="i"
+              class="kpi-warp"
+              effect="dark"
+              :content="arritem.desc"
+              placement="top-start"
+            >
+              <div class="kpi-contont">
+                <span>{{ arritem.name }}</span>
+                <span :class="arritem.ratio == 'up' ? 'kpi-drop' : 'kpi-rise'">
+                  <i
+                    :class="
+                      arritem.ratio == 'up'
+                        ? 'el-icon-caret-bottom'
+                        : 'el-icon-caret-top'
+                    "
+                  ></i>
+                  <span>{{ arritem.num }}</span>
+                </span>
+              </div>
+            </el-tooltip>
           </template>
           <div class="tips-warp">
             <el-popover trigger="hover">
-            <div class="tip">
-               <div v-for="(i,k) in item.desc" :key="k">
-                <div class="title nowrap-ellipsis" v-if="item.title" :title="i.title">{{i.title}}</div>
-                <div
-                  :class="[{ 'tip-desc-one': i.title || i.content }, 'tip-desc']"
-                  v-if="i.content"
-                  v-html="i.content"
-                ></div>
+              <div class="tip">
+                <div v-for="(i, k) in item.desc" :key="k">
+                  <div
+                    class="title nowrap-ellipsis"
+                    v-if="item.title"
+                    :title="i.title"
+                  >
+                    {{ i.title }}
+                  </div>
+                  <div
+                    :class="[
+                      { 'tip-desc-one': i.title || i.content },
+                      'tip-desc'
+                    ]"
+                    v-if="i.content"
+                    v-html="i.content"
+                  ></div>
+                </div>
               </div>
-            </div>
-            <div slot="reference"  class="el-icon-question" style="float:right"></div>
-          </el-popover>
+              <div
+                slot="reference"
+                class="el-icon-question"
+                style="float:right"
+              ></div>
+            </el-popover>
           </div>
         </div>
       </div>
@@ -180,7 +197,8 @@ export default {
                                 desc: 'tips描述'
                               }
                             ]
-                          },{
+                          },
+                          {
                             prop: 'desc',
                             type: 'array-数组',
                             desc: '描述',
@@ -244,23 +262,25 @@ export default {
                 name: '环比 ',
                 ratio: 'up',
                 num: '12%',
-                desc:'环比上涨12%'
+                desc: '环比上涨12%'
               },
               {
                 name: '同比 ',
                 ratio: 'down',
                 num: '23.5%',
-                desc:'同比上涨12%'
+                desc: '同比上涨12%'
               }
             ],
-            desc:[
+            desc: [
               {
-                title:'今日 | 累计新增用户',
-                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
+                title: '今日 | 累计新增用户',
+                content:
+                  '今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
               },
               {
-                title:'今日 | 累计新增用户',
-                content:'今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
+                title: '今日 | 累计新增用户',
+                content:
+                  '今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户今日 | 累计新增用户,今日 | 累计新增用户今日 | 累计新增用户今日'
               }
             ]
           }
@@ -288,7 +308,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.nowrap-ellipsis{
+.nowrap-ellipsis {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -298,7 +318,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   min-height: 178px;
-  &.negativeright{
+  &.negativeright {
     margin-right: -$component-padding;
   }
 }
@@ -314,8 +334,7 @@ export default {
     padding-right: $component-padding;
     margin-bottom: $component-padding;
     &:nth-child(n + 5) {
-        margin-bottom: 0;
-
+      margin-bottom: 0;
     }
   }
 }
@@ -325,8 +344,8 @@ export default {
   font-weight: 400;
   color: #777c7c;
   &:hover {
-      color: #559ff0;
-    }
+    color: #559ff0;
+  }
 }
 .range {
   font-size: 12px;
@@ -382,9 +401,9 @@ export default {
   }
 }
 .tips-warp {
-    width: 16px;
-    height: 16px;
-    float: right;
-    margin-top: 10px;
-  }
+  width: 16px;
+  height: 16px;
+  float: right;
+  margin-top: 10px;
+}
 </style>

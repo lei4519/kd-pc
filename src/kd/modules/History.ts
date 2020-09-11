@@ -73,7 +73,7 @@ export function addHistoryState(
   return function(target: Function) {
     methods.forEach((item: string | [string, (...args: any[]) => boolean]) => {
       let condition: Function | null = null
-      let method: string = ''
+      let method = ''
       if (Array.isArray(item)) {
         condition = item[1]
         method = item[0]

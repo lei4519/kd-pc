@@ -83,7 +83,7 @@ async function commitSvn() {
       .on('exit', () => r(res))
       .stdout.on('data', str => (res += str))
   })
-  resStatus && console.log(chalk.green('res SVN 改动信息'))
+  resStatus && console.log(chalk.green('res SVN 改动信息 \n', resStatus))
   const qbStatus = await new Promise(r => {
     let res = ''
     createShell(`svn status`, {
@@ -93,7 +93,7 @@ async function commitSvn() {
       .on('exit', r)
       .stdout.on('data', str => (res += str))
   })
-  qbStatus && console.log(chalk.green('快搭 HTML SVN 改动信息'))
+  qbStatus && console.log(chalk.green('快搭 HTML SVN 改动信息 \n'), qbStatus)
   const qbPreviewStatus = await new Promise(r => {
     let res = ''
     createShell(`svn status`, {
@@ -103,7 +103,8 @@ async function commitSvn() {
       .on('exit', r)
       .stdout.on('data', str => (res += str))
   })
-  qbPreviewStatus && console.log(chalk.green('落地页 HTML SVN 改动信息'))
+  qbPreviewStatus &&
+    console.log(chalk.green('落地页 HTML SVN 改动信息 \n'), qbPreviewStatus)
   if (!resStatus && !qbStatus && !qbPreviewStatus) return Promise.reject()
   const { confirm } = await inquirer.prompt([
     {

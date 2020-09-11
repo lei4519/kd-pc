@@ -530,7 +530,7 @@ $light_gray: #eee;
     }
   }
 }
-.login-btn-warp{
+.login-btn-warp {
   margin-top: 20px;
 }
 </style>

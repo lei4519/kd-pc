@@ -3,7 +3,6 @@ import { Menu } from './Menu'
 import { Row, RowProps, ColElement, editDirty } from './Element'
 import { cloneDeep, get } from 'lodash'
 import { Message } from 'element-ui'
-import Vue from 'vue'
 import { addHistoryState } from './History'
 let id = 0
 /**

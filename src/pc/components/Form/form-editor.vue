@@ -14,13 +14,25 @@
         class="com-btn"
         plain
         @click="addComponent(item)"
-      >{{item.name}}</el-button>
+        >{{ item.name }}</el-button
+      >
     </div>
     <div class="com-setting mt-12" v-if="value.length > 0">
       <h2 class="mb-8">组件配置</h2>
       <el-table :data="value" style="width: 100%">
-        <el-table-column prop="name" label="组件名称" align="center" width="80"></el-table-column>
-        <el-table-column prop="label" label="标题" show-overflow-tooltip align="center" width="100"></el-table-column>
+        <el-table-column
+          prop="name"
+          label="组件名称"
+          align="center"
+          width="80"
+        ></el-table-column>
+        <el-table-column
+          prop="label"
+          label="标题"
+          show-overflow-tooltip
+          align="center"
+          width="100"
+        ></el-table-column>
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-tooltip
@@ -29,7 +41,10 @@
               content="删除"
               placement="top"
             >
-              <el-button icon="el-icon-delete-solid" @click.native="deleteComponent(scope.$index)"></el-button>
+              <el-button
+                icon="el-icon-delete-solid"
+                @click.native="deleteComponent(scope.$index)"
+              ></el-button>
             </el-tooltip>
             <el-tooltip
               class="ml-4 hover-color click-effect"
@@ -37,7 +52,10 @@
               content="编辑"
               placement="top"
             >
-              <el-button icon="el-icon-edit" @click.native="editComponent(scope.$index)"></el-button>
+              <el-button
+                icon="el-icon-edit"
+                @click.native="editComponent(scope.$index)"
+              ></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -56,10 +74,18 @@
         <h1 class="mb-20">组件配置</h1>
         <el-form ref="form" :model="form" size="mini" :rules="rules">
           <el-form-item label="标题" prop="label">
-            <el-input v-model="form.label" @change="setProps(form.label, ...arguments)"></el-input>
+            <el-input
+              v-model="form.label"
+              @change="setProps(form.label, ...arguments)"
+            ></el-input>
           </el-form-item>
           <el-form-item label="数据字段名" prop="props.dataField">
-            <el-tooltip effect="dark" content="传递给后端的字段" placement="top" class="tip">
+            <el-tooltip
+              effect="dark"
+              content="传递给后端的字段"
+              placement="top"
+              class="tip"
+            >
               <i class="el-icon-info"></i>
             </el-tooltip>
             <el-input
@@ -82,8 +108,15 @@
             >
               <i class="el-icon-info"></i>
             </el-tooltip>
-            <el-input v-model="form.props.optionLabel" placeholder="label字段名" class="mr-4"></el-input>
-            <el-input v-model="form.props.optionKey" placeholder="value字段名"></el-input>
+            <el-input
+              v-model="form.props.optionLabel"
+              placeholder="label字段名"
+              class="mr-4"
+            ></el-input>
+            <el-input
+              v-model="form.props.optionKey"
+              placeholder="value字段名"
+            ></el-input>
           </el-form-item>
           <el-form-item label="数据来源" v-if="currentType === 'select'">
             <el-radio-group v-model="form.props.optionRadio">
@@ -94,13 +127,21 @@
           <el-form-item
             class="dataSource"
             label="数据获取"
-            v-if="currentType === 'select' && form.props.optionRadio === '2' || currentType === 'cascader'"
+            v-if="
+              (currentType === 'select' && form.props.optionRadio === '2') ||
+                currentType === 'cascader'
+            "
           >
             <!-- <el-select v-model="form.dataSourceType">
               <el-option label="自定义" :value="1"></el-option>
               <el-option label="数据源" :value="2" disabled></el-option>
             </el-select>-->
-            <el-tooltip effect="dark" content="接口数据示例" placement="top" class="tip">
+            <el-tooltip
+              effect="dark"
+              content="接口数据示例"
+              placement="top"
+              class="tip"
+            >
               <i class="el-icon-info" @click="dataTypeDialog(currentType)"></i>
             </el-tooltip>
             <el-input v-model="form.url"></el-input>
@@ -118,7 +159,11 @@
             label="选项"
           >
             <div>
-              <div v-for="(option, index) in form.options" :key="index" class="select-option mb-4">
+              <div
+                v-for="(option, index) in form.options"
+                :key="index"
+                class="select-option mb-4"
+              >
                 <el-input
                   v-model="option[form.props.optionLabel]"
                   @change="setProps(form.options, ...arguments)"
@@ -149,7 +194,12 @@
             </div>
           </el-form-item>
           <el-form-item v-if="currentType === 'select'" label="是否多选">
-            <el-tooltip effect="dark" content="全选情况下key值必须为all" placement="top" class="tip">
+            <el-tooltip
+              effect="dark"
+              content="全选情况下key值必须为all"
+              placement="top"
+              class="tip"
+            >
               <i class="el-icon-info"></i>
             </el-tooltip>
             <el-switch
@@ -157,13 +207,23 @@
               @change="setProps(form.props.multiple, ...arguments)"
             ></el-switch>
           </el-form-item>
-          <el-form-item v-if="currentType === 'cascader' && form.props.cascaderProps" label="是否多选">
-            <el-tooltip effect="dark" content="全选情况下key值必须为all" placement="top" class="tip">
+          <el-form-item
+            v-if="currentType === 'cascader' && form.props.cascaderProps"
+            label="是否多选"
+          >
+            <el-tooltip
+              effect="dark"
+              content="全选情况下key值必须为all"
+              placement="top"
+              class="tip"
+            >
               <i class="el-icon-info"></i>
             </el-tooltip>
             <el-switch
               v-model="form.props.cascaderProps.multiple"
-              @change="setProps(form.props.cascaderProps.multiple, ...arguments)"
+              @change="
+                setProps(form.props.cascaderProps.multiple, ...arguments)
+              "
             ></el-switch>
           </el-form-item>
           <el-form-item
@@ -179,14 +239,20 @@
             v-if="currentType === 'cascader' && form.props.cascaderProps"
             label="懒加载查询字段"
           >
-            <el-input v-model="form.props.cascaderProps.lazy_id" placeholder="请输入懒加载查询字段"></el-input>
+            <el-input
+              v-model="form.props.cascaderProps.lazy_id"
+              placeholder="请输入懒加载查询字段"
+            ></el-input>
           </el-form-item>
         </el-form>
       </div>
     </el-drawer>
 
     <el-dialog :append-to-body="true" :visible.sync="dialogVisible" width="60%">
-      <InterfaceDoc title="接口数据格式" v-bind="interfaceDoc[currentType]"></InterfaceDoc>
+      <InterfaceDoc
+        title="接口数据格式"
+        v-bind="interfaceDoc[currentType]"
+      ></InterfaceDoc>
     </el-dialog>
   </div>
 </template>
@@ -199,7 +265,7 @@ export default {
   props: {
     value: {
       type: Array,
-      default () {
+      default() {
         return []
       }
     }
@@ -210,7 +276,7 @@ export default {
       default: ''
     }
   },
-  data () {
+  data() {
     return {
       drawer: false,
       form: {
@@ -277,8 +343,8 @@ export default {
             }
           ],
           code: {
-            "code": 1,
-            "data": [
+            code: 1,
+            data: [
               {
                 label: '全国',
                 key: 'aa'
@@ -294,9 +360,9 @@ export default {
               {
                 label: '滑县',
                 key: 'nx'
-              },
+              }
             ],
-            "msg": "success"
+            msg: 'success'
           }
         },
         cascader: {
@@ -332,75 +398,74 @@ export default {
             }
           ],
           code: {
-            "code": 1,
-            "data": [
+            code: 1,
+            data: [
               {
-                "value": "all",
-                "label": "全国"
+                value: 'all',
+                label: '全国'
               },
               {
-                "value": 349,
-                "label": "城市发展",
-                "children": []
+                value: 349,
+                label: '城市发展',
+                children: []
               },
               {
-                "value": 353,
-                "label": "长沙",
-                "children": [
+                value: 353,
+                label: '长沙',
+                children: [
                   {
-                    "value": "zz ",
-                    "label": "株洲"
+                    value: 'zz ',
+                    label: '株洲'
                   },
                   {
-                    "value": "xiangtan",
-                    "label": "湘潭"
+                    value: 'xiangtan',
+                    label: '湘潭'
                   },
                   {
-                    "value": "cs",
-                    "label": "长沙"
+                    value: 'cs',
+                    label: '长沙'
                   }
                 ]
               },
               {
-                "value": 354,
-                "label": "长春",
-                "children": [
+                value: 354,
+                label: '长春',
+                children: [
                   {
-                    "value": "jl",
-                    "label": "长春"
+                    value: 'jl',
+                    label: '长春'
                   }
                 ]
-              },
+              }
             ],
-            "msg": "success"
+            msg: 'success'
           }
-        },
-
+        }
       }
     }
   },
   computed: {
-    currentType () {
+    currentType() {
       return this.value[this.currentIndex]?.type || ''
     },
-    direction () {
+    direction() {
       return this.asideLayout.direction === 'left' ? 'rtl' : 'ltr'
     }
   },
   methods: {
-    dataTypeDialog (type) {
+    dataTypeDialog() {
       this.dialogVisible = true
     },
-    deleteComponent (index) {
+    deleteComponent(index) {
       this.value.splice(index, 1)
       this.$emit('change', this.value)
     },
-    editComponent (index) {
+    editComponent(index) {
       this.currentIndex = index
       this.form = this.value[index]
       this.drawer = true
     },
-    addComponent ({ type, label }) {
+    addComponent({ type, label }) {
       if (type === 'input') {
         this.value.push({
           label: label || '标题',
@@ -449,13 +514,13 @@ export default {
           props: {
             placeholder: '请选择',
             dataField: '',
-            'cascaderProps': {
+            cascaderProps: {
               emitPath: false,
               multiple: true,
               checkStrictly: true,
               lazy_id: 'id',
               lazy: false,
-              'lazyLoad': (node, resolve) => {
+              lazyLoad: (node, resolve) => {
                 console.log(node)
                 const { level, value } = node
                 setTimeout(() => {
@@ -487,28 +552,28 @@ export default {
       this.$emit('change', this.value)
       this.currentIndex = this.value.length - 1
     },
-    setProps (prop, val) {
+    setProps(prop, val) {
       this.value[this.currentIndex][prop] = val
       this.$emit('change', this.value)
     },
-    deleteSelectOption (index) {
+    deleteSelectOption(index) {
       this.form.options.splice(index, 1)
       this.$emit('change', this.value)
     },
-    addSelectOption () {
+    addSelectOption() {
       this.form.options.push({
         [this.form.props.optionLabel]: '',
         [this.form.props.optionKey]: ''
       })
       this.$emit('change', this.value)
     },
-    onSubmit () {
+    onSubmit() {
       Object.assign(this.value[this.currentIndex], this.form)
       console.log(this.value)
       this.drawer = false
       this.$emit('change', this.value)
     },
-    fetchData (params = {}) {
+    fetchData(params = {}) {
       return this.$ajax({
         url: this.form.url,
         method: 'POST',
