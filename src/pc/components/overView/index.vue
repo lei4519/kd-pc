@@ -6,7 +6,7 @@
       v-for="(item, index) in list"
       :key="index"
     >
-      <div class="view_inner">
+      <div :class="groupcompent ?'view_inner component-decoration':'view_inner'">
         <div class="title nowrap-ellipsis" :title="item.title">
           {{ item.title }}
         </div>
@@ -98,6 +98,21 @@ export default {
       type: Array,
       default() {
         return []
+      }
+    }
+  },
+  dragConfig: {
+    onDrop({ layouts, rowIndex }) {
+      const dropRow = layouts[rowIndex]
+      if (
+        dropRow &&
+        dropRow.some(({ name }) => !(name === 'OverView' || name === 'OverViewGroup'))
+      ) {
+        this.$message.error({
+          message: '概览组件只能与概览组件放置一行内',
+          duration: 5000
+        })
+        return false
       }
     }
   },

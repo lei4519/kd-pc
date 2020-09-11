@@ -99,6 +99,7 @@
 <script>
 import EchartComponent from '@/pc/_components/echart'
 import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
+import { duration } from '@/kd/style/global-variable.scss'
 
 const throttle = (fn, context) => {
   let t = null
@@ -399,7 +400,11 @@ export default {
       } else {
         this.h = 370
       }
-      this.redraw()
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.redraw()
+        }, parseFloat(duration) * 1000 + 100);
+      })
     },
     searchDateModel() {
       this.fetchData()
@@ -873,7 +878,8 @@ export default {
                   .slice(1)
                   .join('-')
               ), //
-              nameTextStyle: {
+              axisLabel: {
+                rotate: 0,
                 color: '#8492A6',
                 fontSize: '10px',
                 fontFamily: '"PingFang SC", 微软雅黑'
@@ -881,22 +887,20 @@ export default {
               axisTick: {
                 alignWithLabel: true
               },
-              axisLabel: {
-                rotate: 0
-              }
             },
             yAxis: {
               name: '万',
               type: 'value',
-              nameTextStyle: {
-                color: '#8492A6',
-                fontSize: '10px'
-              },
               axisLine: {
                 show: false
               },
               axisTick: {
                 show: false
+              },
+              axisLabel: {
+                color: '#8492A6',
+                fontSize: '10px',
+                fontFamily: '"PingFang SC", 微软雅黑'
               },
               // min: Math.min.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
               // max: Math.max.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
@@ -946,10 +950,18 @@ export default {
               type: 'category',
               data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
               axisLabel: {
-                rotate: 0
-              }
+                rotate: 0,
+                color: '#8492A6',
+                fontSize: '10px',
+                fontFamily: '"PingFang SC", 微软雅黑'
+              },
             },
             yAxis: {
+              axisLabel: {
+                color: '#8492A6',
+                fontSize: '10px',
+                fontFamily: '"PingFang SC", 微软雅黑'
+              },
               axisLine: {
                 show: false
               },

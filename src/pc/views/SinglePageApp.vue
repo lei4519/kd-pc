@@ -14,7 +14,7 @@
             :key="el.id"
             :style="el.getStyle()"
           >
-            <AjaxLoading :class="{ decoration: el.needParentStyle }">
+            <AjaxLoading :class="{ 'component-decoration': el.needParentStyle }">
               <component
                 :is="getComponent(el)"
                 v-bind="el.props"
@@ -89,15 +89,5 @@ export default {
   min-height: 100%;
   background-color: $mainBgColor;
   padding: 24px;
-  .decoration {
-    outline: 0 solid transparent;
-    // outline-radius: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-    transition: outline-color $duration;
-    &:hover {
-      outline-width: 2px;
-      outline-color: $theme-color;
-    }
-  }
 }
 </style>
