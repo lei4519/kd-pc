@@ -209,6 +209,7 @@ export default {
     }
     &.string {
       color: #7ec699;
+      white-space: pre-wrap;
     }
     &.boolean {
       color: #f8c555;

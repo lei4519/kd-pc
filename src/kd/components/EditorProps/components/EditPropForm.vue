@@ -49,6 +49,7 @@
             <el-option label="数据源" :value="2" disabled> </el-option>
           </el-select>
           <el-input
+            style="min-width: 100px"
             v-model="form[item.prop]"
             @change="setElementProps(i, item.prop, ...arguments)"
           ></el-input>
