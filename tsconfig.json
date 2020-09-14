@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "preserve",
+    "jsxFactory": "VueTsxSupport",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "baseUrl": ".",
+    "skipLibCheck": true,
+    "types": ["webpack-env"],
+    "paths": {
+      "@/*": ["src/*"],
+      "kd/*": ["src/kd/*"],
+      "pc/*": ["src/pc/*"]
+    },
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "node_modules/vue-tsx-support/enable-check.d.ts"
+  ],
+  "exclude": ["node_modules", "src/singlecomponents/components/Upload/upload_noui_online_v2.0.1.min.js"]
+}

@@ -1,0 +1,65 @@
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.deselect {
+  user-select: none;
+}
+.csp {
+  cursor: pointer;
+}
+.hover-color:hover {
+  color: $theme-color;
+}
+.click-effect {
+  transition: all $duration;
+  &:active {
+    transform: scale(0.8);
+  }
+}
+.clearfix::after {
+  content: '';
+  display: block;
+  line-height: 0;
+  height: 0;
+  visibility: hidden;
+  clear: both;
+}
+
+.w-auto {
+  width: auto !important;
+}
+.pos-a {
+  position: absolute;
+}
+.pos-r {
+  position: relative;
+}
+.text-c {
+  text-align: center;
+}
+// 以4的倍数递增，生成1倍到8倍4个方向的margin
+// 简写 mt-8 mb-8 ml-8 mr-8
+$direction: ('t', 'top'), ('b', 'bottom'), ('l', 'left'), ('r', 'right');
+@for $i from 1 through 8 {
+  @each $d1, $d2 in $direction {
+    .m#{$d1}-#{$i * 4} {
+      margin-#{$d2}: $i * 4 * 1px !important;
+    }
+  }
+}
+.transition {
+  transition: all $duration;
+}
+
+.component-decoration {
+  outline: 0 solid transparent;
+  // outline-radius: 4px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  transition: outline-color $duration;
+  &:hover {
+    outline-width: 2px;
+    outline-color: $theme-color;
+  }
+}

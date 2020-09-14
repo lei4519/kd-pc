@@ -1,0 +1,23 @@
+/**
+  全局scss，声明的scss变量或函数在 .vue 文件的 style 模块中可以直接使用，无需手动引入
+*/
+// 主题色由 Project类 进行修改 勿动此变量
+$theme-color: #409EFF;
+// 过度、动画持续时长
+$duration: .3s;
+$mainBgColor: #f7f8f9;
+// 组件 padding 值
+$component-padding: 16px;
+
+@mixin ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 导出供vuex使用
+:export {
+  themeColor: $theme-color;
+  duration: $duration;
+  componentPadding: $component-padding;
+}

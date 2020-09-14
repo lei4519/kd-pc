@@ -1,0 +1,50 @@
+.el-form:not(.el-form--label-top) {
+  .el-form-item {
+    display: flex;
+    margin-bottom: 0;
+    + .el-form-item {
+      margin-top: 16px;
+    }
+    .el-form-item__label {
+      flex-shrink: 0;
+    }
+    .el-form-item__content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      > * {
+        flex: 1;
+      }
+    }
+  }
+}
+.el-dialog__header,
+.el-dialog__body,
+.el-dialog__footer {
+  padding: 16px;
+}
+.el-date-editor.mini {
+  width: auto;
+  padding: 4px;
+  .el-icon-date {
+    flex: 0 0 25px;
+    margin: 0;
+  }
+  .el-range-input {
+    flex: 1;
+  }
+  .el-range-separator {
+    flex: 0 0 20px;
+  }
+  .el-range__close-icon {
+    display: none;
+  }
+  .el-range-input,
+  .el-range-separator,
+  .el-range__close-icon {
+    display: none;
+  }
+}
+.el-dialog__wrapper {
+  min-width: 1080PX;
+}
