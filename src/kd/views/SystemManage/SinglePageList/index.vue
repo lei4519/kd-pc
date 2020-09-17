@@ -1,20 +1,15 @@
 <template>
   <div class="list-wrapper">
-    <el-button
-      class="mb-16"
-      size="small"
-      type="primary"
-      @click="dialogVisible = true"
-      >新建页面</el-button
-    >
-    <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="name" label="页面名称"></el-table-column>
-      <el-table-column label="操作" width="100px">
-        <el-button size="mini" @click="$router.push({ name: 'EditSinglePage' })"
-          >编辑页面</el-button
-        >
-      </el-table-column>
-    </el-table>
+    <AjaxLoading>
+      <Table
+        url="/api/quickbuild/lis"
+        :operateList="operateList"
+        :columns="columns"
+        :showSearch="false"
+        :showTitle="false"
+        :remoteColumns="false"
+      />
+    </AjaxLoading>
     <el-dialog title="新建页面" :visible.sync="dialogVisible" width="30%">
       <el-form :model="form" ref="elForm">
         <el-form-item label="页面名称" prop="name" required>
@@ -32,8 +27,12 @@
 </template>
 
 <script>
+import Table from '@/pc/components/Table'
 export default {
   name: 'List',
+  components: {
+    Table
+  },
   data() {
     return {
       tableData: [
@@ -42,15 +41,63 @@ export default {
         }
       ],
       dialogVisible: false,
-      form: {}
+      form: {
+        name: '',
+        data: {}
+      }
     }
   },
+  created() {
+    this.operateList = [
+      {
+        label: '新建页面',
+        handler: () => (this.dialogVisible = true)
+      }
+    ]
+    this.columns = [
+      {
+        label: '页面名称',
+        prop: 'form_name'
+      },
+      {
+        label: '操作',
+        type: 'operate',
+        width: '80',
+        operateList: [
+          {
+            label: '编辑',
+            handler: ({ row }) => {
+              this.$router.push({
+                name: 'EditSinglePage',
+                query: { id: row.id }
+              })
+            }
+          }
+        ]
+      }
+    ]
+  },
   methods: {
-    addSystem() {
+    async addSystem() {
       this.$refs.elForm.validate().then(() => {
-        this.tableData.push(this.form)
-        this.form = {}
-        this.dialogVisible = false
+        try {
+          const {
+            data: { code, msg }
+          } = this.$ajax({
+            url: '/api/quickbuild/add',
+            method: 'POST',
+            urlSearchParams: this.form
+          })
+          if (code === 1) {
+            this.form = {}
+            this.dialogVisible = false
+            this.$loadManage.exec()
+          } else {
+            this.$message.error(msg)
+          }
+        } catch {
+          this.$message.error('新增失败，请稍后重试')
+        }
       })
     }
   }

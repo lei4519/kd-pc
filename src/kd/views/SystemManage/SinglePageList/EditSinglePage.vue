@@ -7,6 +7,7 @@
 <script>
 import EditPage from '@/kd/components/EditPage/index.vue'
 import { Project } from '@/kd/modules/Project'
+import { isEmpty } from '@/kd/utils'
 
 export default {
   name: 'EditSinglePage',
@@ -26,26 +27,62 @@ export default {
       return this.$store.state.editor.project
     }
   },
-  created() {
-    const projectConfig = JSON.parse(sessionStorage.getItem('project')) || {
-      menu: [
-        {
-          type: 'menu',
-          children: [
-            {
-              type: 'page'
-            }
-          ]
-        }
-      ]
-    }
-    this.$store.commit('editor/SET_PROJECT', new Project(projectConfig))
-  },
   mounted() {
-    setTimeout(() => {
-      this.project.updateTheme(document.getElementById('_EditPageWrapper'))
-    })
-    this.undoRedoHistory.clear()
+    this.getProject()
+  },
+  methods: {
+    async getProject() {
+      try {
+        // TODO 接口问题
+        // const { data, code, msg } = await this.$ajax({
+        //   url: '/api/quickbuild/detail',
+        //   method: 'POST',
+        //   params: {
+        //     id: this.$route.query.id
+        //   }
+        // })
+        // if (code !== 1) {
+        //   return this.$message.error(msg)
+        // }
+        // const { form_data } = data
+        const form_data =
+          sessionStorage.getItem('project') ||
+          JSON.stringify({
+            menu: [
+              {
+                type: 'menu',
+                children: [
+                  {
+                    type: 'page'
+                  }
+                ]
+              }
+            ]
+          })
+        const project = JSON.parse(form_data)
+        const projectConfig = isEmpty(project)
+          ? {
+              menu: [
+                {
+                  type: 'menu',
+                  children: [
+                    {
+                      type: 'page'
+                    }
+                  ]
+                }
+              ]
+            }
+          : project
+        this.$store.commit('editor/SET_PROJECT', new Project(projectConfig))
+        this.undoRedoHistory.clear()
+        setTimeout(() => {
+          this.project.updateTheme(document.getElementById('_EditPageWrapper'))
+        })
+      } catch {
+        this.$message.error('获取页面信息失败，请稍后重试')
+      }
+    }
   }
 }
 </script>

@@ -15,7 +15,7 @@ module.exports = {
   },
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/name-property-casing': 'warn',
     'vue/no-template-shadow': 'warn',
     'vue/prop-name-casing': 'warn',

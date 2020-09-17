@@ -19,6 +19,7 @@
     <inpit type="hidden" id="input"></inpit>
     <div style="margin: 30px 40px;">
       <div id="upload"></div>
+      <button id="aaa">aaa</button>
     </div>
   </body>
   <script>
@@ -39,10 +40,11 @@
     //         }
     //     }]
     // })
-    new comps.vidoUpload({
+    let vidoUpload = new comps.vidoUpload({
       el: '#upload',
       propsData: {
-        btname: '上传按钮',
+        dialogVisible: false,
+        isProduction:false,
         partner: '10015',
         title: '视屏上传',
         videoname:'wowow'
@@ -56,6 +58,13 @@
           }
         }
       ]
+    })
+    $("#aaa").on('click',function(){
+      if (true) {
+        vidoUpload.dialogVisible = true
+      } else {
+
+      }
     })
   </script>
 </html>

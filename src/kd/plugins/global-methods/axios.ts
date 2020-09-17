@@ -24,16 +24,21 @@ instance.interceptors.request.use(config => {
   if (config.formData) {
     config.data = Object.entries(config.formData).reduce((form, [key, val]) => {
       if (Array.isArray(val)) {
-        val.forEach(v => form.append(`${key}[]`, v))
+        val.forEach(v =>
+          form.append(`${key}[]`, typeof v === 'object' ? JSON.stringify(v) : v)
+        )
       } else {
-        form.append(key, val)
+        form.append(key, typeof val === 'object' ? JSON.stringify(val) : val)
       }
       return form
     }, new FormData())
   }
   if (config.urlSearchParams) {
     config.data = Object.entries(config.urlSearchParams).reduce(
-      (form, [key, val]) => (form.append(key, val), form),
+      (form, [key, val]) => (
+        form.append(key, typeof val === 'object' ? JSON.stringify(val) : val),
+        form
+      ),
       new URLSearchParams()
     )
   }
@@ -42,7 +47,6 @@ instance.interceptors.request.use(config => {
 
 instance.interceptors.response.use(
   value => {
-    debugger
     return value
   },
   err => {

@@ -5,11 +5,11 @@ const { replaceColorToVar } = require('../build/custom-theme-plugin')
 module.exports = {
   outputDir: path.resolve(
     __dirname,
-    '../../../../../trunk/mvvm-project/vue/kd-pc/quicklyBuild'
+    '../../../adjs.leju.com/mvvm-project/vue/kd-pc/quicklyBuild'
   ),
   publicPath: isDev
     ? '/'
-    : `https://res${
+    : `https://adjs${
         isBCH ? '.bch' : ''
       }.leju.com/mvvm-project/vue/kd-pc/quicklyBuild`,
   filenameHashing: false,
@@ -27,6 +27,12 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET,POST,OPTIONS'
+    },
+    proxy: {
+      '/api': {
+        target: 'http://vd.bch.leju.com',
+        changeOrigin: true
+      }
     }
   },
   css: {

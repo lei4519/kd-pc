@@ -109,3 +109,13 @@ export function parseTime(time: number, cFormat: string) {
   })
   return timeStr
 }
+/**
+ * @description 校验数组 或 对象是否为空
+ */
+export function isEmpty(obj: object | any[]): boolean {
+  if (Array.isArray(obj)) {
+    return obj.length === 0
+  } else {
+    return Object.keys(obj).length === 0
+  }
+}

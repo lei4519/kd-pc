@@ -1,7 +1,7 @@
 <template>
   <div class="table-component-wrap clearfix">
     <div class="title-wrap">
-      <div class="title">
+      <div class="title" v-if="showTitle">
         <div class="title-text" v-skeleton="{ width: '100px', height: '20px' }">
           {{ tableTitle }}
         </div>
@@ -104,26 +104,6 @@
                   type="text"
                   >{{ operate.label }}</el-button
                 >
-                <li
-                  :class="
-                    `operate-column-item ${
-                      operate.disabled
-                        ? 'gary-color'
-                        : 'main-color hover-color pointer'
-                    }`
-                  "
-                  v-for="(operate, i) in typeof item.operateList === 'function'
-                    ? item.operateList(scope)
-                    : item.operateList"
-                  :key="i"
-                  @click="
-                    operate.handler && !operate.disabled
-                      ? operate.handler(scope, item, operate)
-                      : noop
-                  "
-                >
-                  {{ operate.label }}
-                </li>
               </ul>
             </template>
           </el-table-column>
@@ -176,9 +156,29 @@ export default {
   iconClass: 'biaoge',
   minSpan: 12,
   props: {
+    operateList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    remoteColumns: {
+      type: Boolean,
+      default: true
+    },
+    columns: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     url: {
       type: String,
       default: ''
+    },
+    showTitle: {
+      type: Boolean,
+      default: true
     },
     tableTitle: {
       type: String,
@@ -279,28 +279,35 @@ export default {
                       {
                         prop: 'code',
                         type: 'number - 数字',
-                        desc: '接口状态值'
+                        desc:
+                          '接口状态值, 1表示成功。其他为失败，失败时请返回msg字段用以提示'
                       },
                       {
-                        prop: 'pageSize',
-                        type: 'number - 数字',
-                        desc: '每次请求返回数据条目'
-                      },
-                      {
-                        prop: 'page',
-                        type: 'number - 数字',
-                        desc: '当前页码'
-                      },
-                      {
-                        prop: 'total',
-                        type: 'number - 数字',
-                        desc: '数据总量'
+                        prop: 'msg',
+                        type: 'string - 字符串',
+                        desc: '状态提示'
                       },
                       {
                         prop: 'data',
                         type: 'object - 对象',
                         desc: '数据主体',
+
                         children: [
+                          {
+                            prop: 'pageSize',
+                            type: 'number - 数字',
+                            desc: '每次请求返回数据条目'
+                          },
+                          {
+                            prop: 'page',
+                            type: 'number - 数字',
+                            desc: '当前页码'
+                          },
+                          {
+                            prop: 'total',
+                            type: 'number - 数字',
+                            desc: '数据总量'
+                          },
                           {
                             prop: 'columns',
                             type: 'array - 数组',
@@ -440,8 +447,7 @@ export default {
   },
   data() {
     return {
-      operateList: [],
-      selfColumns: [],
+      selfColumns: this.columns,
       tableData: [],
       total: 0,
       currentPage: 1,
@@ -460,6 +466,8 @@ export default {
       )}  |  ${(end - start) / 3600 / 1000 / 24}天`
     },
     tableHeight() {
+      // 非快搭页面使用
+      if (!this.$attrs.layouts) return void 0
       // 布局信息
       const { layouts, rowIndex } = this.$attrs.layouts
       // 所在行只有一个元素
@@ -479,15 +487,24 @@ export default {
     }
   },
   watch: {
+    columns() {
+      if (!this.remoteColumns) {
+        this.selfColumns = this.columns
+      }
+    },
     mergeCol() {
       this.processMergeCol()
     },
     searchDateModel() {
-      this.fetchData()
+      if (this.showSearch) {
+        this.fetchData()
+      }
     },
     defaultSearchDate: {
       handler(relative) {
-        this.searchDateModel = getRelativeTime(relative)
+        if (this.showSearch) {
+          this.searchDateModel = getRelativeTime(relative)
+        }
       },
       immediate: true
     }
@@ -674,15 +691,26 @@ export default {
             method: 'post',
             params
           })
-      ).then(({ data, total } = {}) => {
-        if (!data || !data.columns || !data.data) {
-          return this.$message.error('接口错误，请检查接口返回的数据结构')
-        }
-        this.processMergeCol(data.columns)
-        this.tableData = data.data
-        this.noDataText = data.data.length ? '' : this.emptyText
-        this.total = total
-      })
+      )
+        .then(({ data: { data: res, code, msg } = {} } = {}) => {
+          if (code === 1) {
+            const { data, columns, total } = res
+            if (this.remoteColumns) {
+              if (!data || !columns) {
+                return this.$message.error('接口错误，请检查接口返回的数据结构')
+              }
+              this.processMergeCol(columns)
+            }
+            this.tableData = data
+            this.noDataText = data.length ? '' : this.emptyText
+            this.total = total
+          } else {
+            this.$message.error(msg)
+          }
+        })
+        .catch(() => {
+          this.$message.error('数据请求失败，请重试')
+        })
     },
     handleCurrentChange(currentPage) {
       this.currentPage = currentPage
