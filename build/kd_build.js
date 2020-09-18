@@ -1,4 +1,4 @@
-const { sh, runBuild } = require('./commit-git')
+const { sh, runBuild } = require('commit-git')
 
 const isBCH = process.argv[2] === 'test'
 // 打包 KD
