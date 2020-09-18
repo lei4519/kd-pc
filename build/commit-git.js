@@ -1,3 +1,6 @@
+const inquirer = require('inquirer')
+const chalk = require('chalk')
+
 function sh(command, options = {}) {
   const { spawn } = require('child_process')
   options = {
@@ -18,21 +21,6 @@ function sh(command, options = {}) {
 }
 
 async function commitGit(isBCH) {
-  const inquirer = require('inquirer')
-  const chalk = require('chalk')
-  console.log(chalk.green('Git 分支检查'))
-  const branchs = await sh(`git branch`, {
-    stdio: 'pipe'
-  })
-  const curBranch = /\*\s(\w+)/gi.exec(branchs)[1]
-  if (isBCH && curBranch !== 'bch') {
-    console.log(chalk.green('请在bch分支后进行build操作'))
-    return process.exit(1)
-  }
-  if (!isBCH && curBranch !== 'master') {
-    console.log(chalk.green('请在master分支后进行build操作'))
-    return process.exit(1)
-  }
   console.log(chalk.green('Git 改动信息'))
   await sh(
     `git checkout ${isBCH ? 'develop' : 'master'}
@@ -82,12 +70,26 @@ function getTargetGitPath() {
 
 const adjsGitPath = getTargetGitPath()
 
-function runBuild(builds, isBCH) {
-  sh(`git checkout ${isBCH ? 'develop' : 'master'}`, {
+async function runBuild(builds, isBCH) {
+  await sh(`git checkout ${isBCH ? 'develop' : 'master'}`, {
     cwd: adjsGitPath
-  }).then(() => {
-    Promise.all(builds).then(() => commitGit(isBCH))
   })
+
+  console.log(chalk.green('Git 分支检查'))
+  const branchs = await sh(`git branch`, {
+    stdio: 'pipe'
+  })
+  const curBranch = /\*\s(\w+)/gi.exec(branchs)[1]
+  if (isBCH && curBranch !== 'bch') {
+    console.log(chalk.green('请在bch分支进行build操作'))
+    return process.exit(1)
+  }
+  if (!isBCH && curBranch !== 'master') {
+    console.log(chalk.green('请在master分支进行build操作'))
+    return process.exit(1)
+  }
+
+  Promise.all(builds).then(() => commitGit(isBCH))
 }
 
 module.exports = {
