@@ -2,11 +2,11 @@ const isDev = process.env.NODE_ENV === 'development'
 const isBCH = process.env.BUILD_MODE === 'bch'
 const path = require('path')
 const { replaceColorToVar } = require('../build/custom-theme-plugin')
+const { getTargetGitPath } = require('commit-git')
+const adjsPath = getTargetGitPath()
+
 module.exports = {
-  outputDir: path.resolve(
-    __dirname,
-    '../../../adjs.leju.com/mvvm-project/vue/kd-pc/quicklyBuildPreview'
-  ),
+  outputDir: `${adjsPath}/mvvm-project/vue/kd-pc/quicklyBuildPreview`,
   publicPath: isDev
     ? '/'
     : `https://adjs${
