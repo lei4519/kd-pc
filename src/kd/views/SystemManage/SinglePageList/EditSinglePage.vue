@@ -1,6 +1,11 @@
 <template>
   <div style="height: 100%">
-    <EditPage v-if="project" :visible.sync="visiblePage" :project="project" />
+    <EditPage
+      v-if="project"
+      :visible.sync="visiblePage"
+      :project="project"
+      :saveProject="saveProject"
+    />
   </div>
 </template>
 
@@ -31,34 +36,43 @@ export default {
     this.getProject()
   },
   methods: {
+    async saveProject(data) {
+      try {
+        const {
+          data: { code, msg }
+        } = await this.$ajax({
+          url: '/api/quickbuild/edit',
+          method: 'POST',
+          urlSearchParams: {
+            id: this.$route.query.id,
+            data: JSON.stringify(data)
+          }
+        })
+        if (code === 1) {
+          this.$message.success('保存成功')
+        } else if (msg) {
+          this.$message(msg)
+        }
+      } catch {
+        this.$message.error('保存失败，请重试')
+        return Promise.reject('保存失败，请重试')
+      }
+    },
     async getProject() {
       try {
-        // TODO 接口问题
-        // const { data, code, msg } = await this.$ajax({
-        //   url: '/api/quickbuild/detail',
-        //   method: 'POST',
-        //   params: {
-        //     id: this.$route.query.id
-        //   }
-        // })
-        // if (code !== 1) {
-        //   return this.$message.error(msg)
-        // }
-        // const { form_data } = data
-        const form_data =
-          sessionStorage.getItem('project') ||
-          JSON.stringify({
-            menu: [
-              {
-                type: 'menu',
-                children: [
-                  {
-                    type: 'page'
-                  }
-                ]
-              }
-            ]
-          })
+        const {
+          data: { entry, code, msg }
+        } = await this.$ajax({
+          url: '/api/quickbuild/detail',
+          method: 'POST',
+          params: {
+            id: this.$route.query.id
+          }
+        })
+        if (code !== 1) {
+          return this.$message.error(msg)
+        }
+        const { form_data } = entry
         const project = JSON.parse(form_data)
         const projectConfig = isEmpty(project)
           ? {

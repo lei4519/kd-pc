@@ -43,7 +43,7 @@ export default {
       dialogVisible: false,
       form: {
         name: '',
-        data: {}
+        data: '{}'
       }
     }
   },
@@ -79,11 +79,11 @@ export default {
   },
   methods: {
     async addSystem() {
-      this.$refs.elForm.validate().then(() => {
+      this.$refs.elForm.validate().then(async () => {
         try {
           const {
             data: { code, msg }
-          } = this.$ajax({
+          } = await this.$ajax({
             url: '/api/quickbuild/add',
             method: 'POST',
             urlSearchParams: this.form

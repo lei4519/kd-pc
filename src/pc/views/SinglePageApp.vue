@@ -14,8 +14,19 @@
             :key="el.id"
             :style="el.getStyle()"
           >
-            <AjaxLoading :class="{ 'component-decoration': el.needParentStyle }">
+            <AjaxLoading
+              lazy
+              :class="{ 'component-decoration': el.needParentStyle }"
+            >
               <component
+                ref="componentVm"
+                v-on="{
+                  ...(rowIndex === 0 && el.name === 'Form'
+                    ? {
+                        'on-search': onSearch
+                      }
+                    : {})
+                }"
                 :is="getComponent(el)"
                 v-bind="el.props"
                 :layouts="page.getLayout(rowIndex, colIndex)"
@@ -31,6 +42,7 @@
 <script>
 import { Project } from '@/kd/modules/Project'
 import Vue from 'vue'
+import { isEmpty } from '@/kd/utils'
 const theme = Vue.observable({
   color: '409EFF'
 })
@@ -53,27 +65,73 @@ export default {
       }
     }
   },
+  mounted() {
+    setTimeout(() => {
+      const componentVm = this.$refs.componentVm
+      if (componentVm?.[0]?.vm?.$options?.name === 'Form') {
+        this.onSearch(componentVm[0].searchModel, true)
+      }
+    }, 400)
+  },
   methods: {
-    getPage() {
-      return new Promise(r => {
-        setTimeout(() => {
-          const projectConfig = JSON.parse(sessionStorage.getItem('project'))
-          if (projectConfig) {
-            projectConfig.themeEl = this.$refs.rootEl
-            const project = new Project(projectConfig)
-            const {
+    onSearch(searchModel, init) {
+      this.$refs.componentVm.forEach(vm => {
+        if (vm.fetchData) {
+          if (init) {
+            vm.fetchData(searchModel)
+          } else {
+            if (vm.$attrs.inheritPageSearch === false) return
+            vm.fetchData(searchModel)
+          }
+        }
+      })
+    },
+    async getPage() {
+      try {
+        const {
+          data: { entry, code, msg }
+        } = await this.$ajax({
+          url: '/api/quickbuild/detail',
+          method: 'POST',
+          params: {
+            id: this.$route.query.id
+          }
+        })
+        if (code !== 1) {
+          return this.$message.error(msg)
+        }
+        const { form_data } = entry
+        const project = JSON.parse(form_data)
+        const projectConfig = isEmpty(project)
+          ? {
               menu: [
                 {
-                  children: [page]
+                  type: 'menu',
+                  children: [
+                    {
+                      type: 'page'
+                    }
+                  ]
                 }
               ]
-            } = project
-            this.project = project
-            this.page = page
-          }
-          r()
-        }, 500)
-      })
+            }
+          : project
+        if (projectConfig) {
+          projectConfig.themeEl = this.$refs.rootEl
+          const project = new Project(projectConfig)
+          const {
+            menu: [
+              {
+                children: [page]
+              }
+            ]
+          } = project
+          this.project = project
+          this.page = page
+        }
+      } catch {
+        this.$message.error('获取页面信息失败，请稍后重试')
+      }
     },
     getComponent({ path }) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires

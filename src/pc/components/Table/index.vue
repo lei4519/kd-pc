@@ -288,7 +288,7 @@ export default {
                         desc: '状态提示'
                       },
                       {
-                        prop: 'data',
+                        prop: 'entry',
                         type: 'object - 对象',
                         desc: '数据主体',
 
@@ -541,16 +541,16 @@ export default {
         }
       }))
     }
-    this.genMockData()
   },
   methods: {
     genMockData(syncRetrueData = false) {
-      const res = {
-        code: 0,
-        pageSize: 5,
-        page: 1,
-        total: 5,
-        data: {
+      const data = {
+        code: 1,
+        msg: '',
+        entry: {
+          total: 5,
+          pageSize: 5,
+          page: 1,
           columns: [
             {
               label: '城市',
@@ -600,7 +600,7 @@ export default {
           })
         }
       }
-      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+      return syncRetrueData ? data : setTimeoutResolve({ data }, 1000)
     },
     processMergeCol(columns) {
       columns = columns || this.selfColumns
@@ -692,9 +692,9 @@ export default {
             params
           })
       )
-        .then(({ data: { data: res, code, msg } = {} } = {}) => {
+        .then(({ data: { entry, code, msg } = {} } = {}) => {
           if (code === 1) {
-            const { data, columns, total } = res
+            const { data, columns, total } = entry
             if (this.remoteColumns) {
               if (!data || !columns) {
                 return this.$message.error('接口错误，请检查接口返回的数据结构')

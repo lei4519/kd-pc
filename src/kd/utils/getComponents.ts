@@ -77,10 +77,11 @@ function createComponentList(modules: RC): ComponentList {
           path2dir[path].dirName = dirName
         } else {
           const ctor = modules(item).default
+
+          decorationComponent(ctor)
+
           // {} || Vue.extend({})
           const options = typeof ctor === 'function' ? ctor.options : ctor
-
-          decorationComponent(options)
 
           const {
             name: compName,
@@ -181,7 +182,8 @@ export function getEditorComponent(
 /**
  * @description 装饰组件对象，方便快搭系统运行
  */
-function decorationComponent(options: any) {
+function decorationComponent(ctor: any) {
+  const options = typeof ctor === 'function' ? ctor.options : ctor
   // 添加watch，点击数据源发送请求时执行fetchData方法
   if (!options.watch) options.watch = {}
   if (!options.props) options.props = {}
@@ -192,11 +194,4 @@ function decorationComponent(options: any) {
   options.watch.quickBuildSystemInjectFetchDataFlag = function() {
     this.fetchData?.()
   }
-
-  // 添加 mounted 事件抛出组件实例
-  if (!options.mounted) options.mounted = []
-  if (!Array.isArray(options.mounted)) options.mounted = [options.mounted]
-  options.mounted.push(function(this: Vue) {
-    this.$emit('componentMounted', Object.freeze(Object.create(this)))
-  })
 }

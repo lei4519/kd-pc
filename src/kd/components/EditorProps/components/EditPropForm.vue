@@ -185,8 +185,8 @@
           </el-tooltip>
         </span>
         <el-switch
-          v-model="form._inheritPageSearch"
-          @change="setElementProps(i, '_inheritPageSearch', ...arguments)"
+          v-model="form.inheritPageSearch"
+          @change="setElementProps(i, 'inheritPageSearch', ...arguments)"
         />
       </el-form-item>
     </template>
@@ -279,7 +279,7 @@ export default {
           list.push(item)
           return [form, list]
         },
-        [{ dataSourceType: 1, _inheritPageSearch: true }, []]
+        [{ dataSourceType: 1, inheritPageSearch: true }, []]
       )
       this.form = form
       this.encodePropList = list

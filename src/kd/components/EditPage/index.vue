@@ -185,9 +185,10 @@
                       >
                         <AjaxLoading :key="el.path">
                           <component
-                            @componentMounted="
-                              onAddComponentMounted(el, ...arguments)
-                            "
+                            :key="el.path"
+                            :componentID="el.id"
+                            ref="componentVMs"
+                            @hook:mounted="onAddComponentMounted(el)"
                             :data-row_index="rowIndex"
                             :data-col_index="colIndex"
                             :layouts="page.getLayout(rowIndex, colIndex)"
@@ -283,6 +284,12 @@ export default {
       required: true,
       default() {
         return {}
+      }
+    },
+    saveProject: {
+      type: Function,
+      default() {
+        return () => Promise.resolve()
       }
     }
   },
@@ -438,8 +445,12 @@ export default {
         )
       })
     },
-    onAddComponentMounted(el, component) {
-      el.setRenderComponent(component)
+    onAddComponentMounted(el) {
+      const componentVMs = this.$refs.componentVMs || []
+      const vm = componentVMs.find(e => e.$attrs.componentID === el.id)
+      if (vm) {
+        el.setRenderComponent(Object.freeze(Object.create(vm)))
+      }
     },
     onDropEvent(type, e) {
       if (!this.dropHandler) {
@@ -647,9 +658,9 @@ export default {
           this.page
             .validate()
             .then(() => {
-              sessionStorage.setItem('project', JSON.stringify(this.project))
-              this.$message.success('保存成功')
-              this.visiblePreviewPage = true
+              this.saveProject(this.project).then(() => {
+                this.visiblePreviewPage = true
+              })
             })
             .catch(() => {
               return Promise.reject()
@@ -659,8 +670,7 @@ export default {
           this.page
             .validate()
             .then(() => {
-              sessionStorage.setItem('project', JSON.stringify(this.project))
-              this.$message.success('保存成功')
+              this.saveProject(this.project)
             })
             .catch(() => {
               return Promise.reject()
