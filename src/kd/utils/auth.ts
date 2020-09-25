@@ -17,11 +17,11 @@ export function setToken(token: string) {
 }
 
 export function removeToken() {
-  Cookies.remove(TokenKey1, { path: '/' })
-  // Cookies.remove(TokenKey1, { path: '/', domain: '.leju.com' })
-  Cookies.remove(TokenKey2, { path: '/' })
-  // Cookies.remove(TokenKey2, { path: '/', domain: '.leju.com' })
-  Cookies.remove(TokenKey3, { path: '/' })
-  // Cookies.remove(TokenKey3, { path: '/', domain: '.leju.com' })
+  // Cookies.remove(TokenKey1, { path: '/' })
+  Cookies.remove(TokenKey1, { path: '/', domain: '.leju.com' })
+  // Cookies.remove(TokenKey2, { path: '/' })
+  Cookies.remove(TokenKey2, { path: '/', domain: '.leju.com' })
+  // Cookies.remove(TokenKey3, { path: '/' })
+  Cookies.remove(TokenKey3, { path: '/', domain: '.leju.com' })
   return true
 }

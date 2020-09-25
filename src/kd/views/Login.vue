@@ -320,9 +320,9 @@ export default {
     },
     handleLogin() {
       // TEST 测试代码
-      setToken('1')
-      this.$router.push('/home')
-      return
+      // setToken('1')
+      // this.$router.push('/home')
+      // return
       // eslint-disable-next-line no-unreachable
       this.$refs.loginForm.validate(valid => {
         if (valid) {
