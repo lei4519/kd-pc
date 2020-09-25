@@ -60,6 +60,28 @@ export default {
         prop: 'form_name'
       },
       {
+        label: '页面路径',
+        prop: 'id',
+        type: 'render',
+        render(c, { row: { id } }) {
+          const isDev = process.env.NODE_ENV === 'development'
+          return c(
+            'el-link',
+            {
+              props: {
+                type: 'primary',
+                href: `http://vd.${
+                  isDev ? 'bch.' : ''
+                }leju.com/preview/#/SinglePageApp?id=${id}`
+              }
+            },
+            `http://vd.${
+              isDev ? 'bch.' : ''
+            }leju.com/preview/#/SinglePageApp?id=${id}`
+          )
+        }
+      },
+      {
         label: '操作',
         type: 'operate',
         width: '80',

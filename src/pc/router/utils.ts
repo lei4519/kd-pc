@@ -1,5 +1,5 @@
 import { Children } from '@/kd/modules/Menu'
-import VueRouter, { RouteConfig, NavigationGuard, Route } from 'vue-router'
+import VueRouter, { RouteConfig, NavigationGuard } from 'vue-router'
 import router, { routes } from './index'
 import { routeMap } from './routeMap'
 import store from '../store'
@@ -96,7 +96,7 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
         // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
-          next(to.path)
+          next()
         } else {
           // 如果登录成功了却没有获取到menu，就返回重新登录
           next(`/login?redirect=${to.path}`)
@@ -116,6 +116,6 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
   document.body.scrollTop = document.documentElement.scrollTop = 0
 }
 
-export const afterEach = (to: Route) => {
+export const afterEach = () => {
   // localStorage.setItem('routeName', to.name!)
 }

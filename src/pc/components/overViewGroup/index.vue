@@ -13,7 +13,7 @@ export default {
   name: 'OverViewGroup',
   zhName: '概览组',
   iconClass: 'gailan',
-  needParentStyle:false,
+  needParentStyle: false,
   minSpan: 24,
   maxSpan: 24,
   components: {

@@ -66,6 +66,7 @@ export default {
     }
   },
   mounted() {
+    this.getPage()
     setTimeout(() => {
       const componentVm = this.$refs.componentVm
       if (componentVm?.[0]?.vm?.$options?.name === 'Form') {
@@ -93,7 +94,7 @@ export default {
         } = await this.$ajax({
           url: '/api/quickbuild/detail',
           method: 'POST',
-          params: {
+          urlSearchParams: {
             id: this.$route.query.id
           }
         })

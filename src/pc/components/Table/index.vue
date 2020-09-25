@@ -150,11 +150,15 @@
 
 <script>
 import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
+import Expand from './expand'
 export default {
   name: 'Table',
   zhName: '表格组件',
   iconClass: 'biaoge',
   minSpan: 12,
+  components: {
+    Expand
+  },
   props: {
     operateList: {
       type: Array,

@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "serve:kd": "cross-env BUILD_PLATFORM=kd vue-cli-service serve",
+    "serve:pc": "cross-env BUILD_PLATFORM=pc vue-cli-service serve",
     "//": "build:kd_bch、build:kd 命令同时打包 kd 和 pc 两个项目；打包文件名：kd：quicklyBuild；pc：quicklyBuildPreview",
     "build:kd_bch": "node build/kd_build test",
     "build:kd": "node build/kd_build production",

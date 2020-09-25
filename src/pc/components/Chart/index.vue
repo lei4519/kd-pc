@@ -403,7 +403,7 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           this.redraw()
-        }, parseFloat(duration) * 1000 + 100);
+        }, parseFloat(duration) * 1000 + 100)
       })
     },
     searchDateModel() {
@@ -886,7 +886,7 @@ export default {
               },
               axisTick: {
                 alignWithLabel: true
-              },
+              }
             },
             yAxis: {
               name: '万',
@@ -954,7 +954,7 @@ export default {
                 color: '#8492A6',
                 fontSize: '10px',
                 fontFamily: '"PingFang SC", 微软雅黑'
-              },
+              }
             },
             yAxis: {
               axisLabel: {

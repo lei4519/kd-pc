@@ -34,7 +34,7 @@ export default {
         '#6c7ee4',
         '#ff9c6e',
         '#81c784',
-        '#b47fec',
+        '#b47fec'
       ]
     }
   },
