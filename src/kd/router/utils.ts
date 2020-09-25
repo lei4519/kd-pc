@@ -96,7 +96,7 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
         // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
-          next()
+          next(to as any)
         } else {
           // 如果登录成功了却没有获取到menu，就返回重新登录
           removeToken()

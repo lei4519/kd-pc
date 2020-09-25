@@ -64,7 +64,7 @@ export default {
         prop: 'id',
         type: 'render',
         render(c, { row: { id } }) {
-          const isDev = process.env.VUE_APP_BUILD_ENV === 'development'
+          const isDev = process.env.VUE_APP_BUILD_ENV !== 'production'
           return c(
             'el-link',
             {
