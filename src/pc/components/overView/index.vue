@@ -33,13 +33,21 @@
                 <div class="kpi-contont">
                   <span>{{ arritem.name }}</span>
                   <span
-                    :class="arritem.ratio == 'up' ? 'kpi-drop' : 'kpi-rise'"
+                    :class="
+                      arritem.ratio == 'up'
+                        ? 'kpi-drop'
+                        : arritem.ratio == 'down'
+                        ? 'kpi-rise'
+                        : ''
+                    "
                   >
                     <i
                       :class="
                         arritem.ratio == 'up'
                           ? 'el-icon-caret-top'
-                          : 'el-icon-caret-bottom'
+                          : arritem.ratio == 'down'
+                          ? 'el-icon-caret-bottom'
+                          : ''
                       "
                     ></i>
                     <span>{{ arritem.num }}</span>
