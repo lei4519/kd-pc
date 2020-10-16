@@ -889,13 +889,14 @@ export default {
               //     ? 40
               //     : 10,
               top: 10,
-              bottom: 50
-              // left: 60,
-              // right: 10
+              bottom: 50,
+              left: '3%',
+              right: '5%',
+              containLabel: true
             },
             tooltip: {
               trigger: 'item',
-              formatter: '{a} <br/>{b} : {c}%'
+              formatter: '{a} <br/>{b} : {c}'
             },
             legend: {
               data: Object.keys(res.option),
@@ -907,9 +908,9 @@ export default {
               data: Object.keys(res.option[Object.keys(res.option)]).map(
                 item => {
                   return item
-                    .split('-' || '/')
-                    .slice(1)
-                    .join('-')
+                  // .split('-' || '/')
+                  // .slice(1)
+                  // .join('-')
                 }
               ),
               // data: Object.keys(res.option['广告点击率']).map(item =>
@@ -1006,7 +1007,7 @@ export default {
             },
             tooltip: {
               trigger: 'item',
-              formatter: '{a} <br/>{b} : {c}%'
+              formatter: '{a} <br/>{b} : {c}'
             },
             xAxis: {
               type: 'category',
@@ -1103,7 +1104,7 @@ export default {
           funnel: {
             tooltip: {
               trigger: 'item',
-              formatter: '{a} <br/>{b} : {c}%'
+              formatter: '{a} <br/>{b} : {c}'
             },
             series: [
               {
