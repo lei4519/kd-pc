@@ -12,11 +12,15 @@
         <div class="title nowrap-ellipsis" :title="item.title">
           {{ item.title }}
         </div>
-        <div class="range nowrap-ellipsis" :title="item.date">
+        <div
+          class="range nowrap-ellipsis"
+          style="height: 16.8px"
+          :title="item.date"
+        >
           {{ item.date }}
         </div>
         <div class="container">
-          <div>{{ item.dateCn }}</div>
+          <div style="height: 17.6px">{{ item.dateCn }}</div>
           <div>
             <span class="number">{{ item.num }}</span>
             <span>{{ item.unit }}</span>
@@ -305,7 +309,9 @@ export default {
           }
         ]
       }
-      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+      return syncRetrueData
+        ? { data: res }
+        : setTimeoutResolve({ data: res }, 1000)
     },
     fetchData(params = {}) {
       params = {
@@ -319,7 +325,7 @@ export default {
             method: 'post',
             params
           })
-      ).then(({ data }) => {
+      ).then(({ data: { data } }) => {
         this.list = data
       })
     }

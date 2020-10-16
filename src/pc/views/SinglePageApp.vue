@@ -70,7 +70,9 @@ export default {
     setTimeout(() => {
       const componentVm = this.$refs.componentVm
       if (componentVm?.[0]?.vm?.$options?.name === 'Form') {
-        this.onSearch(componentVm[0].searchModel, true)
+        this.onSearch(componentVm[0].searchModel || {}, true)
+      } else {
+        this.onSearch({}, true)
       }
     }, 400)
   },

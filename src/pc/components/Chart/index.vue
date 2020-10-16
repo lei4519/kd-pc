@@ -403,7 +403,7 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           this.redraw()
-        }, parseFloat(duration) * 1000 + 100);
+        }, parseFloat(duration) * 1000 + 100)
       })
     },
     searchDateModel() {
@@ -484,30 +484,30 @@ export default {
         average: '100',
         averageUnit: '次',
         option: {
-          "广告点击率": {
-            "2020-10-21": 1.75,
-            "2020-10-22": 1.74,
-            "2020-10-23": 2.42,
-            "2020-10-24": 1.05,
-            "2020-10-25": 1.87,
-            "2020-10-26": 1.12,
-            "2020-10-27": 0.98,
-            "2020-10-28": 1.76,
-            "2020-10-29": 1.74,
-            "2020-10-30": 1.23,
-            "2020-10-31": 2.11,
-            "2020-11-01": 2.78,
-            "2020-11-02": 1.98,
-            "2020-11-03": 2.13,
-            "2020-11-04": 0.66,
-            "2020-11-05": 0.89,
-            "2020-11-06": 1.11,
-            "2020-11-07": 1.25,
-            "2020-11-08": 2.1,
-            "2020-11-09": 1.77,
-            "2020-11-10": 1.45,
-            "2020-11-11": 1.88
-          },
+          广告点击率: {
+            '2020-10-21': 1.75,
+            '2020-10-22': 1.74,
+            '2020-10-23': 2.42,
+            '2020-10-24': 1.05,
+            '2020-10-25': 1.87,
+            '2020-10-26': 1.12,
+            '2020-10-27': 0.98,
+            '2020-10-28': 1.76,
+            '2020-10-29': 1.74,
+            '2020-10-30': 1.23,
+            '2020-10-31': 2.11,
+            '2020-11-01': 2.78,
+            '2020-11-02': 1.98,
+            '2020-11-03': 2.13,
+            '2020-11-04': 0.66,
+            '2020-11-05': 0.89,
+            '2020-11-06': 1.11,
+            '2020-11-07': 1.25,
+            '2020-11-08': 2.1,
+            '2020-11-09': 1.77,
+            '2020-11-10': 1.45,
+            '2020-11-11': 1.88
+          }
           // pv: {
           //   '2020-04-01': 2628850,
           //   '2020-04-02': 2546674,
@@ -834,7 +834,9 @@ export default {
           // }
         }
       }
-      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+      return syncRetrueData
+        ? { data: res }
+        : setTimeoutResolve({ data: res }, 1000)
     },
     fetchData(params = {}) {
       params = {
@@ -869,7 +871,7 @@ export default {
             method: 'post',
             params
           })
-      ).then(res => {
+      ).then(({ data: res }) => {
         this.options = {
           line: {
             grid: {
@@ -889,12 +891,14 @@ export default {
             },
             xAxis: {
               type: 'category',
-              data: Object.keys(res.option[Object.keys(res.option)]).map(item => {
-                return item
-                  .split('-' || '/')
-                  .slice(1)
-                  .join('-')
-              }),
+              data: Object.keys(res.option[Object.keys(res.option)]).map(
+                item => {
+                  return item
+                    .split('-' || '/')
+                    .slice(1)
+                    .join('-')
+                }
+              ),
               // data: Object.keys(res.option['广告点击率']).map(item =>
               //   item
               //     .split('-' || '/')
@@ -909,7 +913,7 @@ export default {
               },
               axisTick: {
                 alignWithLabel: true
-              },
+              }
             },
             yAxis: {
               name: '万',
@@ -933,7 +937,7 @@ export default {
                 }
               }
             },
-            series: Object.keys(res.option).map((key) => {
+            series: Object.keys(res.option).map(key => {
               return {
                 name: key,
                 data: Object.values(res.option[key]).map(item => {
@@ -945,7 +949,7 @@ export default {
                 }),
                 type: 'line'
               }
-            }),
+            })
             // series: [
             //   {
             //     name: 'pv',
@@ -990,7 +994,7 @@ export default {
                 color: '#8492A6',
                 fontSize: '10px',
                 fontFamily: '"PingFang SC", 微软雅黑'
-              },
+              }
             },
             yAxis: {
               axisLabel: {

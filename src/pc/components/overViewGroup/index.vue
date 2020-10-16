@@ -173,7 +173,9 @@ export default {
           }
         ]
       }
-      return syncRetrueData ? res : setTimeoutResolve(res, 1000)
+      return syncRetrueData
+        ? { data: res }
+        : setTimeoutResolve({ data: res }, 1000)
     },
     fetchData(params = {}) {
       params = {
@@ -187,7 +189,7 @@ export default {
             method: 'post',
             params
           })
-      ).then(({ data }) => {
+      ).then(({ data: { data } }) => {
         this.list = data
       })
     }
