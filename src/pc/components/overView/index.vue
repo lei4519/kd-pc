@@ -12,15 +12,11 @@
         <div class="title nowrap-ellipsis" :title="item.title">
           {{ item.title }}
         </div>
-        <div
-          class="range nowrap-ellipsis"
-          style="height: 16.8px"
-          :title="item.date"
-        >
+        <div class="range nowrap-ellipsis" :title="item.date">
           {{ item.date }}
         </div>
         <div class="container">
-          <div style="height: 17.6px">{{ item.dateCn }}</div>
+          <div>{{ item.dateCn }}</div>
           <div>
             <span class="number">{{ item.num }}</span>
             <span>{{ item.unit }}</span>
@@ -342,7 +338,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  min-height: 178px;
+  // min-height: 178px;
   &.negativeright {
     margin-right: -$component-padding;
   }
