@@ -21,29 +21,33 @@
             <span class="number">{{ item.num }}</span>
             <span>{{ item.unit }}</span>
           </div>
-          <template v-for="(arritem, i) in item.datarr">
-            <el-tooltip
-              :key="i"
-              class="kpi-warp"
-              effect="dark"
-              :content="arritem.desc"
-              placement="top-start"
-            >
-              <div class="kpi-contont">
-                <span>{{ arritem.name }}</span>
-                <span :class="arritem.ratio == 'up' ? 'kpi-drop' : 'kpi-rise'">
-                  <i
-                    :class="
-                      arritem.ratio == 'up'
-                        ? 'el-icon-caret-bottom'
-                        : 'el-icon-caret-top'
-                    "
-                  ></i>
-                  <span>{{ arritem.num }}</span>
-                </span>
-              </div>
-            </el-tooltip>
-          </template>
+          <div style="height: 16px">
+            <template v-for="(arritem, i) in item.datarr">
+              <el-tooltip
+                :key="i"
+                class="kpi-warp"
+                effect="dark"
+                :content="arritem.desc"
+                placement="top-start"
+              >
+                <div class="kpi-contont">
+                  <span>{{ arritem.name }}</span>
+                  <span
+                    :class="arritem.ratio == 'up' ? 'kpi-drop' : 'kpi-rise'"
+                  >
+                    <i
+                      :class="
+                        arritem.ratio == 'up'
+                          ? 'el-icon-caret-bottom'
+                          : 'el-icon-caret-top'
+                      "
+                    ></i>
+                    <span>{{ arritem.num }}</span>
+                  </span>
+                </div>
+              </el-tooltip>
+            </template>
+          </div>
           <div class="tips-warp" v-if="item.desc && item.desc.length">
             <el-popover trigger="hover">
               <div class="tip">
