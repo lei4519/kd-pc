@@ -889,7 +889,7 @@ export default {
                   ? 40
                   : 10,
               bottom: 50,
-              left: 40,
+              left: 60,
               right: 10
             },
             tooltip: {
