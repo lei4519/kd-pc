@@ -44,7 +44,7 @@
               </div>
             </el-tooltip>
           </template>
-          <div class="tips-warp">
+          <div class="tips-warp" v-if="item.desc && item.desc.length">
             <el-popover trigger="hover">
               <div class="tip">
                 <div v-for="(i, k) in item.desc" :key="k">
