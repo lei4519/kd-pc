@@ -29,30 +29,36 @@
       <div class="title ellipsis" :title="chartObj.title">
         {{ chartObj.title }}
       </div>
-      <div class="time">{{ chartObj.startTime }}-{{ chartObj.endTime }}</div>
+      <div class="time" v-if="chartObj.startTime && chartObj.endTime">
+        {{ chartObj.startTime }}-{{ chartObj.endTime }}
+      </div>
       <div class="horizontal" v-if="compose === 'horizontal'">
-        <div class="subtime">{{ chartObj.currentEndTime }}</div>
+        <div class="subtime" v-if="chartObj.currentEndTime">
+          {{ chartObj.currentEndTime }}
+        </div>
         <div class="horizontal-compare-sum">
           <div class="current-box">
             <div class="current">
-              <span class="val">{{ chartObj.endNum }}</span
+              <span class="val" v-if="chartObj.endNum">{{
+                chartObj.endNum
+              }}</span
               >{{ chartObj.endUnit }}
             </div>
-            <div class="compare">
-              <div class="huanbi">
+            <div class="compare" v-if="chartObj.huanBi || chartObj.tongBi">
+              <div class="huanbi" v-if="chartObj.huanBi">
                 环比<span class="val_red">{{ chartObj.huanBi }}</span>
               </div>
-              <div class="tongbi">
+              <div class="tongbi" v-if="chartObj.tongBi">
                 同比<span class="val_green">{{ chartObj.tongBi }}</span>
               </div>
             </div>
           </div>
           <div class="sum-average">
-            <div class="sum">
+            <div class="sum" v-if="chartObj.sum">
               合计<span class="val">{{ chartObj.sum }}</span
               >{{ chartObj.sumUnit }}
             </div>
-            <div class="average">
+            <div class="average" v-if="chartObj.average">
               均值<span class="val">{{ chartObj.average }}</span
               >{{ chartObj.averageUnit }}
             </div>
@@ -1149,7 +1155,7 @@ export default {
       }
     }
     &.h-344 {
-      height: 344px;
+      // height: 344px;
       .horizontal {
         .vertical-r {
           height: 214px;
