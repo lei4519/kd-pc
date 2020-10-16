@@ -881,16 +881,17 @@ export default {
         this.options = {
           line: {
             grid: {
-              top:
-                Math.min.apply(
-                  Array.prototype,
-                  Object.values(res.option[Object.keys(res.option)[0]])
-                ) > 10000
-                  ? 40
-                  : 10,
-              bottom: 50,
-              left: 60,
-              right: 10
+              // top:
+              //   Math.min.apply(
+              //     Array.prototype,
+              //     Object.values(res.option[Object.keys(res.option)[0]])
+              //   ) > 10000
+              //     ? 40
+              //     : 10,
+              top: 10,
+              bottom: 50
+              // left: 60,
+              // right: 10
             },
             tooltip: {
               trigger: 'item',
@@ -929,13 +930,13 @@ export default {
             },
             yAxis: [
               {
-                name:
-                  Math.min.apply(
-                    Array.prototype,
-                    Object.values(res.option[Object.keys(res.option)[0]])
-                  ) > 10000
-                    ? '万'
-                    : '',
+                // name:
+                //   Math.min.apply(
+                //     Array.prototype,
+                //     Object.values(res.option[Object.keys(res.option)[0]])
+                //   ) > 10000
+                //     ? '万'
+                //     : '',
                 type: 'value',
                 axisLine: {
                   show: false
@@ -961,11 +962,12 @@ export default {
               return {
                 name: key,
                 data: Object.values(res.option[key]).map(item => {
-                  if (item > 10000) {
-                    return item / 10000
-                  } else {
-                    return item
-                  }
+                  // if (item > 10000) {
+                  //   return item / 10000
+                  // } else {
+                  //   return item
+                  // }
+                  return item
                 }),
                 type: 'line'
               }
