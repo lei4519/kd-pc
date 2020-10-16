@@ -38,8 +38,8 @@
                     <i
                       :class="
                         arritem.ratio == 'up'
-                          ? 'el-icon-caret-bottom'
-                          : 'el-icon-caret-top'
+                          ? 'el-icon-caret-top'
+                          : 'el-icon-caret-bottom'
                       "
                     ></i>
                     <span>{{ arritem.num }}</span>
