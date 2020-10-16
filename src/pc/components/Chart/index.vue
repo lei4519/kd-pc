@@ -881,7 +881,13 @@ export default {
         this.options = {
           line: {
             grid: {
-              top: 10,
+              top:
+                Math.min.apply(
+                  Array.prototype,
+                  Object.values(res.option[Object.keys(res.option)[0]])
+                ) > 10000
+                  ? 40
+                  : 10,
               bottom: 50,
               left: 40,
               right: 10
@@ -921,28 +927,36 @@ export default {
                 alignWithLabel: true
               }
             },
-            yAxis: {
-              name: '万',
-              type: 'value',
-              axisLine: {
-                show: false
-              },
-              axisTick: {
-                show: false
-              },
-              axisLabel: {
-                color: '#8492A6',
-                fontSize: '10px',
-                fontFamily: '"PingFang SC", 微软雅黑'
-              },
-              // min: Math.min.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
-              // max: Math.max.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
-              splitLine: {
-                lineStyle: {
-                  type: 'dotted'
+            yAxis: [
+              {
+                name:
+                  Math.min.apply(
+                    Array.prototype,
+                    Object.values(res.option[Object.keys(res.option)[0]])
+                  ) > 10000
+                    ? '万'
+                    : '',
+                type: 'value',
+                axisLine: {
+                  show: false
+                },
+                axisTick: {
+                  show: false
+                },
+                axisLabel: {
+                  color: '#8492A6',
+                  fontSize: '10px',
+                  fontFamily: '"PingFang SC", 微软雅黑'
+                },
+                // min: Math.min.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
+                // max: Math.max.apply(Array.prototype, Object.values(res.option.pv).concat(Object.values(res.option.uv))),
+                splitLine: {
+                  lineStyle: {
+                    type: 'dotted'
+                  }
                 }
               }
-            },
+            ],
             series: Object.keys(res.option).map(key => {
               return {
                 name: key,
