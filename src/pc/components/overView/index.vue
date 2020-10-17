@@ -97,7 +97,7 @@ export default {
   name: 'OverView',
   zhName: '概览',
   iconClass: 'gailan',
-  minSpan: 6,
+  minSpan: 4,
   maxSpan: 6,
   props: {
     url: {
