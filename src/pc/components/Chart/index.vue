@@ -905,7 +905,7 @@ export default {
             },
             xAxis: {
               type: 'category',
-              data: Object.keys(res.option[Object.keys(res.option)]).map(
+              data: Object.keys(res.option[Object.keys(res.option)[0]]).map(
                 item => {
                   return item
                   // .split('-' || '/')
