@@ -28,6 +28,7 @@ export default {
       chartInstance: null,
       color: [
         '#488bff',
+        '#DC143C',
         '#25ceba',
         '#ffc069',
         '#fd6765',
