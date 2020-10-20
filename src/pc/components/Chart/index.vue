@@ -661,6 +661,11 @@ export default {
               right: '5%',
               containLabel: true
             },
+            legend: {
+              data: Object.keys(res.option),
+              bottom: 8,
+              type: 'scroll'
+            },
             tooltip: {
               trigger: 'axis',
               axisPointer: {
@@ -704,6 +709,7 @@ export default {
             },
             series: Object.keys(res.option).map(key => {
               return {
+                name: key,
                 type: 'bar',
                 data: Object.values(res.option[key]).map(item => {
                   return item
@@ -719,12 +725,18 @@ export default {
               right: '5%',
               containLabel: true
             },
+            legend: {
+              data: Object.keys(res.option),
+              bottom: 8,
+              type: 'scroll'
+            },
             tooltip: {
               trigger: 'item',
               formatter: '{a} <br/>{b} : {c}%'
             },
             series: Object.keys(res.option).map(key => {
               return {
+                name: key,
                 type: 'pie',
                 radius: ['50%', '70%'],
                 data: Object.entries(res.option[key]).map(([name, value]) => {
@@ -744,6 +756,11 @@ export default {
               right: '5%',
               containLabel: true
             },
+            legend: {
+              data: Object.keys(res.option),
+              bottom: 8,
+              type: 'scroll'
+            },
             tooltip: {
               trigger: 'item',
               formatter: '{a} <br/>{b} : {c}'
@@ -757,6 +774,7 @@ export default {
                   show: true,
                   position: 'inside'
                 },
+                name: key,
                 data: Object.entries(res.option[key]).map(([name, value]) => {
                   return {
                     name,
