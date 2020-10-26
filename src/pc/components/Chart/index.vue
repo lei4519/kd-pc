@@ -758,7 +758,7 @@ export default {
             },
             legend: {
               data: Object.keys(res.option),
-              bottom: 8,
+              bottom: 0,
               type: 'scroll'
             },
             tooltip: {
@@ -768,7 +768,7 @@ export default {
             series: Object.keys(res.option).map(key => {
               return {
                 top: 10,
-                bottom: 10,
+                bottom: 30,
                 type: 'funnel',
                 label: {
                   show: true,
