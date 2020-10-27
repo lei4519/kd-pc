@@ -749,18 +749,8 @@ export default {
             })
           },
           funnel: {
-            grid: {
-              top: 10,
-              bottom: 50,
-              left: '3%',
-              right: '5%',
-              containLabel: true
-            },
-            legend: {
-              data: Object.keys(res.option),
-              bottom: 0,
-              type: 'scroll',
-              icon: 'none'
+            title: {
+              text: Object.keys(res.option)[0]
             },
             tooltip: {
               trigger: 'item',
@@ -768,8 +758,8 @@ export default {
             },
             series: Object.keys(res.option).map(key => {
               return {
-                top: 10,
-                bottom: 10,
+                top: 30,
+                bottom: 4,
                 left: '18%',
                 right: '18%',
                 type: 'funnel',
