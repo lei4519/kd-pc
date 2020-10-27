@@ -756,11 +756,11 @@ export default {
               right: '5%',
               containLabel: true
             },
-            legend: {
-              data: Object.keys(res.option),
-              bottom: 0,
-              type: 'scroll'
-            },
+            // legend: {
+            //   data: Object.keys(res.option),
+            //   bottom: 0,
+            //   type: 'scroll'
+            // },
             tooltip: {
               trigger: 'item',
               formatter: '{a} <br/>{b} : {c}'
@@ -768,7 +768,9 @@ export default {
             series: Object.keys(res.option).map(key => {
               return {
                 top: 10,
-                bottom: 30,
+                bottom: 10,
+                left: '18%',
+                right: '18%',
                 type: 'funnel',
                 label: {
                   show: true,
