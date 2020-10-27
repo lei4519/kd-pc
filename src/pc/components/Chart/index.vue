@@ -756,11 +756,12 @@ export default {
               right: '5%',
               containLabel: true
             },
-            // legend: {
-            //   data: Object.keys(res.option),
-            //   bottom: 0,
-            //   type: 'scroll'
-            // },
+            legend: {
+              data: Object.keys(res.option),
+              bottom: 0,
+              type: 'scroll',
+              icon: 'none'
+            },
             tooltip: {
               trigger: 'item',
               formatter: '{a} <br/>{b} : {c}'
