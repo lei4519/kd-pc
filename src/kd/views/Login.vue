@@ -168,8 +168,6 @@
 </template>
 
 <script>
-import { setToken } from '../utils/auth'
-
 export default {
   name: 'Login',
   data() {
@@ -319,10 +317,6 @@ export default {
       this.changeImg()
     },
     handleLogin() {
-      // TEST 测试代码
-      // setToken('1')
-      // this.$router.push('/home')
-      // return
       // eslint-disable-next-line no-unreachable
       this.$refs.loginForm.validate(valid => {
         if (valid) {
