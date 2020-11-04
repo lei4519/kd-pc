@@ -11,7 +11,7 @@ import { getToken, removeToken } from '@/kd/utils/auth'
 export function setRoutes(menu: Children[]) {
   // 主页面路由
   const HomeRoute: RouteConfig = {
-    path: '/home',
+    path: '/',
     name: 'Home',
     redirect: '',
     component: () => import('@/kd/views/Home.vue'),
@@ -30,6 +30,7 @@ export function setRoutes(menu: Children[]) {
         if (isPage(item)) {
           // 其权限的第一个页面作为首页
           if (!HomeRoute.redirect) {
+            routes[0].meta.redirect = { name: item.routeName }
             HomeRoute.redirect = { name: item.routeName }
           }
           const dynamicRoutes = routeMap[item.routeName!]
@@ -96,7 +97,7 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
         // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
-          next(to as any)
+          next('/')
         } else {
           // 如果登录成功了却没有获取到menu，就返回重新登录
           removeToken()

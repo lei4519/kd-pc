@@ -5,14 +5,12 @@ Vue.use(VueRouter)
 
 export const routes: Array<RouteConfig> = [
   {
-    path: '/',
-    name: 'App',
-    redirect: '/home'
-  },
-  {
     path: '/login',
     name: 'Login',
-    component: () => import('@/kd/views/Login.vue')
+    component: () => import('@/kd/views/Login.vue'),
+    meta: {
+      redirect: ''
+    }
   }
 ]
 const router = new VueRouter({

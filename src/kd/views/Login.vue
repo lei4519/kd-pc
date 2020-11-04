@@ -17,7 +17,7 @@
             :rules="rules"
             class="login-form"
             autocomplete="on"
-            label-position="left"
+            label-position="top"
           >
             <div v-if="type">
               <el-form-item prop="mobile" class="input-box">
@@ -413,10 +413,10 @@ $light_gray: #eee;
   background: url(https://src.leju.com/imp/imp/deal/31/d6/e/2f1bef5ed7e0d4a164d8b869ebb_p122_mk169.jpg)
     center / cover;
   ::v-deep .el-button {
-    height: 52px;
+    // height: 52px;
   }
   .login-wrap {
-    width: 406px;
+    width: 326px;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -437,13 +437,13 @@ $light_gray: #eee;
       border-radius: 7px 7px 0 0;
     }
     .login-content {
-      padding: 40px;
+      padding: 30px;
       background-color: #fff;
       border-radius: 7px 7px 0 0;
       .title-wrap {
         font-size: 22px;
         color: #1a1a1a;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
       }
     }
     .login-type {
@@ -457,12 +457,13 @@ $light_gray: #eee;
       }
     }
     .login-form {
+      $height: 32px;
       width: 100%;
       overflow: hidden;
       ::v-deep .el-input__inner {
-        height: 52px;
-        line-height: 52px;
-        padding-left: 15px;
+        // height: 52px;
+        // line-height: 52px;
+        // padding-left: 15px;
       }
       .mobile-code,
       .verifycode {
@@ -472,12 +473,12 @@ $light_gray: #eee;
         width: 100px;
         vertical-align: top;
         font-size: 14px;
-        padding: 12px 0;
+        // padding: 12px 0;
         margin-left: 10px;
       }
       .img-box {
         display: inline-block;
-        height: 50px;
+        height: $height;
         width: 100px;
         margin-left: 10px;
         border-radius: 4px;
@@ -490,7 +491,7 @@ $light_gray: #eee;
         .el-icon-refresh {
           font-size: 16px;
           margin-left: 10px;
-          line-height: 52px;
+          line-height: $height;
           vertical-align: top;
           cursor: pointer;
           &:hover {

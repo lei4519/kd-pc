@@ -35,7 +35,7 @@ export default {
     //   //   commit('SET_USER_INFO', data || {})
     //   // })
     // },
-    login({ dispatch }, userInfo) {
+    login({ commit }, userInfo) {
       const { mobile, username, password, code, verifycode } = userInfo
       return ajax
         .jsonp({
@@ -54,7 +54,17 @@ export default {
           }
           return res.data
         })
-      dispatch
+        .then(() => {
+          commit(
+            {
+              type: 'project/SET_PROJECT'
+            },
+            {
+              root: true
+            }
+          )
+        })
+
       // .then(api.user.getPermissions)
       // .then(({ data }) => {
       //   dispatch('getUserInfo')
