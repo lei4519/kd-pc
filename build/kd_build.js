@@ -34,6 +34,12 @@ const runBuildPC = () =>
     console.log('databiDir :>> ', databiDir)
     console.log('kdOutputDir :>> ', kdOutputDir)
     console.log('pcOutputDir :>> ', pcOutputDir)
+
+    sh(
+      `cd ${databiDir}
+      svn status
+      svn commit -m 'build'`
+    )
   } catch (error) {
     console.error('移动资源文件失败，请重试或者手动移动')
     throw error
