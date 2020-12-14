@@ -1,4 +1,4 @@
-const { sh, runBuild } = require('commit-git')
+const { sh, runBuild, getTargetGitPath } = require('commit-git')
 
 const isBCH = process.argv[2] === 'test'
 // 打包 KD
@@ -16,4 +16,26 @@ const runBuildPC = () =>
     } vue-cli-service build --mode ${isBCH ? 'test' : 'production'}`
   )
 
-runBuild([runBuildKD(), runBuildPC()], isBCH)
+;(async function() {
+  await runBuild([runBuildKD(), runBuildPC()], isBCH)
+
+  const databiDir = getTargetGitPath('databi') + '/application/views/vd_page'
+
+  const { outputDir: kdOutputDir } = require('./kd.config')
+  const { outputDir: pcOutputDir } = require('./pc.config')
+
+  const fsExtra = require('fs-extra')
+
+  try {
+    fsExtra.copySync(`${kdOutputDir}/index.html`, `${databiDir}/build.html`)
+    fsExtra.copySync(`${pcOutputDir}/index.html`, `${databiDir}/preview.html`)
+
+    console.log('移动资源文件完成')
+    console.log('databiDir :>> ', databiDir)
+    console.log('kdOutputDir :>> ', kdOutputDir)
+    console.log('pcOutputDir :>> ', pcOutputDir)
+  } catch (error) {
+    console.error('移动资源文件失败，请重试或者手动移动')
+    throw error
+  }
+})()
