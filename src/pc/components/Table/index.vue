@@ -150,7 +150,7 @@
 
 <script>
 import { setTimeoutResolve, getRelativeTime, parseTime } from '@/kd/utils'
-import Expand from './expand'
+import Expand from '@/pc/_components/expand'
 export default {
   name: 'Table',
   zhName: '表格组件',

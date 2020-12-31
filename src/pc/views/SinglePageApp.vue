@@ -46,6 +46,7 @@ import { isEmpty } from '@/kd/utils'
 const theme = Vue.observable({
   color: '409EFF'
 })
+import { getProject } from '@/pc/api/project'
 export default {
   data() {
     return {
@@ -91,20 +92,7 @@ export default {
     },
     async getPage() {
       try {
-        const {
-          data: { entry, code, msg }
-        } = await this.$ajax({
-          url: '/api/quickbuild/detail',
-          method: 'POST',
-          urlSearchParams: {
-            id: this.$route.query.id
-          }
-        })
-        if (code !== 1) {
-          return this.$message.error(msg)
-        }
-        const { form_data } = entry
-        const project = JSON.parse(form_data)
+        const project = await getProject()
         const projectConfig = isEmpty(project)
           ? {
               menu: [

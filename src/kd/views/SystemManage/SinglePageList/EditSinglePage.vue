@@ -13,6 +13,7 @@
 import EditPage from '@/kd/components/EditPage/index.vue'
 import { Project } from '@/kd/modules/Project'
 import { isEmpty } from '@/kd/utils'
+import { getProject, saveProject } from '@/pc/api/project'
 
 export default {
   name: 'EditSinglePage',
@@ -38,21 +39,8 @@ export default {
   methods: {
     async saveProject(data) {
       try {
-        const {
-          data: { code, msg }
-        } = await this.$ajax({
-          url: '/api/quickbuild/edit',
-          method: 'POST',
-          urlSearchParams: {
-            id: this.$route.query.id,
-            data: JSON.stringify(data)
-          }
-        })
-        if (code === 1) {
-          this.$message.success('保存成功')
-        } else if (msg) {
-          this.$message(msg)
-        }
+        await saveProject(data)
+        this.$message.success('保存成功')
       } catch {
         this.$message.error('保存失败，请重试')
         return Promise.reject('保存失败，请重试')
@@ -60,20 +48,7 @@ export default {
     },
     async getProject() {
       try {
-        const {
-          data: { entry, code, msg }
-        } = await this.$ajax({
-          url: '/api/quickbuild/detail',
-          method: 'POST',
-          params: {
-            id: this.$route.query.id
-          }
-        })
-        if (code !== 1) {
-          return this.$message.error(msg)
-        }
-        const { form_data } = entry
-        const project = JSON.parse(form_data)
+        const project = await getProject()
         const projectConfig = isEmpty(project)
           ? {
               menu: [

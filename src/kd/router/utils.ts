@@ -13,9 +13,11 @@ export function setRoutes(menu: Children[]) {
   const HomeRoute: RouteConfig = {
     path: '/',
     name: 'Home',
-    redirect: '',
     component: () => import('@/kd/views/Home.vue'),
-    children: []
+    children: [],
+    redirect: {
+      name: 'EditSinglePage'
+    }
   }
   const set = new Set()
   const accessControl = (menu: Children[]): void => {

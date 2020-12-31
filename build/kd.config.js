@@ -5,7 +5,7 @@ const databiPath = getTargetGitPath('databi')
 
 module.exports = {
   outputDir: `${databiPath}/application/views/vd_page/build`,
-  publicPath: '/application/views/vd_page/build',
+  publicPath: isDev ? '/' : '/application/views/vd_page/build',
   filenameHashing: false,
   productionSourceMap: false,
   configureWebpack: config => {

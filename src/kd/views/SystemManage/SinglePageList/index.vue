@@ -2,7 +2,6 @@
   <div class="list-wrapper">
     <AjaxLoading>
       <Table
-        url="/api/quickbuild/lis"
         :operateList="operateList"
         :columns="columns"
         :showSearch="false"
