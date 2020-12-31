@@ -17,7 +17,7 @@ const runBuildPC = () =>
   )
 
 ;(async function() {
-  await runBuild([runBuildKD(), runBuildPC()], isBCH)
+  await Promise.all([runBuildKD(), runBuildPC()])
 
   const databiDir = getTargetGitPath('databi') + '/application/views/vd_page'
 
