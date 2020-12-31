@@ -28,6 +28,7 @@
 
 <script>
 import Table from '@/pc/components/Table'
+const origin = window.location.origin
 export default {
   name: 'List',
   components: {
@@ -64,20 +65,15 @@ export default {
         prop: 'id',
         type: 'render',
         render(c, { row: { id } }) {
-          const isDev = process.env.VUE_APP_BUILD_ENV !== 'production'
           return c(
             'el-link',
             {
               props: {
                 type: 'primary',
-                href: `http://vd.${
-                  isDev ? 'bch.' : ''
-                }leju.com/preview/#/SinglePageApp?id=${id}`
+                href: `${origin}/front/login/preview/#/SinglePageApp?id=${id}`
               }
             },
-            `http://vd.${
-              isDev ? 'bch.' : ''
-            }leju.com/preview/#/SinglePageApp?id=${id}`
+            `${origin}/front/login/preview/#/SinglePageApp?id=${id}`
           )
         }
       },

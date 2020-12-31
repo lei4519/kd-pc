@@ -1,17 +1,11 @@
 const isDev = process.env.NODE_ENV === 'development'
-const isBCH = process.env.BUILD_MODE === 'bch'
-const path = require('path')
 const { replaceColorToVar } = require('../build/custom-theme-plugin')
 const { getTargetGitPath } = require('commit-git')
-const adjsPath = getTargetGitPath()
+const databiPath = getTargetGitPath('databi')
 
 module.exports = {
-  outputDir: `${adjsPath}/mvvm-project/vue/kd-pc/quicklyBuild`,
-  publicPath: isDev
-    ? '/'
-    : `https://adjs${
-        isBCH ? '.bch' : ''
-      }.leju.com/mvvm-project/vue/kd-pc/quicklyBuild`,
+  outputDir: `${databiPath}/application/views/vd_page/build`,
+  publicPath: '/application/views/vd_page/build',
   filenameHashing: false,
   productionSourceMap: false,
   configureWebpack: config => {
