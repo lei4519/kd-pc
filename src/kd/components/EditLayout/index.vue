@@ -61,7 +61,7 @@
           v-show="fullScreen"
           size="26"
         ></IconFont>
-        <IconFont class="icon" type="tuichu" size="30" @click.native="logout" />
+        <!-- <IconFont class="icon" type="tuichu" size="30" @click.native="logout" /> -->
       </div>
     </el-header>
     <el-container>

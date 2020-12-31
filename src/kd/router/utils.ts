@@ -83,7 +83,7 @@ export function resetRouter() {
 const whiteList: string[] = ['/login']
 export const beforeEach: NavigationGuard = (to, from, next) => {
   // determine whether the user has logged in
-  const isLogin = getToken().userId
+  const isLogin = true || getToken().userId
   if (isLogin) {
     if (to.path === '/login') {
       // if is logged in, redirect to the home page
@@ -93,7 +93,7 @@ export const beforeEach: NavigationGuard = (to, from, next) => {
       if (!store.state.project.project) {
         // 浏览器刷新时project为空，重新设置
         const project = JSON.parse(localStorage.getItem('project') || 'null')
-        // 目前没有权限控制，所以 project 一直为空
+        // TODO 目前没有权限控制，所以 project 一直为空
         // 正常情况有project才会进行commit
         if (!project) {
           store.commit('project/SET_PROJECT')
